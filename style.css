@@ -1,0 +1,352 @@
+:root {
+  --bg: #0b0f14;
+  --panel: #101826;
+  --panel2: #0f1724;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: rgba(255, 255, 255, 0.92);
+  --muted: rgba(255, 255, 255, 0.65);
+  --muted2: rgba(255, 255, 255, 0.5);
+  --accent: #5dd6ff;
+  --good: #2ee59d;
+  --bad: #ff5c7a;
+  --warn: #ffd34d;
+  --picked: rgba(255, 255, 255, 0.28);
+  --shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  --radius: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans",
+    "Liberation Sans", sans-serif;
+  background: radial-gradient(1200px 800px at 20% -10%, rgba(93, 214, 255, 0.14), transparent 55%),
+    radial-gradient(900px 600px at 110% 20%, rgba(46, 229, 157, 0.12), transparent 50%),
+    var(--bg);
+  color: var(--text);
+}
+
+code {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: linear-gradient(180deg, rgba(16, 24, 38, 0.96), rgba(16, 24, 38, 0.88));
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  padding: 16px 18px;
+}
+
+.title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.title h1 {
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: 0.2px;
+}
+
+.title p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 12px;
+}
+
+.control {
+  grid-column: span 4;
+  background: rgba(15, 23, 36, 0.72);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+}
+
+.control.actions {
+  grid-column: span 4;
+  display: flex;
+  gap: 10px;
+  align-items: end;
+  justify-content: flex-end;
+}
+
+.control label {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+input[type="file"],
+input[type="number"] {
+  width: 100%;
+  color: var(--text);
+}
+
+input[type="number"] {
+  padding: 10px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  outline: none;
+}
+
+input[type="number"]:focus {
+  border-color: rgba(93, 214, 255, 0.6);
+  box-shadow: 0 0 0 3px rgba(93, 214, 255, 0.12);
+}
+
+button {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(93, 214, 255, 0.35);
+  background: rgba(93, 214, 255, 0.12);
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 0.05s ease, background 0.12s ease, border-color 0.12s ease;
+  font-weight: 600;
+  width: 100%;
+}
+
+button:hover {
+  background: rgba(93, 214, 255, 0.18);
+  border-color: rgba(93, 214, 255, 0.55);
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+button.secondary {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+button.secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.content {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.statusLine {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.hint {
+  color: var(--muted2);
+  font-size: 12px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 2px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.pill.available {
+  border-color: rgba(46, 229, 157, 0.35);
+  background: rgba(46, 229, 157, 0.1);
+}
+
+.pill.picked {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.tableWrap {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: rgba(15, 23, 36, 0.55);
+  box-shadow: var(--shadow);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(16, 24, 38, 0.98);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 10px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+thead th.num {
+  text-align: right;
+}
+
+thead th.defaultSort::after {
+  content: " ↓";
+  color: rgba(93, 214, 255, 0.75);
+}
+
+tbody td {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 10px 10px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.88);
+  vertical-align: top;
+}
+
+tbody td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+tbody tr {
+  transition: background 0.12s ease, opacity 0.12s ease;
+  cursor: pointer;
+}
+
+tbody tr:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+tbody tr.pickedRow {
+  opacity: 0.58;
+  color: var(--picked);
+}
+
+tbody tr.pickedRow td {
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: line-through;
+}
+
+tbody tr.myTeam {
+  outline: 2px solid rgba(255, 211, 77, 0.55);
+  outline-offset: -2px;
+  background: rgba(255, 211, 77, 0.12);
+}
+
+.reliability {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.04);
+}
+
+.dot.good {
+  background: var(--good);
+}
+.dot.bad {
+  background: var(--bad);
+}
+.dot.warn {
+  background: var(--warn);
+}
+
+.statusCell {
+  font-weight: 700;
+}
+
+.statusCell.available {
+  color: rgba(46, 229, 157, 0.95);
+}
+
+.statusCell.picked {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.empty {
+  padding: 18px 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.footer {
+  padding: 14px 18px;
+  color: var(--muted2);
+  font-size: 12px;
+  border-top: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+@media (max-width: 980px) {
+  .control {
+    grid-column: span 6;
+  }
+  .control.actions {
+    grid-column: span 12;
+  }
+}
+
+@media (max-width: 640px) {
+  .title {
+    margin-bottom: 10px;
+  }
+
+  .control {
+    grid-column: span 12;
+  }
+
+  thead th,
+  tbody td {
+    padding: 10px 8px;
+  }
+}
+

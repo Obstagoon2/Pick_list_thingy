@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reefscape Scouting Pick List Tool</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="title">
+          <h1>FRC Reefscape Pick List</h1>
+          <p>Merge Pit + Match scouting CSVs into a sortable pick table.</p>
+        </div>
+
+        <div class="controls">
+          <div class="control">
+            <label for="pitCsv">Pit scouting CSV</label>
+            <input id="pitCsv" type="file" accept=".csv,text/csv" />
+          </div>
+
+          <div class="control">
+            <label for="matchCsv">Match scouting CSV</label>
+            <input id="matchCsv" type="file" accept=".csv,text/csv" />
+          </div>
+
+          <div class="control">
+            <label for="myTeam">Your team number</label>
+            <input id="myTeam" type="number" inputmode="numeric" placeholder="e.g. 1912" />
+          </div>
+
+          <div class="control actions">
+            <button id="clearPicked" type="button" class="secondary">Clear picked</button>
+            <button id="exportCsv" type="button">Export merged CSV</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="content">
+        <div class="meta">
+          <div id="statusLine" class="statusLine">Upload both CSVs to generate the table.</div>
+          <div class="hint">
+            Tip: click a row to toggle <span class="pill available">Available</span> /
+            <span class="pill picked">Picked</span>. Picked rows are saved locally.
+          </div>
+        </div>
+
+        <div class="tableWrap">
+          <table id="pickTable" class="table" aria-label="Pick list table">
+            <thead>
+              <tr>
+                <th data-sort="teamNumber">Team #</th>
+                <th data-sort="avgAuto" class="num">Avg Auto</th>
+                <th data-sort="avgTeleop" class="num">Avg Teleop</th>
+                <th data-sort="avgEndgame" class="num">Avg Endgame</th>
+                <th data-sort="avgTotal" class="num defaultSort">Avg Total</th>
+                <th data-sort="driveBaseType">Drive Type</th>
+                <th data-sort="reliabilityRate">Reliability</th>
+                <th data-sort="notes">Notes</th>
+                <th data-sort="status">Status</th>
+              </tr>
+            </thead>
+            <tbody id="pickTableBody">
+              <tr>
+                <td colspan="9" class="empty">No data loaded.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <footer class="footer">
+      <span>
+        Parsing via PapaParse. Team mapping: <code>team_key</code> like <code>frc1912</code> → <code>1912</code>.
+      </span>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
+
