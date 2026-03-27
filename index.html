@@ -366,33 +366,33 @@ async function fetchEventData(){
 
     setStatus('Fetching Statbotics...');
 
-    const statRes = await fetch(`https://api.statbotics.io/v3/event/${code}/teams`);
-    const statData = await statRes.json();
+    const statPromises = tbaTeams.map(async (t) => {
+    const num = t.team_number;
 
-    const statMap={};
-    statData.forEach(t=>statMap[t.team]=t);
+    try{
+        const res = await fetch(`https://api.statbotics.io/v3/team_event/${num}/${code}`);
+        const s = await res.json();
 
-    tbaTeams.forEach(t=>{
-      const num=t.team_number;
-
-      if(!teams[num]){
-        teams[num]={num,name:t.nickname||`Team ${num}`,notes:{},scores:{},dnp:false,tba:{},statbotics:{}};
-      }
-
-      teams[num].tba={
-        rank: rankMap[num] ?? '',
-        opr: oprData.oprs?.[`frc${num}`]?.toFixed(1) ?? '',
-        ccwm: oprData.ccwms?.[`frc${num}`]?.toFixed(1) ?? ''
-      };
-
-      const s=statMap[num];
-      if(s){
-        teams[num].statbotics={
-          epa: s.epa?.total_points?.mean?.toFixed(1) ?? '',
-          auto_epa: s.epa?.auto_points?.mean?.toFixed(1) ?? ''
+        return {
+        team: num,
+        data: s
         };
-      }
+
+    }catch{
+        return { team: num, data: null };
+    }
     });
+
+    const statResults = await Promise.all(statPromises);
+
+    const s = statMap[num];
+
+  if(s){
+    teams[num].statbotics = {
+      epa: s.epa?.toFixed(1) ?? '',
+      auto_epa: s.auto_epa?.toFixed(1) ?? ''
+    };
+  }
 
     ensureTBACols();
     ensureStatboticsCols();
