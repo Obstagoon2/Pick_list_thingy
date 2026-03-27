@@ -155,6 +155,149 @@ tr.dnp-row td{opacity:.45;background:var(--bg2)}
 <script>
 const TBA_KEY = 'REPLACE_WITH_YOUR_TBA_KEY';
 
+/* =========================
+   CSV IMPORT (RESTORED)
+========================= */
+
+function loadCSV(evt,type){
+  const file=evt.target.files[0];
+  if(!file) return;
+
+  evt.target.value='';
+
+  Papa.parse(file,{
+    header:true,
+    dynamicTyping:true,
+    skipEmptyLines:true,
+    complete(res){
+
+      const rows=res.data;
+      const headers=res.meta.fields;
+
+      const teamCol=headers.find(h=>/^team_key$/i.test(h)) ||
+                     headers.find(h=>/team.*num|team.*key|^team$/i.test(h));
+
+      if(!teamCol){
+        setStatus('Could not find team column in CSV','error');
+        return;
+      }
+
+      const grouped={};
+
+      rows.forEach(r=>{
+        const num=parseTeamNum(r[teamCol]);
+        if(num!=null){
+          if(!grouped[num]) grouped[num]=[];
+          grouped[num].push(r);
+        }
+      });
+
+      const numCols=headers.filter(h=>{
+        if(h===teamCol || ALWAYS_SKIP.has(h)) return false;
+
+        const vals=rows.map(r=>r[h]).filter(v=>v!=null && v!=='');
+
+        const numericCount=vals.filter(v=>
+          typeof v==='number' ||
+          (!isNaN(parseFloat(v)) && String(v).trim()!=='')
+        ).length;
+
+        return vals.length>0 && numericCount/vals.length>=0.5;
+      });
+
+      if(!numCols.length){
+        setStatus(`No numeric columns found in ${type} CSV`,'error');
+        return;
+      }
+
+      pendingCSV={type,numCols,grouped};
+      openColModal(type,numCols);
+    }
+  });
+}
+
+/* =========================
+   COLUMN PICKER
+========================= */
+
+function openColModal(type,cols){
+  document.getElementById('col-modal-title').textContent=`Select ${type} scouting columns`;
+
+  document.getElementById('col-checkboxes').innerHTML =
+    cols.map(c=>`<label><input type="checkbox" checked value="${c}"> ${c}</label>`).join('');
+
+  document.getElementById('col-modal').style.display='flex';
+}
+
+function colCheckAll(v){
+  document.querySelectorAll('#col-checkboxes input')
+    .forEach(i=>i.checked=v);
+}
+
+function cancelColModal(){
+  document.getElementById('col-modal').style.display='none';
+  pendingCSV=null;
+}
+
+function confirmColModal(){
+  document.getElementById('col-modal').style.display='none';
+
+  if(!pendingCSV) return;
+
+  const {type,grouped}=pendingCSV;
+
+  const checked = Array.from(
+    document.querySelectorAll('#col-checkboxes input:checked')
+  ).map(i=>i.value);
+
+  if(!checked.length){
+    setStatus('No columns selected','error');
+    pendingCSV=null;
+    return;
+  }
+
+  // create criteria
+  checked.forEach(col=>{
+    const id=`${type}_${col}`;
+
+    if(!criteria.find(c=>c.id===id)){
+      criteria.push({
+        id,
+        name:col,
+        weight:1,
+        source:type,
+        editable:true
+      });
+    }
+  });
+
+  // aggregate data per team
+  Object.entries(grouped).forEach(([num,rowArr])=>{
+    const n=+num;
+
+    if(!teams[n]){
+      teams[n]={num:n,name:`Team ${n}`,notes:{},scores:{},dnp:false,tba:{},statbotics:{}};
+    }
+
+    checked.forEach(col=>{
+      const vals=rowArr
+        .map(r=>typeof r[col]==='number'?r[col]:parseFloat(r[col]))
+        .filter(v=>!isNaN(v));
+
+      if(vals.length){
+        teams[n].scores[`${type}_${col}`] =
+          +(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2);
+      }
+    });
+  });
+
+  renderAll();
+
+  setStatus(`${type} CSV imported: ${Object.keys(grouped).length} teams, ${checked.length} columns`,'success');
+
+  pendingCSV=null;
+}
+
 const ALWAYS_SKIP = new Set([
   'org_key','year','event_key','match_key','match_number','time',
   'alliance','scouter','team_key','otherNotes','superNotes',
