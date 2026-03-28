@@ -7,79 +7,90 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
 :root{
-  --bg:#ffffff;--bg2:#f4f4f4;--bg3:#e8e8e8;
-  --text:#1a1a1a;--text2:#555;--text3:#888;
-  --border:#d0d0d0;--border2:#bbb;
+  --bg:#fff;--bg2:#f4f4f4;--bg3:#e8e8e8;
+  --text:#1a1a1a;--text2:#555;--text3:#999;
+  --border:#d8d8d8;--border2:#bbb;
   --info-bg:#e6f1fb;--info-text:#185fa5;--info-border:#85b7eb;
   --danger-bg:#fcebeb;--danger-text:#a32d2d;--danger-border:#f09595;
-  --success-text:#3b6d11;
-  --total-color:#185fa5;
+  --success:#2e7d32;--total:#185fa5;
 }
 [data-theme=dark]{
-  --bg:#1e1e1e;--bg2:#2a2a2a;--bg3:#333;
-  --text:#e8e8e8;--text2:#aaa;--text3:#666;
+  --bg:#1e1e1e;--bg2:#272727;--bg3:#333;
+  --text:#e0e0e0;--text2:#aaa;--text3:#666;
   --border:#3a3a3a;--border2:#555;
   --info-bg:#0c2a45;--info-text:#78b4e8;--info-border:#1a5080;
   --danger-bg:#3a1515;--danger-text:#e88;--danger-border:#6a2a2a;
-  --success-text:#7ec850;
-  --total-color:#78b4e8;
+  --success:#81c784;--total:#78b4e8;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,sans-serif;font-size:14px;color:var(--text);background:var(--bg2);transition:background .2s,color .2s}
-button{cursor:pointer;font-family:inherit;font-size:13px;padding:6px 12px;border:0.5px solid var(--border2);border-radius:6px;background:transparent;color:var(--text);transition:background .15s}
+body{font-family:system-ui,sans-serif;font-size:14px;color:var(--text);background:var(--bg2)}
+button{cursor:pointer;font-family:inherit;font-size:12px;padding:5px 11px;border:0.5px solid var(--border2);border-radius:6px;background:transparent;color:var(--text);transition:background .15s}
 button:hover{background:var(--bg3)}
 button.primary{background:var(--info-bg);color:var(--info-text);border-color:var(--info-border)}
 button.danger{background:var(--danger-bg);color:var(--danger-text);border-color:var(--danger-border)}
-input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:13px;padding:5px 8px;border:0.5px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);width:100%}
-textarea{resize:vertical;min-height:44px}
-.layout{display:flex;gap:12px;padding:12px;min-height:100vh}
-.sidebar{width:230px;flex-shrink:0;display:flex;flex-direction:column;gap:10px}
+input[type=text],input[type=number],textarea{font-family:inherit;font-size:13px;padding:5px 8px;border:0.5px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);width:100%}
+textarea{resize:vertical;min-height:40px}
+.layout{display:flex;gap:10px;padding:10px;min-height:100vh;align-items:flex-start}
+.sidebar{width:240px;flex-shrink:0;display:flex;flex-direction:column;gap:10px;position:sticky;top:10px}
 .main{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
 .card{background:var(--bg);border:0.5px solid var(--border);border-radius:10px;padding:12px}
-.card h3{font-size:11px;font-weight:500;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
-.rank-item{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:6px;border:0.5px solid var(--border);margin-bottom:3px;background:var(--bg)}
-.rank-item.dnp{opacity:.4;text-decoration:line-through}
-.rank-num{font-size:11px;color:var(--text3);min-width:16px;text-align:right}
-.rank-score{font-size:11px;color:var(--text2);margin-left:auto;white-space:nowrap}
+.card h3{font-size:10px;font-weight:600;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em}
+/* Rankings */
+.rl-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.rl-header h3{margin:0}
+.rl-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.rl-tab{font-size:11px;padding:3px 8px;border-radius:12px;border:0.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer}
+.rl-tab.active{background:var(--info-bg);color:var(--info-text);border-color:var(--info-border)}
+.rank-item{display:flex;align-items:center;gap:5px;padding:4px 7px;border-radius:6px;border:0.5px solid var(--border);margin-bottom:3px;background:var(--bg)}
+.rank-item.dnp{opacity:.35;text-decoration:line-through}
+.rank-num{font-size:10px;color:var(--text3);min-width:16px;text-align:right}
+.rank-score{font-size:11px;color:var(--text2);margin-left:auto}
+/* Table */
 .table-wrap{overflow-x:auto;border-radius:8px;border:0.5px solid var(--border)}
 table{width:100%;border-collapse:collapse;font-size:12px}
 th{background:var(--bg2);font-weight:500;padding:7px 8px;text-align:left;white-space:nowrap;border-bottom:0.5px solid var(--border);cursor:pointer;user-select:none}
 th:hover{background:var(--bg3)}
 td{padding:5px 8px;border-bottom:0.5px solid var(--border);vertical-align:top;background:var(--bg)}
 tr:last-child td{border-bottom:none}
-tr.dnp-row td{opacity:.45;background:var(--bg2)}
+tr.dnp-row td{opacity:.4;background:var(--bg2)}
 .score-input{width:50px;text-align:center;padding:3px 4px}
-.notes-fields{display:flex;flex-direction:column;gap:3px;min-width:190px}
+.notes-fields{display:flex;flex-direction:column;gap:3px;min-width:180px}
 .note-row{display:flex;gap:5px;align-items:flex-start}
-.note-label{font-size:10px;color:var(--text2);min-width:56px;padding-top:5px;font-weight:500}
-.note-input{flex:1;font-size:11px;padding:3px 6px;min-height:30px}
-.criteria-row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
-.criteria-name{flex:1}
-.criteria-weight{width:48px;text-align:center}
-.top-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.total-col{font-weight:500;color:var(--total-color)}
-/* Modal */
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:flex;align-items:center;justify-content:center}
-.modal{background:var(--bg);border:1px solid var(--border2);border-radius:14px;padding:22px;width:460px;max-width:95vw;max-height:85vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.35)}
-.modal h2{font-size:15px;font-weight:500;margin-bottom:12px;color:var(--text)}
-.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;padding-top:12px;border-top:0.5px solid var(--border)}
-.status-bar{font-size:12px;padding:4px 0;min-height:20px}
+.note-label{font-size:10px;color:var(--text2);min-width:54px;padding-top:5px;font-weight:500}
+.note-input{flex:1;font-size:11px;padding:3px 6px}
+.total-col{font-weight:600;color:var(--total)}
+/* Top bar */
+.top-bar{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.status-bar{font-size:12px;padding:3px 0;min-height:18px}
+/* Modals */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:flex;align-items:center;justify-content:center}
+.modal{background:var(--bg);border:1px solid var(--border2);border-radius:14px;padding:20px;width:480px;max-width:96vw;max-height:88vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.modal h2{font-size:15px;font-weight:500;margin-bottom:12px}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;padding-top:10px;border-top:0.5px solid var(--border)}
+/* Misc */
 .tag-chip{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;background:var(--bg2);border:0.5px solid var(--border);font-size:11px;margin:2px;color:var(--text)}
 .tag-chip button{border:none;background:none;padding:0;font-size:11px;color:var(--text3);cursor:pointer}
-.flex-gap{display:flex;gap:8px}
-.badge-src{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;background:var(--bg2);color:var(--text3)}
+.badge-src{font-size:10px;padding:1px 5px;border-radius:3px;background:var(--bg2);color:var(--text3)}
+.flex-gap{display:flex;gap:7px}
 .spinner{display:inline-block;width:11px;height:11px;border:2px solid var(--border2);border-top-color:var(--info-text);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:4px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.skip-cols-list{max-height:200px;overflow-y:auto;border:0.5px solid var(--border);border-radius:6px;padding:8px;margin-top:6px;background:var(--bg2)}
-.skip-cols-list label{display:flex;align-items:center;gap:8px;font-size:12px;padding:3px 0;cursor:pointer;color:var(--text)}
-.theme-toggle{padding:5px 10px;border-radius:20px;font-size:12px;border:0.5px solid var(--border2);background:var(--bg2);color:var(--text);cursor:pointer}
+.skip-cols-list{max-height:200px;overflow-y:auto;border:0.5px solid var(--border);border-radius:6px;padding:8px;background:var(--bg2)}
+.skip-cols-list label{display:flex;align-items:center;gap:7px;font-size:12px;padding:3px 0;cursor:pointer;color:var(--text)}
+.criteria-row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.rl-criteria-check label{display:flex;align-items:center;gap:6px;font-size:12px;padding:2px 0;cursor:pointer;color:var(--text)}
+.rl-view-row{display:flex;align-items:center;gap:6px;padding:6px 8px;border:0.5px solid var(--border);border-radius:7px;margin-bottom:5px;background:var(--bg2)}
 </style>
 </head>
 <body>
 <div class="layout">
+  <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="card">
-      <h3>Live Rankings</h3>
+      <div class="rl-header">
+        <h3>Live Rankings</h3>
+        <button style="font-size:10px;padding:3px 7px" onclick="openRLModal()">+ View</button>
+      </div>
+      <div class="rl-tabs" id="rl-tabs"></div>
       <div id="rank-list"><p style="font-size:12px;color:var(--text3)">No teams yet</p></div>
     </div>
     <div class="card">
@@ -95,30 +106,29 @@ tr.dnp-row td{opacity:.45;background:var(--bg2)}
       <div id="summary" style="font-size:12px;color:var(--text2);line-height:1.9"></div>
     </div>
   </div>
+
+  <!-- MAIN -->
   <div class="main">
     <div class="card">
       <div class="top-bar">
-        <input type="text" id="event-code" placeholder="Event code (e.g. 2025txhou)" style="width:190px">
-        <button class="primary" onclick="fetchEventData()" id="fetch-btn">Pull TBA + Statbotics</button>
-        <label style="padding:6px 12px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:13px">
+        <input type="text" id="event-code" placeholder="Event code (e.g. 2026mslr)" style="width:185px">
+        <button class="primary" onclick="fetchEventData()" id="fetch-btn">Pull Statbotics</button>
+        <label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">
           Match CSV<input type="file" accept=".csv" style="display:none" onchange="loadCSV(event,'match')">
         </label>
-        <label style="padding:6px 12px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:13px">
+        <label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">
           Pit CSV<input type="file" accept=".csv" style="display:none" onchange="loadCSV(event,'pit')">
         </label>
         <button onclick="openCriteriaModal()">Criteria</button>
         <button onclick="addTeamManual()">+ Team</button>
         <button onclick="exportCSV()" class="primary">Export</button>
-        <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">Dark mode</button>
+        <button onclick="toggleTheme()" id="theme-btn" style="padding:5px 10px;border-radius:20px">Dark</button>
       </div>
       <div id="status-bar" class="status-bar"></div>
     </div>
-    <div class="card" style="flex:1;overflow:hidden;padding:0">
+    <div class="card" style="padding:0">
       <div class="table-wrap">
-        <table>
-          <thead id="thead"></thead>
-          <tbody id="tbody"></tbody>
-        </table>
+        <table><thead id="thead"></thead><tbody id="tbody"></tbody></table>
       </div>
     </div>
   </div>
@@ -128,7 +138,7 @@ tr.dnp-row td{opacity:.45;background:var(--bg2)}
 <div id="criteria-modal" style="display:none" class="modal-backdrop">
   <div class="modal">
     <h2>Manage criteria & weights</h2>
-    <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Adjust weights (0 = ignored). TBA/Statbotics cols are read-only display.</p>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Set weight to 0 to exclude from totals. TBA/Statbotics cols are read-only.</p>
     <div id="criteria-list"></div>
     <button onclick="addCriteria()" style="margin-top:8px">+ Add manual criteria</button>
     <div class="modal-footer"><button onclick="closeCriteriaModal()">Done</button></div>
@@ -139,8 +149,8 @@ tr.dnp-row td{opacity:.45;background:var(--bg2)}
 <div id="col-modal" style="display:none" class="modal-backdrop">
   <div class="modal">
     <h2 id="col-modal-title">Select columns to import</h2>
-    <p style="font-size:12px;color:var(--text2);margin-bottom:4px">Uncheck columns you don't want as criteria.</p>
-    <div style="display:flex;gap:8px;margin-bottom:6px">
+    <p style="font-size:12px;color:var(--text2);margin-bottom:5px">Uncheck columns you don't want as scoring criteria.</p>
+    <div style="display:flex;gap:7px;margin-bottom:7px">
       <button onclick="colCheckAll(true)" style="font-size:11px;padding:3px 8px">All</button>
       <button onclick="colCheckAll(false)" style="font-size:11px;padding:3px 8px">None</button>
     </div>
@@ -152,352 +162,353 @@ tr.dnp-row td{opacity:.45;background:var(--bg2)}
   </div>
 </div>
 
+<!-- Ranking Views Modal -->
+<div id="rl-modal" style="display:none" class="modal-backdrop">
+  <div class="modal">
+    <h2>Manage ranking views</h2>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Each view shows a live ranking using only its selected criteria. Mix any criteria freely.</p>
+    <div id="rl-views-list"></div>
+    <button onclick="addRLView()" style="margin-top:8px">+ New view</button>
+    <div class="modal-footer"><button onclick="closeRLModal()">Done</button></div>
+  </div>
+</div>
+
 <script>
 const TBA_KEY = 'k3RQ7yVrZdKqUt6RjDlOKYadDOglo2B41X1CE6Fv5eUozinzBfDhr2aw3hg5D22z';
-
-/* =========================
-   CSV IMPORT (RESTORED)
-========================= */
-
-function loadCSV(evt,type){
-  const file=evt.target.files[0];
-  if(!file) return;
-
-  evt.target.value='';
-
-  Papa.parse(file,{
-    header:true,
-    dynamicTyping:true,
-    skipEmptyLines:true,
-    complete(res){
-
-      const rows=res.data;
-      const headers=res.meta.fields;
-
-      const teamCol=headers.find(h=>/^team_key$/i.test(h)) ||
-                     headers.find(h=>/team.*num|team.*key|^team$/i.test(h));
-
-      if(!teamCol){
-        setStatus('Could not find team column in CSV','error');
-        return;
-      }
-
-      const grouped={};
-
-      rows.forEach(r=>{
-        const num=parseTeamNum(r[teamCol]);
-        if(num!=null){
-          if(!grouped[num]) grouped[num]=[];
-          grouped[num].push(r);
-        }
-      });
-
-      const numCols=headers.filter(h=>{
-        if(h===teamCol || ALWAYS_SKIP.has(h)) return false;
-
-        const vals=rows.map(r=>r[h]).filter(v=>v!=null && v!=='');
-
-        const numericCount=vals.filter(v=>
-          typeof v==='number' ||
-          (!isNaN(parseFloat(v)) && String(v).trim()!=='')
-        ).length;
-
-        return vals.length>0 && numericCount/vals.length>=0.5;
-      });
-
-      if(!numCols.length){
-        setStatus(`No numeric columns found in ${type} CSV`,'error');
-        return;
-      }
-
-      pendingCSV={type,numCols,grouped};
-      openColModal(type,numCols);
-    }
-  });
-}
-
-/* =========================
-   COLUMN PICKER
-========================= */
-
-function openColModal(type,cols){
-  document.getElementById('col-modal-title').textContent=`Select ${type} scouting columns`;
-
-  document.getElementById('col-checkboxes').innerHTML =
-    cols.map(c=>`<label><input type="checkbox" checked value="${c}"> ${c}</label>`).join('');
-
-  document.getElementById('col-modal').style.display='flex';
-}
-
-function colCheckAll(v){
-  document.querySelectorAll('#col-checkboxes input')
-    .forEach(i=>i.checked=v);
-}
-
-function cancelColModal(){
-  document.getElementById('col-modal').style.display='none';
-  pendingCSV=null;
-}
-
-function confirmColModal(){
-  document.getElementById('col-modal').style.display='none';
-
-  if(!pendingCSV) return;
-
-  const {type,grouped}=pendingCSV;
-
-  const checked = Array.from(
-    document.querySelectorAll('#col-checkboxes input:checked')
-  ).map(i=>i.value);
-
-  if(!checked.length){
-    setStatus('No columns selected','error');
-    pendingCSV=null;
-    return;
-  }
-
-  // create criteria
-  checked.forEach(col=>{
-    const id=`${type}_${col}`;
-
-    if(!criteria.find(c=>c.id===id)){
-      criteria.push({
-        id,
-        name:col,
-        weight:1,
-        source:type,
-        editable:true
-      });
-    }
-  });
-
-  // aggregate data per team
-  Object.entries(grouped).forEach(([num,rowArr])=>{
-    const n=+num;
-
-    if(!teams[n]){
-      teams[n]={num:n,name:`Team ${n}`,notes:{},scores:{},dnp:false,tba:{},statbotics:{}};
-    }
-
-    checked.forEach(col=>{
-      const vals=rowArr
-        .map(r=>typeof r[col]==='number'?r[col]:parseFloat(r[col]))
-        .filter(v=>!isNaN(v));
-
-      if(vals.length){
-        teams[n].scores[`${type}_${col}`] =
-          +(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2);
-      }
-    });
-  });
-
-  renderAll();
-
-  setStatus(`${type} CSV imported: ${Object.keys(grouped).length} teams, ${checked.length} columns`,'success');
-
-  pendingCSV=null;
-}
-
 const ALWAYS_SKIP = new Set([
-  'org_key','year','event_key','match_key','match_number','time',
-  'alliance','scouter','team_key','otherNotes','superNotes',
-  'AutoMistake🚩','DidScoreMistake🚩','DidintakeMistake🚩',
-  'RedCard','YellowCard','describeAuto','autoCodeTeleop','preferredStrategy',
-  'describepizzatoppings','doAutoCodeTeleop','StartPos'
+  'org_key','year','event_key','match_key','match_number','time','alliance','scouter',
+  'team_key','otherNotes','superNotes','RedCard','YellowCard','describeAuto',
+  'autoCodeTeleop','preferredStrategy','describepizzatoppings','doAutoCodeTeleop',
+  'StartPos','AutoMistake🚩','DidScoreMistake🚩','DidintakeMistake🚩'
 ]);
 
 let teams={}, criteria=[], noteTags=['Strategy','Autos','Concerns'];
-let sortCol='__total__', sortAsc=false, pendingCSV=null;
-let darkMode=false;
+let sortCol='__total__', sortAsc=false, pendingCSV=null, darkMode=false;
 
+// Ranking views: [{id, name, criteriaIds:[]}]
+let rlViews=[{id:'rl_default',name:'Overall',criteriaIds:[]}];
+let activeRLView='rl_default';
+
+// ── Theme ──────────────────────────────────────────────
 function toggleTheme(){
   darkMode=!darkMode;
-  document.documentElement.setAttribute('data-theme', darkMode?'dark':'');
-  document.getElementById('theme-btn').textContent = darkMode?'Light mode':'Dark mode';
+  document.documentElement.setAttribute('data-theme',darkMode?'dark':'');
+  document.getElementById('theme-btn').textContent=darkMode?'Light':'Dark';
 }
 
+// ── Status ─────────────────────────────────────────────
 function setStatus(msg,type='info'){
   const el=document.getElementById('status-bar');
   el.textContent=msg;
-  el.style.color=type==='error'?'var(--danger-text)':type==='success'?'var(--success-text)':'var(--text2)';
+  el.style.color=type==='error'?'var(--danger-text)':type==='success'?'var(--success)':'var(--text2)';
 }
 
 function parseTeamNum(val){
   if(val==null) return null;
-  const s=String(val).trim().toLowerCase().replace('frc','');
-  const n=parseInt(s);
+  const n=parseInt(String(val).trim().toLowerCase().replace('frc',''));
   return isNaN(n)?null:n;
 }
 
-/* =========================
-   FIXED API FETCH (REAL)
-========================= */
+// ── Statbotics direct fetch ──
 async function fetchEventData(){
-  const code=document.getElementById('event-code').value.trim();
+  const code=document.getElementById('event-code').value.trim().toLowerCase();
   if(!code){setStatus('Enter an event code','error');return;}
-
   const btn=document.getElementById('fetch-btn');
   btn.innerHTML='<span class="spinner"></span>Fetching...';
   btn.disabled=true;
-
+  setStatus('Fetching from Statbotics...');
   try{
-    setStatus('Fetching TBA data...');
-
-    const [teamsRes, rankRes, oprRes] = await Promise.all([
-      fetch(`https://www.thebluealliance.com/api/v3/event/${code}/teams`,{
-        headers:{'X-TBA-Auth-Key':TBA_KEY}
-      }),
-      fetch(`https://www.thebluealliance.com/api/v3/event/${code}/rankings`,{
-        headers:{'X-TBA-Auth-Key':TBA_KEY}
-      }),
-      fetch(`https://www.thebluealliance.com/api/v3/event/${code}/oprs`,{
-        headers:{'X-TBA-Auth-Key':TBA_KEY}
-      })
-    ]);
-
-    const tbaTeams = await teamsRes.json();
-    const rankings = await rankRes.json();
-    const oprData = await oprRes.json();
-
-    const rankMap={};
-    rankings.rankings?.forEach(r=>{
-      rankMap[r.team_key.replace('frc','')] = r.rank;
+    const r = await fetch(`https://api.statbotics.io/v3/team_events?event=${code}&limit=100`,{
+      headers:{accept:'application/json'}
     });
-
-    setStatus('Fetching Statbotics...');
-
-    const statPromises = tbaTeams.map(async (t) => {
-    const num = t.team_number;
-
-    try{
-        const res = await fetch(`https://api.statbotics.io/v3/team_event/${num}/${code}`);
-        const s = await res.json();
-
-        return {
-        team: num,
-        data: s
-        };
-
-    }catch{
-        return { team: num, data: null };
+    if(!r.ok) throw new Error(`Statbotics returned ${r.status} — check event code`);
+    const list = await r.json();
+    if(!list.length) throw new Error('No teams found for that event');
+    for(const s of list){
+      const num=s.team;
+      if(!num) continue;
+      if(!teams[num]) teams[num]={num,name:s.team_name||`Team ${num}`,notes:{},scores:{},dnp:false,tba:{},statbotics:{}};
+      else if(s.team_name) teams[num].name=s.team_name;
+      teams[num].statbotics={
+        epa:         s.epa?.total_points?.mean              !=null?+s.epa.total_points.mean.toFixed(1):'',
+        auto_epa:    s.epa?.breakdown?.auto_points?.mean    !=null?+s.epa.breakdown.auto_points.mean.toFixed(1):'',
+        teleop_epa:  s.epa?.breakdown?.teleop_points?.mean  !=null?+s.epa.breakdown.teleop_points.mean.toFixed(1):'',
+        endgame_epa: s.epa?.breakdown?.endgame_points?.mean !=null?+s.epa.breakdown.endgame_points.mean.toFixed(1):'',
+        rank:        s.record?.qual?.rank??'',
+        wins:        s.record?.qual?.wins??'',
+        losses:      s.record?.qual?.losses??''
+      };
     }
-    });
-
-    const statResults = await Promise.all(statPromises);
-
-    const s = statMap[num];
-
-  if(s){
-    teams[num].statbotics = {
-      epa: s.epa?.toFixed(1) ?? '',
-      auto_epa: s.auto_epa?.toFixed(1) ?? ''
-    };
-  }
-
-    ensureTBACols();
     ensureStatboticsCols();
     renderAll();
-
-    setStatus(`Loaded ${tbaTeams.length} teams`,'success');
-
+    setStatus(`Loaded ${list.length} teams from Statbotics`,'success');
   }catch(e){
-    setStatus('Fetch failed: '+e.message,'error');
+    setStatus('Fetch failed: '+e.message+' — save as HTML and open in browser for live fetching','error');
   }
-
-  btn.innerHTML='Pull TBA + Statbotics';
+  btn.innerHTML='Fetch from Statbotics';
   btn.disabled=false;
 }
 
-/* =========================
-   CRITERIA
-========================= */
-function ensureTBACols(){
-  [['rank','Rank'],['opr','OPR'],['ccwm','CCWM']].forEach(([id,name])=>{
-    if(!criteria.find(c=>c.id===id)) criteria.push({id,name,weight:1,source:'tba',editable:false});
-  });
-}
+function ensureTBACols(){} // TBA removed
 function ensureStatboticsCols(){
-  [['epa','EPA'],['auto_epa','Auto EPA']].forEach(([id,name])=>{
+  [['epa','EPA'],['auto_epa','Auto EPA'],['teleop_epa','Teleop EPA'],['endgame_epa','Endgame EPA'],['rank','Rank'],['wins','W'],['losses','L']].forEach(([id,name])=>{
     if(!criteria.find(c=>c.id===id)) criteria.push({id,name,weight:1,source:'statbotics',editable:false});
   });
 }
 
+// ── CSV ────────────────────────────────────────────────
+function loadCSV(evt,type){
+  const file=evt.target.files[0]; if(!file) return; evt.target.value='';
+  Papa.parse(file,{header:true,dynamicTyping:true,skipEmptyLines:true,complete(res){
+    const rows=res.data,headers=res.meta.fields;
+    const teamCol=headers.find(h=>/^team_key$/i.test(h))||headers.find(h=>/team.*num|team.*key|^team$/i.test(h));
+    if(!teamCol){setStatus('Could not find team column','error');return;}
+    const grouped={};
+    rows.forEach(r=>{const n=parseTeamNum(r[teamCol]);if(n!=null){if(!grouped[n])grouped[n]=[];grouped[n].push(r);}});
+    const numCols=headers.filter(h=>{
+      if(h===teamCol||ALWAYS_SKIP.has(h)) return false;
+      const vals=rows.map(r=>r[h]).filter(v=>v!=null&&v!=='');
+      const nc=vals.filter(v=>typeof v==='number'||!isNaN(parseFloat(v))).length;
+      return vals.length>0&&nc/vals.length>=0.5;
+    });
+    if(!numCols.length){setStatus('No numeric columns found','error');return;}
+    pendingCSV={type,numCols,grouped};
+    openColModal(type,numCols);
+  }});
+}
+
+function openColModal(type,cols){
+  document.getElementById('col-modal-title').textContent=`Select ${type} scouting columns`;
+  document.getElementById('col-checkboxes').innerHTML=cols.map(c=>`<label><input type="checkbox" checked value="${c}"> ${c}</label>`).join('');
+  document.getElementById('col-modal').style.display='flex';
+}
+function colCheckAll(v){document.querySelectorAll('#col-checkboxes input').forEach(i=>i.checked=v);}
+function cancelColModal(){document.getElementById('col-modal').style.display='none';pendingCSV=null;}
+function confirmColModal(){
+  document.getElementById('col-modal').style.display='none';
+  if(!pendingCSV) return;
+  const {type,grouped}=pendingCSV;
+  const checked=Array.from(document.querySelectorAll('#col-checkboxes input:checked')).map(i=>i.value);
+  if(!checked.length){setStatus('No columns selected','error');pendingCSV=null;return;}
+  checked.forEach(col=>{
+    const id=`${type}_${col}`;
+    if(!criteria.find(c=>c.id===id)) criteria.push({id,name:col,weight:1,source:type,editable:true});
+  });
+  Object.entries(grouped).forEach(([num,rowArr])=>{
+    const n=+num;
+    if(!teams[n]) teams[n]={num:n,name:`Team ${n}`,notes:{},scores:{},dnp:false,tba:{},statbotics:{}};
+    checked.forEach(col=>{
+      const vals=rowArr.map(r=>typeof r[col]==='number'?r[col]:parseFloat(r[col])).filter(v=>!isNaN(v));
+      if(vals.length) teams[n].scores[`${type}_${col}`]=+(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2);
+    });
+  });
+  syncDefaultView();
+  renderAll();
+  setStatus(`${type} CSV: ${Object.keys(grouped).length} teams, ${checked.length} columns`,'success');
+  pendingCSV=null;
+}
+
+function addTeamManual(){
+  const raw=prompt('Team number:'); if(!raw) return;
+  const n=parseTeamNum(raw);
+  if(!n){setStatus('Invalid team number','error');return;}
+  if(!teams[n]) teams[n]={num:n,name:`Team ${n}`,notes:{},scores:{},dnp:false,tba:{},statbotics:{}};
+  renderAll();
+}
+
+// ── Scoring ────────────────────────────────────────────
 function getScore(t,c){
   if(c.source==='tba') return t.tba?.[c.id]??'';
   if(c.source==='statbotics') return t.statbotics?.[c.id]??'';
   return t.scores[c.id]??'';
 }
 
-/* =========================
-   NORMALIZED RANKING ENGINE
-========================= */
-function normalizeStats(){
-  const stats={};
-
-  criteria.forEach(c=>{
-    const vals=Object.values(teams)
-      .map(t=>parseFloat(getScore(t,c)))
-      .filter(v=>!isNaN(v));
-
-    stats[c.id]={
-      min:Math.min(...vals),
-      max:Math.max(...vals)
-    };
+function calcTotalForView(t, view){
+  // If view.criteriaIds is empty → use all criteria
+  const useCriteria = view.criteriaIds.length===0
+    ? criteria
+    : criteria.filter(c=>view.criteriaIds.includes(c.id));
+  let sum=0,wsum=0;
+  useCriteria.forEach(c=>{
+    if(!(c.weight>0)) return;
+    const v=parseFloat(getScore(t,c));
+    if(!isNaN(v)){sum+=v*c.weight;wsum+=c.weight;}
   });
-
-  return stats;
+  return wsum>0?+(sum/wsum).toFixed(2):0;
 }
 
 function calcTotal(t){
-  const stats=normalizeStats();
-  let sum=0,wsum=0;
-
-  criteria.forEach(c=>{
-    if(!(c.weight>0)) return;
-
-    let v=parseFloat(getScore(t,c));
-    if(isNaN(v)) return;
-
-    const {min,max}=stats[c.id];
-    if(min===max) return;
-
-    let norm=(v-min)/(max-min);
-
-    // invert rank (lower better)
-    if(c.id==='rank') norm=1-norm;
-
-    sum+=norm*c.weight;
-    wsum+=c.weight;
-  });
-
-  return wsum>0?+(sum/wsum).toFixed(3):0;
+  const view=rlViews.find(v=>v.id==='rl_default')||rlViews[0];
+  return calcTotalForView(t,view);
 }
 
-/* =========================
-   SORT / RENDER (UNCHANGED)
-========================= */
-function getSorted(){
+function getSorted(viewId){
+  const view=rlViews.find(v=>v.id===(viewId||activeRLView))||rlViews[0];
   const arr=Object.values(teams);
-  arr.forEach(t=>t.__total__=calcTotal(t));
-
+  arr.forEach(t=>{t.__total__=calcTotalForView(t,rlViews.find(v=>v.id==='rl_default')||rlViews[0]);});
   arr.sort((a,b)=>{
     if(a.dnp!==b.dnp) return a.dnp?1:-1;
-
-    let av=a.__total__,bv=b.__total__;
+    let av,bv;
+    if(sortCol==='__total__'){av=calcTotalForView(a,view);bv=calcTotalForView(b,view);}
+    else if(sortCol==='name'){av=a.name;bv=b.name;}
+    else if(sortCol==='num'){av=a.num;bv=b.num;}
+    else{const c=criteria.find(x=>x.id===sortCol)||{};av=getScore(a,c);bv=getScore(b,c);}
+    if(av===''||av==null) av=sortAsc?Infinity:-Infinity;
+    if(bv===''||bv==null) bv=sortAsc?Infinity:-Infinity;
+    if(typeof av==='string') return sortAsc?av.localeCompare(bv):bv.localeCompare(av);
     return sortAsc?av-bv:bv-av;
   });
-
   return arr;
 }
 
-function renderAll(){renderTable();renderRankings();renderSummary();}
+// ── Render ─────────────────────────────────────────────
+function renderAll(){renderTable();renderRankings();renderSummary();renderRLTabs();}
 
-/* KEEP YOUR EXISTING renderTable, renderRankings, CSV, notes, etc */
-/* NOTHING ELSE NEEDS CHANGING */
+function renderTable(){
+  const sorted=getSorted();
+  const si=col=>col===sortCol?(sortAsc?'↑':'↓'):'';
+  document.getElementById('thead').innerHTML=`<tr>
+    <th onclick="setSort('num')"># ${si('num')}</th>
+    <th onclick="setSort('name')">Name ${si('name')}</th>
+    ${criteria.map(c=>`<th onclick="setSort('${c.id}')" title="source:${c.source} w:${c.weight}">${c.name} ${si(c.id)}</th>`).join('')}
+    <th onclick="setSort('__total__')">Total ${si('__total__')}</th>
+    <th>Notes</th><th>DNP</th></tr>`;
+  document.getElementById('tbody').innerHTML=sorted.map(t=>`
+    <tr class="${t.dnp?'dnp-row':''}">
+      <td><strong>${t.num}</strong></td>
+      <td style="white-space:nowrap">${t.name}</td>
+      ${criteria.map(c=>{
+        const v=getScore(t,c);
+        if(!c.editable||c.source==='tba'||c.source==='statbotics')
+          return `<td style="text-align:center">${v!==''&&v!=null?v:'—'}</td>`;
+        return `<td><input type="number" class="score-input" value="${v!==''?v:''}" placeholder="—" min="0" max="200" step="0.1" onchange="setScore(${t.num},'${c.id}',this.value)"></td>`;
+      }).join('')}
+      <td class="total-col">${t.__total__}</td>
+      <td><div class="notes-fields">${noteTags.map(tag=>`
+        <div class="note-row">
+          <span class="note-label">${tag}</span>
+          <textarea class="note-input" onchange="setNote(${t.num},'${tag}',this.value)" placeholder="${tag}...">${t.notes[tag]||''}</textarea>
+        </div>`).join('')}</div></td>
+      <td style="text-align:center;vertical-align:middle"><input type="checkbox" ${t.dnp?'checked':''} onchange="toggleDNP(${t.num},this.checked)"></td>
+    </tr>`).join('');
+}
 
-/* ========================= */
-renderTagList();
-renderAll();
+function renderRLTabs(){
+  document.getElementById('rl-tabs').innerHTML=rlViews.map(v=>`
+    <button class="rl-tab ${v.id===activeRLView?'active':''}" onclick="setRLView('${v.id}')">${v.name}</button>`).join('');
+}
+
+function renderRankings(){
+  const view=rlViews.find(v=>v.id===activeRLView)||rlViews[0];
+  const arr=Object.values(teams);
+  arr.forEach(t=>t.__rl_score__=calcTotalForView(t,view));
+  arr.sort((a,b)=>{
+    if(a.dnp!==b.dnp) return a.dnp?1:-1;
+    return b.__rl_score__-a.__rl_score__;
+  });
+  const el=document.getElementById('rank-list');
+  if(!arr.length){el.innerHTML='<p style="font-size:12px;color:var(--text3)">No teams yet</p>';return;}
+  let rank=0;
+  el.innerHTML=arr.map(t=>{
+    if(!t.dnp) rank++;
+    return `<div class="rank-item ${t.dnp?'dnp':''}">
+      <span class="rank-num">${t.dnp?'—':rank}</span>
+      <span style="font-weight:600;font-size:13px">${t.num}</span>
+      <span style="font-size:11px;color:var(--text3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:3px">${t.name.length>13?t.name.slice(0,13)+'…':t.name}</span>
+      <span class="rank-score">${t.__rl_score__}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderSummary(){
+  const arr=Object.values(teams),dnp=arr.filter(t=>t.dnp).length;
+  document.getElementById('summary').innerHTML=`Teams: ${arr.length}<br>Ranked: ${arr.length-dnp}<br>DNP: ${dnp}<br>Criteria: ${criteria.length}<br>Views: ${rlViews.length}`;
+}
+
+function setRLView(id){activeRLView=id;renderRLTabs();renderRankings();}
+function setSort(col){if(sortCol===col)sortAsc=!sortAsc;else{sortCol=col;sortAsc=false;}renderTable();renderRankings();}
+function setScore(num,id,val){if(!teams[num])return;teams[num].scores[id]=val===''?'':+parseFloat(val).toFixed(2);teams[num].__total__=calcTotal(teams[num]);renderRankings();renderSummary();}
+function setNote(num,tag,val){if(teams[num])teams[num].notes[tag]=val;}
+function toggleDNP(num,val){if(teams[num]){teams[num].dnp=val;renderAll();}}
+
+// ── Ranking Views Modal ────────────────────────────────
+function syncDefaultView(){
+  // Overall view: criteriaIds=[] means use all
+}
+
+function openRLModal(){renderRLViewsList();document.getElementById('rl-modal').style.display='flex';}
+function closeRLModal(){document.getElementById('rl-modal').style.display='none';renderAll();}
+
+function renderRLViewsList(){
+  document.getElementById('rl-views-list').innerHTML=rlViews.map((v,vi)=>`
+    <div class="rl-view-row">
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
+          <input type="text" value="${v.name}" style="width:120px;font-size:13px" onchange="rlViews[${vi}].name=this.value;renderRLTabs()">
+          ${vi>0?`<button class="danger" style="font-size:11px;padding:2px 7px" onclick="removeRLView(${vi})">Remove</button>`:'<span style="font-size:10px;color:var(--text3)">(default)</span>'}
+        </div>
+        <p style="font-size:10px;color:var(--text3);margin-bottom:4px">${vi===0?'Uses all criteria (no filter)':'Select criteria to include:'}</p>
+        ${vi===0?'':`<div class="rl-criteria-check">${criteria.map(c=>`
+          <label>
+            <input type="checkbox" ${v.criteriaIds.includes(c.id)?'checked':''} onchange="toggleRLCriteria(${vi},'${c.id}',this.checked)">
+            ${c.name} <span style="font-size:10px;color:var(--text3)">(${c.source})</span>
+          </label>`).join('')}
+        </div>`}
+      </div>
+    </div>`).join('');
+}
+
+function addRLView(){
+  rlViews.push({id:'rl_'+Date.now(),name:'New View',criteriaIds:[]});
+  renderRLViewsList();
+}
+function removeRLView(i){
+  if(rlViews[i].id===activeRLView) activeRLView='rl_default';
+  rlViews.splice(i,1);
+  renderRLViewsList();
+}
+function toggleRLCriteria(vi,id,checked){
+  const v=rlViews[vi];
+  if(checked){if(!v.criteriaIds.includes(id)) v.criteriaIds.push(id);}
+  else{v.criteriaIds=v.criteriaIds.filter(x=>x!==id);}
+}
+
+// ── Tag & Criteria Modals ─────────────────────────────
+function renderTagList(){
+  document.getElementById('tag-list').innerHTML=noteTags.map((t,i)=>`
+    <span class="tag-chip">${t}<button onclick="removeTag(${i})">×</button></span>`).join('');
+}
+function addTag(){
+  const inp=document.getElementById('new-tag'),val=inp.value.trim();
+  if(!val||noteTags.includes(val))return;
+  noteTags.push(val);inp.value='';renderTagList();renderTable();
+}
+function removeTag(i){noteTags.splice(i,1);renderTagList();renderTable();}
+
+function openCriteriaModal(){renderCriteriaModal();document.getElementById('criteria-modal').style.display='flex';}
+function closeCriteriaModal(){document.getElementById('criteria-modal').style.display='none';renderAll();}
+function renderCriteriaModal(){
+  document.getElementById('criteria-list').innerHTML=criteria.map((c,i)=>`
+    <div class="criteria-row">
+      <input type="text" style="flex:1" value="${c.name}" onchange="criteria[${i}].name=this.value">
+      <input type="number" style="width:46px;text-align:center" value="${c.weight}" min="0" max="10" step="0.1" onchange="criteria[${i}].weight=+this.value" title="Weight">
+      <span class="badge-src">${c.source||'manual'}</span>
+      <button class="danger" onclick="removeCriteria(${i})">×</button>
+    </div>`).join('')||'<p style="font-size:12px;color:var(--text3)">No criteria yet.</p>';
+}
+function addCriteria(){criteria.push({id:'manual_'+Date.now(),name:'New Criteria',weight:1,source:'manual',editable:true});renderCriteriaModal();}
+function removeCriteria(i){criteria.splice(i,1);renderCriteriaModal();}
+
+// ── Export ─────────────────────────────────────────────
+function exportCSV(){
+  const sorted=getSorted();
+  const headers=['Team','Name',...criteria.map(c=>c.name),'Weighted Total',...noteTags,'DNP'];
+  const rows=sorted.map(t=>[t.num,t.name,...criteria.map(c=>getScore(t,c)),t.__total__,...noteTags.map(tag=>t.notes[tag]||''),t.dnp?'Y':'N']);
+  const csv=Papa.unparse({fields:headers,data:rows});
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='picklist.csv';a.click();
+}
+
+renderTagList();renderAll();
 </script>
 </body>
 </html>
