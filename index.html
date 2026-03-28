@@ -7,20 +7,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
 :root{
-  --bg:#fff;--bg2:#f4f4f4;--bg3:#e8e8e8;
-  --text:#1a1a1a;--text2:#555;--text3:#999;
-  --border:#d8d8d8;--border2:#bbb;
-  --info-bg:#e6f1fb;--info-text:#185fa5;--info-border:#85b7eb;
-  --danger-bg:#fcebeb;--danger-text:#a32d2d;--danger-border:#f09595;
-  --success:#2e7d32;--total:#185fa5;
-}
-[data-theme=dark]{
   --bg:#1e1e1e;--bg2:#272727;--bg3:#333;
   --text:#e0e0e0;--text2:#aaa;--text3:#666;
   --border:#3a3a3a;--border2:#555;
   --info-bg:#0c2a45;--info-text:#78b4e8;--info-border:#1a5080;
   --danger-bg:#3a1515;--danger-text:#e88;--danger-border:#6a2a2a;
   --success:#81c784;--total:#78b4e8;
+}
+[data-theme=light]{
+  --bg:#fff;--bg2:#f4f4f4;--bg3:#e8e8e8;
+  --text:#1a1a1a;--text2:#555;--text3:#999;
+  --border:#d8d8d8;--border2:#bbb;
+  --info-bg:#e6f1fb;--info-text:#185fa5;--info-border:#85b7eb;
+  --danger-bg:#fcebeb;--danger-text:#a32d2d;--danger-border:#f09595;
+  --success:#2e7d32;--total:#185fa5;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;font-size:14px;color:var(--text);background:var(--bg2)}
@@ -35,17 +35,16 @@ textarea{resize:vertical;min-height:40px}
 .main{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
 .card{background:var(--bg);border:0.5px solid var(--border);border-radius:10px;padding:12px}
 .card h3{font-size:10px;font-weight:600;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em}
-/* Rankings */
 .rl-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .rl-header h3{margin:0}
 .rl-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
 .rl-tab{font-size:11px;padding:3px 8px;border-radius:12px;border:0.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer}
 .rl-tab.active{background:var(--info-bg);color:var(--info-text);border-color:var(--info-border)}
+.rank-scroll{overflow-y:auto;max-height:480px;min-height:200px;padding-right:2px}
 .rank-item{display:flex;align-items:center;gap:5px;padding:4px 7px;border-radius:6px;border:0.5px solid var(--border);margin-bottom:3px;background:var(--bg)}
 .rank-item.dnp{opacity:.35;text-decoration:line-through}
 .rank-num{font-size:10px;color:var(--text3);min-width:16px;text-align:right}
 .rank-score{font-size:11px;color:var(--text2);margin-left:auto}
-/* Table */
 .table-wrap{overflow-x:auto;border-radius:8px;border:0.5px solid var(--border)}
 table{width:100%;border-collapse:collapse;font-size:12px}
 th{background:var(--bg2);font-weight:500;padding:7px 8px;text-align:left;white-space:nowrap;border-bottom:0.5px solid var(--border);cursor:pointer;user-select:none}
@@ -59,31 +58,46 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 .note-label{font-size:10px;color:var(--text2);min-width:54px;padding-top:5px;font-weight:500}
 .note-input{flex:1;font-size:11px;padding:3px 6px}
 .total-col{font-weight:600;color:var(--total)}
-/* Top bar */
 .top-bar{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .status-bar{font-size:12px;padding:3px 0;min-height:18px}
-/* Modals */
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:flex;align-items:center;justify-content:center}
-.modal{background:var(--bg);border:1px solid var(--border2);border-radius:14px;padding:20px;width:480px;max-width:96vw;max-height:88vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.4)}
-.modal h2{font-size:15px;font-weight:500;margin-bottom:12px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:flex;align-items:center;justify-content:center}
+.modal{background:var(--bg);border:1px solid var(--border2);border-radius:14px;padding:20px;width:500px;max-width:96vw;max-height:88vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.modal h2{font-size:15px;font-weight:500;margin-bottom:4px}
+.modal-sub{font-size:12px;color:var(--text2);margin-bottom:12px}
 .modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;padding-top:10px;border-top:0.5px solid var(--border)}
-/* Misc */
 .tag-chip{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;background:var(--bg2);border:0.5px solid var(--border);font-size:11px;margin:2px;color:var(--text)}
 .tag-chip button{border:none;background:none;padding:0;font-size:11px;color:var(--text3);cursor:pointer}
 .badge-src{font-size:10px;padding:1px 5px;border-radius:3px;background:var(--bg2);color:var(--text3)}
 .flex-gap{display:flex;gap:7px}
 .spinner{display:inline-block;width:11px;height:11px;border:2px solid var(--border2);border-top-color:var(--info-text);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:4px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.skip-cols-list{max-height:200px;overflow-y:auto;border:0.5px solid var(--border);border-radius:6px;padding:8px;background:var(--bg2)}
-.skip-cols-list label{display:flex;align-items:center;gap:7px;font-size:12px;padding:3px 0;cursor:pointer;color:var(--text)}
+/* Column picker table */
+.col-table{width:100%;border-collapse:collapse;font-size:12px}
+.col-table th{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;padding:4px 8px;text-align:left;border-bottom:0.5px solid var(--border);background:var(--bg2)}
+.col-table th:not(:first-child){text-align:center}
+.col-table td{padding:5px 8px;border-bottom:0.5px solid var(--border);color:var(--text)}
+.col-table td:not(:first-child){text-align:center}
+.col-table tr:last-child td{border-bottom:none}
+.col-scroll{max-height:300px;overflow-y:auto;border:0.5px solid var(--border);border-radius:6px;background:var(--bg2)}
+/* Toggle switch */
+.toggle-switch{position:relative;width:30px;height:17px;display:inline-block;flex-shrink:0}
+.toggle-switch input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;inset:0;background:var(--border2);border-radius:17px;cursor:pointer;transition:background .2s}
+.toggle-slider:before{content:'';position:absolute;width:13px;height:13px;left:2px;top:2px;background:#fff;border-radius:50%;transition:transform .2s}
+.toggle-switch input:checked+.toggle-slider{background:var(--info-text)}
+.toggle-switch input:checked+.toggle-slider:before{transform:translateX(13px)}
+.toggle-switch.disabled{opacity:.3;pointer-events:none}
+/* Criteria row */
 .criteria-row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
 .rl-criteria-check label{display:flex;align-items:center;gap:6px;font-size:12px;padding:2px 0;cursor:pointer;color:var(--text)}
-.rl-view-row{display:flex;align-items:center;gap:6px;padding:6px 8px;border:0.5px solid var(--border);border-radius:7px;margin-bottom:5px;background:var(--bg2)}
+.rl-view-row{padding:10px 12px;border:0.5px solid var(--border);border-radius:8px;margin-bottom:8px;background:var(--bg2)}
+/* Bulk bar */
+.bulk-bar{display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--bg2);border-radius:6px;margin-bottom:8px;flex-wrap:wrap}
+.bulk-bar span{font-size:11px;color:var(--text3);margin-right:4px}
 </style>
 </head>
-<body>
+<body data-theme="">
 <div class="layout">
-  <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="card">
       <div class="rl-header">
@@ -91,7 +105,7 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
         <button style="font-size:10px;padding:3px 7px" onclick="openRLModal()">+ View</button>
       </div>
       <div class="rl-tabs" id="rl-tabs"></div>
-      <div id="rank-list"><p style="font-size:12px;color:var(--text3)">No teams yet</p></div>
+      <div class="rank-scroll" id="rank-list"><p style="font-size:12px;color:var(--text3)">No teams yet</p></div>
     </div>
     <div class="card">
       <h3>Note Tags</h3>
@@ -106,13 +120,11 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
       <div id="summary" style="font-size:12px;color:var(--text2);line-height:1.9"></div>
     </div>
   </div>
-
-  <!-- MAIN -->
   <div class="main">
     <div class="card">
       <div class="top-bar">
         <input type="text" id="event-code" placeholder="Event code (e.g. 2026mslr)" style="width:185px">
-        <button class="primary" onclick="fetchEventData()" id="fetch-btn">Pull Statbotics</button>
+        <button class="primary" onclick="fetchEventData()" id="fetch-btn">Fetch from Statbotics</button>
         <label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">
           Match CSV<input type="file" accept=".csv" style="display:none" onchange="loadCSV(event,'match')">
         </label>
@@ -122,7 +134,7 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
         <button onclick="openCriteriaModal()">Criteria</button>
         <button onclick="addTeamManual()">+ Team</button>
         <button onclick="exportCSV()" class="primary">Export</button>
-        <button onclick="toggleTheme()" id="theme-btn" style="padding:5px 10px;border-radius:20px">Dark</button>
+        <button onclick="toggleTheme()" id="theme-btn" style="padding:5px 10px;border-radius:20px">Light mode</button>
       </div>
       <div id="status-bar" class="status-bar"></div>
     </div>
@@ -138,7 +150,7 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 <div id="criteria-modal" style="display:none" class="modal-backdrop">
   <div class="modal">
     <h2>Manage criteria & weights</h2>
-    <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Set weight to 0 to exclude from totals. TBA/Statbotics cols are read-only.</p>
+    <p class="modal-sub">Weight 0 = shown in table but excluded from total.</p>
     <div id="criteria-list"></div>
     <button onclick="addCriteria()" style="margin-top:8px">+ Add manual criteria</button>
     <div class="modal-footer"><button onclick="closeCriteriaModal()">Done</button></div>
@@ -149,15 +161,58 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 <div id="col-modal" style="display:none" class="modal-backdrop">
   <div class="modal">
     <h2 id="col-modal-title">Select columns to import</h2>
-    <p style="font-size:12px;color:var(--text2);margin-bottom:5px">Uncheck columns you don't want as scoring criteria.</p>
-    <div style="display:flex;gap:7px;margin-bottom:7px">
-      <button onclick="colCheckAll(true)" style="font-size:11px;padding:3px 8px">All</button>
-      <button onclick="colCheckAll(false)" style="font-size:11px;padding:3px 8px">None</button>
+    <p class="modal-sub">Choose which columns to import and whether each counts toward the weighted total.</p>
+    <div class="bulk-bar">
+      <span>Import:</span>
+      <button onclick="bulkImport(true)" style="font-size:11px;padding:3px 8px">All</button>
+      <button onclick="bulkImport(false)" style="font-size:11px;padding:3px 8px">None</button>
+      <span style="margin-left:8px">Count toward total:</span>
+      <button onclick="bulkRank(true)" style="font-size:11px;padding:3px 8px">All</button>
+      <button onclick="bulkRank(false)" style="font-size:11px;padding:3px 8px">None</button>
     </div>
-    <div class="skip-cols-list" id="col-checkboxes"></div>
+    <div class="col-scroll">
+      <table class="col-table">
+        <thead><tr>
+          <th>Column</th>
+          <th>Import</th>
+          <th>Count toward total</th>
+        </tr></thead>
+        <tbody id="col-checkboxes"></tbody>
+      </table>
+    </div>
     <div class="modal-footer">
       <button onclick="cancelColModal()">Cancel</button>
       <button class="primary" onclick="confirmColModal()">Import selected</button>
+    </div>
+  </div>
+</div>
+
+<!-- Statbotics Column Picker Modal -->
+<div id="stat-col-modal" style="display:none" class="modal-backdrop">
+  <div class="modal">
+    <h2>Statbotics columns</h2>
+    <p class="modal-sub">Choose which fields to add and whether each counts toward the weighted total.</p>
+    <div class="bulk-bar">
+      <span>Import:</span>
+      <button onclick="bulkStatImport(true)" style="font-size:11px;padding:3px 8px">All</button>
+      <button onclick="bulkStatImport(false)" style="font-size:11px;padding:3px 8px">None</button>
+      <span style="margin-left:8px">Count toward total:</span>
+      <button onclick="bulkStatRank(true)" style="font-size:11px;padding:3px 8px">All</button>
+      <button onclick="bulkStatRank(false)" style="font-size:11px;padding:3px 8px">None</button>
+    </div>
+    <div class="col-scroll">
+      <table class="col-table">
+        <thead><tr>
+          <th>Field</th>
+          <th>Import</th>
+          <th>Count toward total</th>
+        </tr></thead>
+        <tbody id="stat-col-checkboxes"></tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button onclick="cancelStatColModal()">Cancel</button>
+      <button class="primary" onclick="confirmStatColModal()">Apply</button>
     </div>
   </div>
 </div>
@@ -166,7 +221,7 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 <div id="rl-modal" style="display:none" class="modal-backdrop">
   <div class="modal">
     <h2>Manage ranking views</h2>
-    <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Each view shows a live ranking using only its selected criteria. Mix any criteria freely.</p>
+    <p class="modal-sub">Each view ranks teams using only its selected criteria.</p>
     <div id="rl-views-list"></div>
     <button onclick="addRLView()" style="margin-top:8px">+ New view</button>
     <div class="modal-footer"><button onclick="closeRLModal()">Done</button></div>
@@ -174,29 +229,35 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 </div>
 
 <script>
-const TBA_KEY = 'k3RQ7yVrZdKqUt6RjDlOKYadDOglo2B41X1CE6Fv5eUozinzBfDhr2aw3hg5D22z';
-const ALWAYS_SKIP = new Set([
-  'org_key','year','event_key','match_key','match_number','time','alliance','scouter',
-  'team_key','otherNotes','superNotes','RedCard','YellowCard','describeAuto',
-  'autoCodeTeleop','preferredStrategy','describepizzatoppings','doAutoCodeTeleop',
-  'StartPos','AutoMistake🚩','DidScoreMistake🚩','DidintakeMistake🚩'
-]);
+const TBA_KEY='k3RQ7yVrZdKqUt6RjDlOKYadDOglo2B41X1CE6Fv5eUozinzBfDhr2aw3hg5D22z';
+const ALWAYS_SKIP=new Set(['org_key','year','event_key','match_key','match_number','time','alliance','scouter','team_key','otherNotes','superNotes','RedCard','YellowCard','describeAuto','autoCodeTeleop','preferredStrategy','describepizzatoppings','doAutoCodeTeleop','StartPos','AutoMistake🚩','DidScoreMistake🚩','DidintakeMistake🚩']);
 
-let teams={}, criteria=[], noteTags=['Strategy','Autos','Concerns'];
-let sortCol='__total__', sortAsc=false, pendingCSV=null, darkMode=false;
+// All possible statbotics fields: [id, label, countsInTotal]
+const STAT_FIELDS=[
+  ['epa','EPA',true],
+  ['auto_epa','Auto EPA',true],
+  ['teleop_epa','Teleop EPA',true],
+  ['endgame_epa','Endgame EPA',true],
+  ['rank','Rank',false],
+  ['wins','W',false],
+  ['losses','L',false],
+  ['rps','RPs',false],
+  ['winrate','Win%',false],
+];
 
-// Ranking views: [{id, name, criteriaIds:[]}]
+let teams={},criteria=[],noteTags=['Strategy','Autos','Concerns'];
+let sortCol='__total__',sortAsc=false,pendingCSV=null,pendingStatData=null;
 let rlViews=[{id:'rl_default',name:'Overall',criteriaIds:[]}];
 let activeRLView='rl_default';
+let darkMode=true;
 
-// ── Theme ──────────────────────────────────────────────
+// ── Theme ──
 function toggleTheme(){
   darkMode=!darkMode;
-  document.documentElement.setAttribute('data-theme',darkMode?'dark':'');
-  document.getElementById('theme-btn').textContent=darkMode?'Light':'Dark';
+  document.body.setAttribute('data-theme',darkMode?'':'light');
+  document.getElementById('theme-btn').textContent=darkMode?'Light mode':'Dark mode';
 }
 
-// ── Status ─────────────────────────────────────────────
 function setStatus(msg,type='info'){
   const el=document.getElementById('status-bar');
   el.textContent=msg;
@@ -209,7 +270,7 @@ function parseTeamNum(val){
   return isNaN(n)?null:n;
 }
 
-// ── Statbotics direct fetch ──
+// ── Statbotics fetch ──
 async function fetchEventData(){
   const code=document.getElementById('event-code').value.trim().toLowerCase();
   if(!code){setStatus('Enter an event code','error');return;}
@@ -218,64 +279,96 @@ async function fetchEventData(){
   btn.disabled=true;
   setStatus('Fetching from Statbotics...');
   try{
-    // Step 1: get team list from bulk endpoint
-    const r = await fetch(`https://api.statbotics.io/v3/team_events?event=${code}&limit=100`,{
-      headers:{accept:'application/json'}
-    });
-    if(!r.ok) throw new Error(`Statbotics returned ${r.status} — check event code`);
-    const list = await r.json();
-    if(!list.length) throw new Error('No teams found for that event');
+    const r=await fetch(`https://api.statbotics.io/v3/team_events?event=${code}&limit=100`,{headers:{accept:'application/json'}});
+    if(!r.ok) throw new Error(`Statbotics returned ${r.status}`);
+    const list=await r.json();
+    if(!list.length) throw new Error('No teams found — check event code');
 
-    // Step 2: fetch full detail per team (has breakdown + record)
     setStatus(`Got ${list.length} teams. Fetching full stats...`);
-    const details = await Promise.all(list.map(s=>
+    const details=await Promise.all(list.map(s=>
       fetch(`https://api.statbotics.io/v3/team_event/${s.team}/${code}`,{headers:{accept:'application/json'}})
         .then(r=>r.ok?r.json():null).catch(()=>null)
     ));
 
-    let loaded=0;
-    details.forEach(s=>{
-      if(!s) return;
-      const num=s.team;
-      if(!teams[num]) teams[num]={num,name:s.team_name||`Team ${num}`,notes:{},scores:{},dnp:false,tba:{},statbotics:{}};
-      else if(s.team_name) teams[num].name=s.team_name;
-      const b=s.epa?.breakdown||{};
-      teams[num].statbotics={
-        epa:          s.epa?.total_points?.mean  !=null ? +s.epa.total_points.mean.toFixed(1)  : '',
-        auto_epa:     b.auto_points              !=null ? +b.auto_points.toFixed(1)             : '',
-        teleop_epa:   b.teleop_points            !=null ? +b.teleop_points.toFixed(1)           : '',
-        endgame_epa:  b.endgame_points           !=null ? +b.endgame_points.toFixed(1)          : '',
-        rank:         s.record?.qual?.rank       ??'',
-        wins:         s.record?.qual?.wins       ??'',
-        losses:       s.record?.qual?.losses     ??'',
-        rps:          s.record?.qual?.rps        ??'',
-        winrate:      s.record?.qual?.winrate    !=null ? +(s.record.qual.winrate*100).toFixed(1): ''
-      };
-      loaded++;
-    });
-    ensureStatboticsCols();
-    renderAll();
-    setStatus(`Loaded ${loaded} teams from Statbotics`,'success');
+    // Store raw data, show column picker
+    pendingStatData={details,code};
+    openStatColModal();
   }catch(e){
-    setStatus('Fetch failed: '+e.message+' — save as HTML and open in browser for live fetching','error');
+    setStatus('Fetch failed: '+e.message,'error');
   }
   btn.innerHTML='Fetch from Statbotics';
   btn.disabled=false;
 }
 
-function ensureTBACols(){} // TBA removed
-function ensureStatboticsCols(){
-  [
-    ['epa','EPA'],['auto_epa','Auto EPA'],['teleop_epa','Teleop EPA'],['endgame_epa','Endgame EPA'],
-    ['rank','Rank'],['wins','W'],['losses','L'],['rps','RPs'],['winrate','Win%']
-  ].forEach(([id,name])=>{
-    if(!criteria.find(c=>c.id===id)) criteria.push({id,name,weight:1,source:'statbotics',editable:false});
+function openStatColModal(){
+  document.getElementById('stat-col-checkboxes').innerHTML=STAT_FIELDS.map(([id,label,countsDefault])=>`
+    <tr>
+      <td>${label}</td>
+      <td><input type="checkbox" checked data-id="${id}" class="stat-import" style="width:14px;height:14px;cursor:pointer"></td>
+      <td>
+        <label class="toggle-switch" id="stat-toggle-wrap-${id}">
+          <input type="checkbox" ${countsDefault?'checked':''} data-id="${id}" class="stat-rank">
+          <span class="toggle-slider"></span>
+        </label>
+      </td>
+    </tr>`).join('');
+  // Sync import → rank toggle disabled state
+  document.querySelectorAll('.stat-import').forEach(cb=>{
+    cb.addEventListener('change',()=>{
+      const wrap=document.getElementById(`stat-toggle-wrap-${cb.dataset.id}`);
+      if(wrap) wrap.classList.toggle('disabled',!cb.checked);
+    });
   });
+  document.getElementById('stat-col-modal').style.display='flex';
+}
+function cancelStatColModal(){document.getElementById('stat-col-modal').style.display='none';pendingStatData=null;}
+function bulkStatImport(v){document.querySelectorAll('.stat-import').forEach(i=>{i.checked=v;i.dispatchEvent(new Event('change'));});}
+function bulkStatRank(v){document.querySelectorAll('.stat-rank').forEach(i=>i.checked=v);}
+
+function confirmStatColModal(){
+  document.getElementById('stat-col-modal').style.display='none';
+  if(!pendingStatData) return;
+  const {details}=pendingStatData;
+  const importIds=new Set(Array.from(document.querySelectorAll('.stat-import:checked')).map(i=>i.dataset.id));
+  const rankIds=new Set(Array.from(document.querySelectorAll('.stat-rank:checked')).map(i=>i.dataset.id));
+
+  // Add criteria for selected fields
+  STAT_FIELDS.forEach(([id,label])=>{
+    if(!importIds.has(id)) return;
+    if(!criteria.find(c=>c.id===id))
+      criteria.push({id,name:label,weight:rankIds.has(id)?1:0,source:'statbotics',editable:false});
+  });
+
+  // Populate team data
+  let loaded=0;
+  details.forEach(s=>{
+    if(!s) return;
+    const num=s.team;
+    if(!teams[num]) teams[num]={num,name:s.team_name||`Team ${num}`,notes:{},scores:{},dnp:false,tba:{},statbotics:{}};
+    else if(s.team_name) teams[num].name=s.team_name;
+    const b=s.epa?.breakdown||{};
+    teams[num].statbotics={
+      epa:         s.epa?.total_points?.mean !=null?+s.epa.total_points.mean.toFixed(1):'',
+      auto_epa:    b.auto_points             !=null?+b.auto_points.toFixed(1):'',
+      teleop_epa:  b.teleop_points           !=null?+b.teleop_points.toFixed(1):'',
+      endgame_epa: b.endgame_points          !=null?+b.endgame_points.toFixed(1):'',
+      rank:        s.record?.qual?.rank      ??'',
+      wins:        s.record?.qual?.wins      ??'',
+      losses:      s.record?.qual?.losses    ??'',
+      rps:         s.record?.qual?.rps       ??'',
+      winrate:     s.record?.qual?.winrate   !=null?+(s.record.qual.winrate*100).toFixed(1):''
+    };
+    loaded++;
+  });
+
+  renderAll();
+  setStatus(`Loaded ${loaded} teams from Statbotics`,'success');
+  pendingStatData=null;
 }
 
-// ── CSV ────────────────────────────────────────────────
+// ── CSV ──
 function loadCSV(evt,type){
-  const file=evt.target.files[0]; if(!file) return; evt.target.value='';
+  const file=evt.target.files[0];if(!file)return;evt.target.value='';
   Papa.parse(file,{header:true,dynamicTyping:true,skipEmptyLines:true,complete(res){
     const rows=res.data,headers=res.meta.fields;
     const teamCol=headers.find(h=>/^team_key$/i.test(h))||headers.find(h=>/team.*num|team.*key|^team$/i.test(h));
@@ -296,20 +389,38 @@ function loadCSV(evt,type){
 
 function openColModal(type,cols){
   document.getElementById('col-modal-title').textContent=`Select ${type} scouting columns`;
-  document.getElementById('col-checkboxes').innerHTML=cols.map(c=>`<label><input type="checkbox" checked value="${c}"> ${c}</label>`).join('');
+  document.getElementById('col-checkboxes').innerHTML=cols.map(c=>`
+    <tr>
+      <td>${c}</td>
+      <td><input type="checkbox" checked data-col="${c}" class="col-import" style="width:14px;height:14px;cursor:pointer"></td>
+      <td>
+        <label class="toggle-switch" id="col-toggle-wrap-${c}">
+          <input type="checkbox" checked data-col="${c}" class="col-rank">
+          <span class="toggle-slider"></span>
+        </label>
+      </td>
+    </tr>`).join('');
+  document.querySelectorAll('.col-import').forEach(cb=>{
+    cb.addEventListener('change',()=>{
+      const wrap=document.getElementById(`col-toggle-wrap-${cb.dataset.col}`);
+      if(wrap) wrap.classList.toggle('disabled',!cb.checked);
+    });
+  });
   document.getElementById('col-modal').style.display='flex';
 }
-function colCheckAll(v){document.querySelectorAll('#col-checkboxes input').forEach(i=>i.checked=v);}
+function bulkImport(v){document.querySelectorAll('.col-import').forEach(i=>{i.checked=v;i.dispatchEvent(new Event('change'));});}
+function bulkRank(v){document.querySelectorAll('.col-rank').forEach(i=>i.checked=v);}
 function cancelColModal(){document.getElementById('col-modal').style.display='none';pendingCSV=null;}
 function confirmColModal(){
   document.getElementById('col-modal').style.display='none';
   if(!pendingCSV) return;
   const {type,grouped}=pendingCSV;
-  const checked=Array.from(document.querySelectorAll('#col-checkboxes input:checked')).map(i=>i.value);
+  const checked=Array.from(document.querySelectorAll('.col-import:checked')).map(i=>i.dataset.col);
+  const rankCols=new Set(Array.from(document.querySelectorAll('.col-rank:checked')).map(i=>i.dataset.col));
   if(!checked.length){setStatus('No columns selected','error');pendingCSV=null;return;}
   checked.forEach(col=>{
     const id=`${type}_${col}`;
-    if(!criteria.find(c=>c.id===id)) criteria.push({id,name:col,weight:1,source:type,editable:true});
+    if(!criteria.find(c=>c.id===id)) criteria.push({id,name:col,weight:rankCols.has(col)?1:0,source:type,editable:true});
   });
   Object.entries(grouped).forEach(([num,rowArr])=>{
     const n=+num;
@@ -319,34 +430,29 @@ function confirmColModal(){
       if(vals.length) teams[n].scores[`${type}_${col}`]=+(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2);
     });
   });
-  syncDefaultView();
   renderAll();
   setStatus(`${type} CSV: ${Object.keys(grouped).length} teams, ${checked.length} columns`,'success');
   pendingCSV=null;
 }
 
 function addTeamManual(){
-  const raw=prompt('Team number:'); if(!raw) return;
+  const raw=prompt('Team number:');if(!raw)return;
   const n=parseTeamNum(raw);
   if(!n){setStatus('Invalid team number','error');return;}
   if(!teams[n]) teams[n]={num:n,name:`Team ${n}`,notes:{},scores:{},dnp:false,tba:{},statbotics:{}};
   renderAll();
 }
 
-// ── Scoring ────────────────────────────────────────────
+// ── Scoring ──
 function getScore(t,c){
   if(c.source==='tba') return t.tba?.[c.id]??'';
   if(c.source==='statbotics') return t.statbotics?.[c.id]??'';
   return t.scores[c.id]??'';
 }
-
-function calcTotalForView(t, view){
-  // If view.criteriaIds is empty → use all criteria
-  const useCriteria = view.criteriaIds.length===0
-    ? criteria
-    : criteria.filter(c=>view.criteriaIds.includes(c.id));
+function calcTotalForView(t,view){
+  const use=view.criteriaIds.length===0?criteria:criteria.filter(c=>view.criteriaIds.includes(c.id));
   let sum=0,wsum=0;
-  useCriteria.forEach(c=>{
+  use.forEach(c=>{
     if(!(c.weight>0)) return;
     const v=parseFloat(getScore(t,c));
     if(!isNaN(v)){sum+=v*c.weight;wsum+=c.weight;}
@@ -354,19 +460,15 @@ function calcTotalForView(t, view){
   return wsum>0?+(sum/wsum).toFixed(2):0;
 }
 
-function calcTotal(t){
-  const view=rlViews.find(v=>v.id==='rl_default')||rlViews[0];
-  return calcTotalForView(t,view);
-}
-
-function getSorted(viewId){
-  const view=rlViews.find(v=>v.id===(viewId||activeRLView))||rlViews[0];
+function getSorted(){
+  const defaultView=rlViews.find(v=>v.id==='rl_default')||rlViews[0];
+  const activeView=rlViews.find(v=>v.id===activeRLView)||rlViews[0];
   const arr=Object.values(teams);
-  arr.forEach(t=>{t.__total__=calcTotalForView(t,rlViews.find(v=>v.id==='rl_default')||rlViews[0]);});
+  arr.forEach(t=>t.__total__=calcTotalForView(t,defaultView));
   arr.sort((a,b)=>{
     if(a.dnp!==b.dnp) return a.dnp?1:-1;
     let av,bv;
-    if(sortCol==='__total__'){av=calcTotalForView(a,view);bv=calcTotalForView(b,view);}
+    if(sortCol==='__total__'){av=calcTotalForView(a,activeView);bv=calcTotalForView(b,activeView);}
     else if(sortCol==='name'){av=a.name;bv=b.name;}
     else if(sortCol==='num'){av=a.num;bv=b.num;}
     else{const c=criteria.find(x=>x.id===sortCol)||{};av=getScore(a,c);bv=getScore(b,c);}
@@ -378,7 +480,7 @@ function getSorted(viewId){
   return arr;
 }
 
-// ── Render ─────────────────────────────────────────────
+// ── Render ──
 function renderAll(){renderTable();renderRankings();renderSummary();renderRLTabs();}
 
 function renderTable(){
@@ -444,53 +546,37 @@ function renderSummary(){
 
 function setRLView(id){activeRLView=id;renderRLTabs();renderRankings();}
 function setSort(col){if(sortCol===col)sortAsc=!sortAsc;else{sortCol=col;sortAsc=false;}renderTable();renderRankings();}
-function setScore(num,id,val){if(!teams[num])return;teams[num].scores[id]=val===''?'':+parseFloat(val).toFixed(2);teams[num].__total__=calcTotal(teams[num]);renderRankings();renderSummary();}
+function setScore(num,id,val){if(!teams[num])return;teams[num].scores[id]=val===''?'':+parseFloat(val).toFixed(2);renderRankings();renderSummary();}
 function setNote(num,tag,val){if(teams[num])teams[num].notes[tag]=val;}
 function toggleDNP(num,val){if(teams[num]){teams[num].dnp=val;renderAll();}}
 
-// ── Ranking Views Modal ────────────────────────────────
-function syncDefaultView(){
-  // Overall view: criteriaIds=[] means use all
-}
-
+// ── Ranking Views ──
 function openRLModal(){renderRLViewsList();document.getElementById('rl-modal').style.display='flex';}
 function closeRLModal(){document.getElementById('rl-modal').style.display='none';renderAll();}
-
 function renderRLViewsList(){
   document.getElementById('rl-views-list').innerHTML=rlViews.map((v,vi)=>`
     <div class="rl-view-row">
-      <div style="flex:1">
-        <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
-          <input type="text" value="${v.name}" style="width:120px;font-size:13px" onchange="rlViews[${vi}].name=this.value;renderRLTabs()">
-          ${vi>0?`<button class="danger" style="font-size:11px;padding:2px 7px" onclick="removeRLView(${vi})">Remove</button>`:'<span style="font-size:10px;color:var(--text3)">(default)</span>'}
-        </div>
-        <p style="font-size:10px;color:var(--text3);margin-bottom:4px">${vi===0?'Uses all criteria (no filter)':'Select criteria to include:'}</p>
-        ${vi===0?'':`<div class="rl-criteria-check">${criteria.map(c=>`
-          <label>
-            <input type="checkbox" ${v.criteriaIds.includes(c.id)?'checked':''} onchange="toggleRLCriteria(${vi},'${c.id}',this.checked)">
-            ${c.name} <span style="font-size:10px;color:var(--text3)">(${c.source})</span>
-          </label>`).join('')}
-        </div>`}
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <input type="text" value="${v.name}" style="width:130px;font-size:13px" onchange="rlViews[${vi}].name=this.value;renderRLTabs()">
+        ${vi>0?`<button class="danger" style="font-size:11px;padding:2px 7px" onclick="removeRLView(${vi})">Remove</button>`:'<span style="font-size:10px;color:var(--text3)">(uses all criteria)</span>'}
       </div>
+      ${vi===0?'':`<div class="rl-criteria-check">${criteria.map(c=>`
+        <label>
+          <input type="checkbox" ${v.criteriaIds.includes(c.id)?'checked':''} onchange="toggleRLCriteria(${vi},'${c.id}',this.checked)">
+          ${c.name} <span style="font-size:10px;color:var(--text3)">(${c.source})</span>
+        </label>`).join('')}
+      </div>`}
     </div>`).join('');
 }
-
-function addRLView(){
-  rlViews.push({id:'rl_'+Date.now(),name:'New View',criteriaIds:[]});
-  renderRLViewsList();
-}
-function removeRLView(i){
-  if(rlViews[i].id===activeRLView) activeRLView='rl_default';
-  rlViews.splice(i,1);
-  renderRLViewsList();
-}
+function addRLView(){rlViews.push({id:'rl_'+Date.now(),name:'New View',criteriaIds:[]});renderRLViewsList();}
+function removeRLView(i){if(rlViews[i].id===activeRLView)activeRLView='rl_default';rlViews.splice(i,1);renderRLViewsList();}
 function toggleRLCriteria(vi,id,checked){
   const v=rlViews[vi];
-  if(checked){if(!v.criteriaIds.includes(id)) v.criteriaIds.push(id);}
-  else{v.criteriaIds=v.criteriaIds.filter(x=>x!==id);}
+  if(checked){if(!v.criteriaIds.includes(id))v.criteriaIds.push(id);}
+  else v.criteriaIds=v.criteriaIds.filter(x=>x!==id);
 }
 
-// ── Tag & Criteria Modals ─────────────────────────────
+// ── Tags ──
 function renderTagList(){
   document.getElementById('tag-list').innerHTML=noteTags.map((t,i)=>`
     <span class="tag-chip">${t}<button onclick="removeTag(${i})">×</button></span>`).join('');
@@ -502,13 +588,14 @@ function addTag(){
 }
 function removeTag(i){noteTags.splice(i,1);renderTagList();renderTable();}
 
+// ── Criteria Modal ──
 function openCriteriaModal(){renderCriteriaModal();document.getElementById('criteria-modal').style.display='flex';}
 function closeCriteriaModal(){document.getElementById('criteria-modal').style.display='none';renderAll();}
 function renderCriteriaModal(){
   document.getElementById('criteria-list').innerHTML=criteria.map((c,i)=>`
     <div class="criteria-row">
       <input type="text" style="flex:1" value="${c.name}" onchange="criteria[${i}].name=this.value">
-      <input type="number" style="width:46px;text-align:center" value="${c.weight}" min="0" max="10" step="0.1" onchange="criteria[${i}].weight=+this.value" title="Weight">
+      <input type="number" style="width:46px;text-align:center" value="${c.weight}" min="0" max="10" step="0.1" onchange="criteria[${i}].weight=+this.value" title="Weight (0=display only)">
       <span class="badge-src">${c.source||'manual'}</span>
       <button class="danger" onclick="removeCriteria(${i})">×</button>
     </div>`).join('')||'<p style="font-size:12px;color:var(--text3)">No criteria yet.</p>';
@@ -516,7 +603,7 @@ function renderCriteriaModal(){
 function addCriteria(){criteria.push({id:'manual_'+Date.now(),name:'New Criteria',weight:1,source:'manual',editable:true});renderCriteriaModal();}
 function removeCriteria(i){criteria.splice(i,1);renderCriteriaModal();}
 
-// ── Export ─────────────────────────────────────────────
+// ── Export ──
 function exportCSV(){
   const sorted=getSorted();
   const headers=['Team','Name',...criteria.map(c=>c.name),'Weighted Total',...noteTags,'DNP'];
