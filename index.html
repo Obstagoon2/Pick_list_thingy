@@ -218,30 +218,44 @@ async function fetchEventData(){
   btn.disabled=true;
   setStatus('Fetching from Statbotics...');
   try{
+    // Step 1: get team list from bulk endpoint
     const r = await fetch(`https://api.statbotics.io/v3/team_events?event=${code}&limit=100`,{
       headers:{accept:'application/json'}
     });
     if(!r.ok) throw new Error(`Statbotics returned ${r.status} — check event code`);
     const list = await r.json();
     if(!list.length) throw new Error('No teams found for that event');
-    for(const s of list){
+
+    // Step 2: fetch full detail per team (has breakdown + record)
+    setStatus(`Got ${list.length} teams. Fetching full stats...`);
+    const details = await Promise.all(list.map(s=>
+      fetch(`https://api.statbotics.io/v3/team_event/${s.team}/${code}`,{headers:{accept:'application/json'}})
+        .then(r=>r.ok?r.json():null).catch(()=>null)
+    ));
+
+    let loaded=0;
+    details.forEach(s=>{
+      if(!s) return;
       const num=s.team;
-      if(!num) continue;
       if(!teams[num]) teams[num]={num,name:s.team_name||`Team ${num}`,notes:{},scores:{},dnp:false,tba:{},statbotics:{}};
       else if(s.team_name) teams[num].name=s.team_name;
+      const b=s.epa?.breakdown||{};
       teams[num].statbotics={
-        epa:         s.epa?.total_points?.mean              !=null?+s.epa.total_points.mean.toFixed(1):'',
-        auto_epa:    s.epa?.breakdown?.auto_points?.mean    !=null?+s.epa.breakdown.auto_points.mean.toFixed(1):'',
-        teleop_epa:  s.epa?.breakdown?.teleop_points?.mean  !=null?+s.epa.breakdown.teleop_points.mean.toFixed(1):'',
-        endgame_epa: s.epa?.breakdown?.endgame_points?.mean !=null?+s.epa.breakdown.endgame_points.mean.toFixed(1):'',
-        rank:        s.record?.qual?.rank??'',
-        wins:        s.record?.qual?.wins??'',
-        losses:      s.record?.qual?.losses??''
+        epa:          s.epa?.total_points?.mean  !=null ? +s.epa.total_points.mean.toFixed(1)  : '',
+        auto_epa:     b.auto_points              !=null ? +b.auto_points.toFixed(1)             : '',
+        teleop_epa:   b.teleop_points            !=null ? +b.teleop_points.toFixed(1)           : '',
+        endgame_epa:  b.endgame_points           !=null ? +b.endgame_points.toFixed(1)          : '',
+        rank:         s.record?.qual?.rank       ??'',
+        wins:         s.record?.qual?.wins       ??'',
+        losses:       s.record?.qual?.losses     ??'',
+        rps:          s.record?.qual?.rps        ??'',
+        winrate:      s.record?.qual?.winrate    !=null ? +(s.record.qual.winrate*100).toFixed(1): ''
       };
-    }
+      loaded++;
+    });
     ensureStatboticsCols();
     renderAll();
-    setStatus(`Loaded ${list.length} teams from Statbotics`,'success');
+    setStatus(`Loaded ${loaded} teams from Statbotics`,'success');
   }catch(e){
     setStatus('Fetch failed: '+e.message+' — save as HTML and open in browser for live fetching','error');
   }
@@ -251,7 +265,10 @@ async function fetchEventData(){
 
 function ensureTBACols(){} // TBA removed
 function ensureStatboticsCols(){
-  [['epa','EPA'],['auto_epa','Auto EPA'],['teleop_epa','Teleop EPA'],['endgame_epa','Endgame EPA'],['rank','Rank'],['wins','W'],['losses','L']].forEach(([id,name])=>{
+  [
+    ['epa','EPA'],['auto_epa','Auto EPA'],['teleop_epa','Teleop EPA'],['endgame_epa','Endgame EPA'],
+    ['rank','Rank'],['wins','W'],['losses','L'],['rps','RPs'],['winrate','Win%']
+  ].forEach(([id,name])=>{
     if(!criteria.find(c=>c.id===id)) criteria.push({id,name,weight:1,source:'statbotics',editable:false});
   });
 }
