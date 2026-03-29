@@ -30,22 +30,51 @@ button.primary{background:var(--info-bg);color:var(--info-text);border-color:var
 button.danger{background:var(--danger-bg);color:var(--danger-text);border-color:var(--danger-border)}
 input[type=text],input[type=number],textarea{font-family:inherit;font-size:13px;padding:5px 8px;border:0.5px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);width:100%}
 textarea{resize:vertical;min-height:40px}
-.layout{display:flex;gap:10px;padding:10px;min-height:100vh;align-items:flex-start}
-.sidebar{width:240px;flex-shrink:0;display:flex;flex-direction:column;gap:10px;position:sticky;top:10px}
-.main{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
 .card{background:var(--bg);border:0.5px solid var(--border);border-radius:10px;padding:12px}
 .card h3{font-size:10px;font-weight:600;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em}
+
+/* ── Desktop layout ── */
+.layout{display:flex;gap:10px;padding:10px;min-height:100vh;align-items:flex-start}
+.sidebar{width:240px;flex-shrink:0;display:flex;flex-direction:column;gap:10px;position:sticky;top:10px;max-height:calc(100vh - 20px);overflow-y:auto}
+.main{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
+
+/* ── Mobile: accordion layout ── */
+@media(max-width:700px){
+  .layout{flex-direction:column;padding:6px;gap:6px}
+  .sidebar{width:100%;position:static;max-height:none;overflow-y:visible}
+  /* Hide sidebar cards and main table card by default on mobile */
+  .mobile-section{border:0.5px solid var(--border);border-radius:10px;overflow:hidden}
+  .mobile-section-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg);cursor:pointer;user-select:none;font-size:13px;font-weight:500}
+  .mobile-section-header .chevron{font-size:12px;color:var(--text3);transition:transform .2s}
+  .mobile-section-header.open .chevron{transform:rotate(180deg)}
+  .mobile-section-body{display:none;background:var(--bg)}
+  .mobile-section-body.open{display:block}
+  /* On mobile, unwrap .card inside section body */
+  .mobile-section-body .card{border:none;border-radius:0;border-top:0.5px solid var(--border)}
+  /* Top bar wraps nicely */
+  .top-bar{gap:6px}
+  .top-bar input{width:100%!important;flex:1 1 140px}
+  table{font-size:11px}
+  th,td{padding:5px 5px}
+}
+
+.top-bar{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.status-bar{font-size:12px;padding:3px 0;min-height:18px}
+
+/* ── Rankings ── */
 .rl-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .rl-header h3{margin:0}
 .rl-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
 .rl-tab{font-size:11px;padding:3px 8px;border-radius:12px;border:0.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer}
 .rl-tab.active{background:var(--info-bg);color:var(--info-text);border-color:var(--info-border)}
-.rank-scroll{overflow-y:auto;max-height:370px;min-height:200px;padding-right:2px}
+.rank-scroll{overflow-y:auto;max-height:360px}
 .rank-item{display:flex;align-items:center;gap:5px;padding:4px 7px;border-radius:6px;border:0.5px solid var(--border);margin-bottom:3px;background:var(--bg)}
 .rank-item.dnp{opacity:.35;text-decoration:line-through}
 .rank-num{font-size:10px;color:var(--text3);min-width:16px;text-align:right}
 .rank-score{font-size:11px;color:var(--text2);margin-left:auto}
-.table-wrap{overflow-x:auto;border-radius:8px;border:0.5px solid var(--border)}
+
+/* ── Table ── */
+.table-wrap{overflow-x:auto;border-radius:8px;border:0.5px solid var(--border);-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;font-size:12px}
 th{background:var(--bg2);font-weight:500;padding:7px 8px;text-align:left;white-space:nowrap;border-bottom:0.5px solid var(--border);cursor:pointer;user-select:none}
 th:hover{background:var(--bg3)}
@@ -58,28 +87,24 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 .note-label{font-size:10px;color:var(--text2);min-width:54px;padding-top:5px;font-weight:500}
 .note-input{flex:1;font-size:11px;padding:3px 6px}
 .total-col{font-weight:600;color:var(--total)}
-.top-bar{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.status-bar{font-size:12px;padding:3px 0;min-height:18px}
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:flex;align-items:center;justify-content:center}
-.modal{background:var(--bg);border:1px solid var(--border2);border-radius:14px;padding:20px;width:500px;max-width:96vw;max-height:88vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+
+/* ── Modals ── */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:10px}
+.modal{background:var(--bg);border:1px solid var(--border2);border-radius:14px;padding:20px;width:500px;max-width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.5)}
 .modal h2{font-size:15px;font-weight:500;margin-bottom:4px}
 .modal-sub{font-size:12px;color:var(--text2);margin-bottom:12px}
 .modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;padding-top:10px;border-top:0.5px solid var(--border)}
-.tag-chip{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;background:var(--bg2);border:0.5px solid var(--border);font-size:11px;margin:2px;color:var(--text)}
-.tag-chip button{border:none;background:none;padding:0;font-size:11px;color:var(--text3);cursor:pointer}
-.badge-src{font-size:10px;padding:1px 5px;border-radius:3px;background:var(--bg2);color:var(--text3)}
-.flex-gap{display:flex;gap:7px}
-.spinner{display:inline-block;width:11px;height:11px;border:2px solid var(--border2);border-top-color:var(--info-text);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:4px}
-@keyframes spin{to{transform:rotate(360deg)}}
-/* Column picker table */
+
+/* ── Col picker table ── */
 .col-table{width:100%;border-collapse:collapse;font-size:12px}
 .col-table th{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;padding:4px 8px;text-align:left;border-bottom:0.5px solid var(--border);background:var(--bg2)}
 .col-table th:not(:first-child){text-align:center}
 .col-table td{padding:5px 8px;border-bottom:0.5px solid var(--border);color:var(--text)}
 .col-table td:not(:first-child){text-align:center}
 .col-table tr:last-child td{border-bottom:none}
-.col-scroll{max-height:300px;overflow-y:auto;border:0.5px solid var(--border);border-radius:6px;background:var(--bg2)}
-/* Toggle switch */
+.col-scroll{max-height:280px;overflow-y:auto;border:0.5px solid var(--border);border-radius:6px;background:var(--bg2)}
+
+/* ── Toggle ── */
 .toggle-switch{position:relative;width:30px;height:17px;display:inline-block;flex-shrink:0}
 .toggle-switch input{opacity:0;width:0;height:0;position:absolute}
 .toggle-slider{position:absolute;inset:0;background:var(--border2);border-radius:17px;cursor:pointer;transition:background .2s}
@@ -87,17 +112,24 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 .toggle-switch input:checked+.toggle-slider{background:var(--info-text)}
 .toggle-switch input:checked+.toggle-slider:before{transform:translateX(13px)}
 .toggle-switch.disabled{opacity:.3;pointer-events:none}
-/* Criteria row */
+
+/* ── Misc ── */
+.tag-chip{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;background:var(--bg2);border:0.5px solid var(--border);font-size:11px;margin:2px;color:var(--text)}
+.tag-chip button{border:none;background:none;padding:0;font-size:11px;color:var(--text3);cursor:pointer}
+.badge-src{font-size:10px;padding:1px 5px;border-radius:3px;background:var(--bg2);color:var(--text3)}
+.flex-gap{display:flex;gap:7px}
+.spinner{display:inline-block;width:11px;height:11px;border:2px solid var(--border2);border-top-color:var(--info-text);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.bulk-bar{display:flex;align-items:center;gap:7px;padding:6px 8px;background:var(--bg2);border-radius:6px;margin-bottom:8px;flex-wrap:wrap}
+.bulk-bar span{font-size:11px;color:var(--text3)}
 .criteria-row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
 .rl-criteria-check label{display:flex;align-items:center;gap:6px;font-size:12px;padding:2px 0;cursor:pointer;color:var(--text)}
 .rl-view-row{padding:10px 12px;border:0.5px solid var(--border);border-radius:8px;margin-bottom:8px;background:var(--bg2)}
-/* Bulk bar */
-.bulk-bar{display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--bg2);border-radius:6px;margin-bottom:8px;flex-wrap:wrap}
-.bulk-bar span{font-size:11px;color:var(--text3);margin-right:4px}
 </style>
 </head>
 <body data-theme="">
 <div class="layout">
+  <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="card">
       <div class="rl-header">
@@ -120,6 +152,8 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
       <div id="summary" style="font-size:12px;color:var(--text2);line-height:1.9"></div>
     </div>
   </div>
+
+  <!-- MAIN -->
   <div class="main">
     <div class="card">
       <div class="top-bar">
@@ -146,6 +180,9 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
   </div>
 </div>
 
+<!-- Mobile accordion overlay (injected by JS on small screens) -->
+<div id="mobile-layout" style="display:none;flex-direction:column;gap:6px;padding:6px"></div>
+
 <!-- Criteria Modal -->
 <div id="criteria-modal" style="display:none" class="modal-backdrop">
   <div class="modal">
@@ -166,17 +203,13 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
       <span>Import:</span>
       <button onclick="bulkImport(true)" style="font-size:11px;padding:3px 8px">All</button>
       <button onclick="bulkImport(false)" style="font-size:11px;padding:3px 8px">None</button>
-      <span style="margin-left:8px">Count toward total:</span>
+      <span style="margin-left:4px">Count toward total:</span>
       <button onclick="bulkRank(true)" style="font-size:11px;padding:3px 8px">All</button>
       <button onclick="bulkRank(false)" style="font-size:11px;padding:3px 8px">None</button>
     </div>
     <div class="col-scroll">
       <table class="col-table">
-        <thead><tr>
-          <th>Column</th>
-          <th>Import</th>
-          <th>Count toward total</th>
-        </tr></thead>
+        <thead><tr><th>Column</th><th>Import</th><th>Count toward total</th></tr></thead>
         <tbody id="col-checkboxes"></tbody>
       </table>
     </div>
@@ -196,17 +229,13 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
       <span>Import:</span>
       <button onclick="bulkStatImport(true)" style="font-size:11px;padding:3px 8px">All</button>
       <button onclick="bulkStatImport(false)" style="font-size:11px;padding:3px 8px">None</button>
-      <span style="margin-left:8px">Count toward total:</span>
+      <span style="margin-left:4px">Count toward total:</span>
       <button onclick="bulkStatRank(true)" style="font-size:11px;padding:3px 8px">All</button>
       <button onclick="bulkStatRank(false)" style="font-size:11px;padding:3px 8px">None</button>
     </div>
     <div class="col-scroll">
       <table class="col-table">
-        <thead><tr>
-          <th>Field</th>
-          <th>Import</th>
-          <th>Count toward total</th>
-        </tr></thead>
+        <thead><tr><th>Field</th><th>Import</th><th>Count toward total</th></tr></thead>
         <tbody id="stat-col-checkboxes"></tbody>
       </table>
     </div>
@@ -230,18 +259,9 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 
 <script>
 const ALWAYS_SKIP=new Set(['org_key','year','event_key','match_key','match_number','time','alliance','scouter','team_key','otherNotes','superNotes','RedCard','YellowCard','describeAuto','autoCodeTeleop','preferredStrategy','describepizzatoppings','doAutoCodeTeleop','StartPos','AutoMistake🚩','DidScoreMistake🚩','DidintakeMistake🚩']);
-
-// All possible statbotics fields: [id, label, countsInTotal]
 const STAT_FIELDS=[
-  ['epa','EPA',true],
-  ['auto_epa','Auto EPA',true],
-  ['teleop_epa','Teleop EPA',true],
-  ['endgame_epa','Endgame EPA',true],
-  ['rank','Rank',false],
-  ['wins','W',false],
-  ['losses','L',false],
-  ['rps','RPs',false],
-  ['winrate','Win%',false],
+  ['epa','EPA',true],['auto_epa','Auto EPA',true],['teleop_epa','Teleop EPA',true],['endgame_epa','Endgame EPA',true],
+  ['rank','Rank',false],['wins','W',false],['losses','L',false],['rps','RPs',false],['winrate','Win%',false],
 ];
 
 let teams={},criteria=[],noteTags=['Strategy','Autos','Concerns'];
@@ -250,11 +270,11 @@ let rlViews=[{id:'rl_default',name:'Overall',criteriaIds:[]}];
 let activeRLView='rl_default';
 let darkMode=true;
 
-// ── Theme ──
 function toggleTheme(){
   darkMode=!darkMode;
   document.body.setAttribute('data-theme',darkMode?'':'light');
   document.getElementById('theme-btn').textContent=darkMode?'Light mode':'Dark mode';
+  syncMobileThemeBtn();
 }
 
 function setStatus(msg,type='info'){
@@ -269,7 +289,7 @@ function parseTeamNum(val){
   return isNaN(n)?null:n;
 }
 
-// ── Statbotics fetch ──
+// ── Statbotics ──
 async function fetchEventData(){
   const code=document.getElementById('event-code').value.trim().toLowerCase();
   if(!code){setStatus('Enter an event code','error');return;}
@@ -282,15 +302,12 @@ async function fetchEventData(){
     if(!r.ok) throw new Error(`Statbotics returned ${r.status}`);
     const list=await r.json();
     if(!list.length) throw new Error('No teams found — check event code');
-
     setStatus(`Got ${list.length} teams. Fetching full stats...`);
     const details=await Promise.all(list.map(s=>
       fetch(`https://api.statbotics.io/v3/team_event/${s.team}/${code}`,{headers:{accept:'application/json'}})
         .then(r=>r.ok?r.json():null).catch(()=>null)
     ));
-
-    // Store raw data, show column picker
-    pendingStatData={details,code};
+    pendingStatData={details};
     openStatColModal();
   }catch(e){
     setStatus('Fetch failed: '+e.message,'error');
@@ -300,66 +317,53 @@ async function fetchEventData(){
 }
 
 function openStatColModal(){
-  document.getElementById('stat-col-checkboxes').innerHTML=STAT_FIELDS.map(([id,label,countsDefault])=>`
+  document.getElementById('stat-col-checkboxes').innerHTML=STAT_FIELDS.map(([id,label,def])=>`
     <tr>
       <td>${label}</td>
       <td><input type="checkbox" checked data-id="${id}" class="stat-import" style="width:14px;height:14px;cursor:pointer"></td>
-      <td>
-        <label class="toggle-switch" id="stat-toggle-wrap-${id}">
-          <input type="checkbox" ${countsDefault?'checked':''} data-id="${id}" class="stat-rank">
-          <span class="toggle-slider"></span>
-        </label>
-      </td>
+      <td><label class="toggle-switch" id="stat-tw-${id}">
+        <input type="checkbox" ${def?'checked':''} data-id="${id}" class="stat-rank">
+        <span class="toggle-slider"></span>
+      </label></td>
     </tr>`).join('');
-  // Sync import → rank toggle disabled state
-  document.querySelectorAll('.stat-import').forEach(cb=>{
-    cb.addEventListener('change',()=>{
-      const wrap=document.getElementById(`stat-toggle-wrap-${cb.dataset.id}`);
-      if(wrap) wrap.classList.toggle('disabled',!cb.checked);
-    });
-  });
+  document.querySelectorAll('.stat-import').forEach(cb=>cb.addEventListener('change',()=>{
+    const w=document.getElementById(`stat-tw-${cb.dataset.id}`);
+    if(w) w.classList.toggle('disabled',!cb.checked);
+  }));
   document.getElementById('stat-col-modal').style.display='flex';
 }
 function cancelStatColModal(){document.getElementById('stat-col-modal').style.display='none';pendingStatData=null;}
 function bulkStatImport(v){document.querySelectorAll('.stat-import').forEach(i=>{i.checked=v;i.dispatchEvent(new Event('change'));});}
 function bulkStatRank(v){document.querySelectorAll('.stat-rank').forEach(i=>i.checked=v);}
-
 function confirmStatColModal(){
   document.getElementById('stat-col-modal').style.display='none';
   if(!pendingStatData) return;
-  const {details}=pendingStatData;
   const importIds=new Set(Array.from(document.querySelectorAll('.stat-import:checked')).map(i=>i.dataset.id));
   const rankIds=new Set(Array.from(document.querySelectorAll('.stat-rank:checked')).map(i=>i.dataset.id));
-
-  // Add criteria for selected fields
   STAT_FIELDS.forEach(([id,label])=>{
     if(!importIds.has(id)) return;
-    if(!criteria.find(c=>c.id===id))
-      criteria.push({id,name:label,weight:rankIds.has(id)?1:0,source:'statbotics',editable:false});
+    if(!criteria.find(c=>c.id===id)) criteria.push({id,name:label,weight:rankIds.has(id)?1:0,source:'statbotics',editable:false});
   });
-
-  // Populate team data
   let loaded=0;
-  details.forEach(s=>{
+  pendingStatData.details.forEach(s=>{
     if(!s) return;
     const num=s.team;
     if(!teams[num]) teams[num]={num,name:s.team_name||`Team ${num}`,notes:{},scores:{},dnp:false,tba:{},statbotics:{}};
     else if(s.team_name) teams[num].name=s.team_name;
     const b=s.epa?.breakdown||{};
     teams[num].statbotics={
-      epa:         s.epa?.total_points?.mean !=null?+s.epa.total_points.mean.toFixed(1):'',
-      auto_epa:    b.auto_points             !=null?+b.auto_points.toFixed(1):'',
-      teleop_epa:  b.teleop_points           !=null?+b.teleop_points.toFixed(1):'',
-      endgame_epa: b.endgame_points          !=null?+b.endgame_points.toFixed(1):'',
-      rank:        s.record?.qual?.rank      ??'',
-      wins:        s.record?.qual?.wins      ??'',
-      losses:      s.record?.qual?.losses    ??'',
-      rps:         s.record?.qual?.rps       ??'',
-      winrate:     s.record?.qual?.winrate   !=null?+(s.record.qual.winrate*100).toFixed(1):''
+      epa:         s.epa?.total_points?.mean!=null?+s.epa.total_points.mean.toFixed(1):'',
+      auto_epa:    b.auto_points!=null?+b.auto_points.toFixed(1):'',
+      teleop_epa:  b.teleop_points!=null?+b.teleop_points.toFixed(1):'',
+      endgame_epa: b.endgame_points!=null?+b.endgame_points.toFixed(1):'',
+      rank:        s.record?.qual?.rank??'',
+      wins:        s.record?.qual?.wins??'',
+      losses:      s.record?.qual?.losses??'',
+      rps:         s.record?.qual?.rps??'',
+      winrate:     s.record?.qual?.winrate!=null?+(s.record.qual.winrate*100).toFixed(1):''
     };
     loaded++;
   });
-
   renderAll();
   setStatus(`Loaded ${loaded} teams from Statbotics`,'success');
   pendingStatData=null;
@@ -385,26 +389,21 @@ function loadCSV(evt,type){
     openColModal(type,numCols);
   }});
 }
-
 function openColModal(type,cols){
   document.getElementById('col-modal-title').textContent=`Select ${type} scouting columns`;
   document.getElementById('col-checkboxes').innerHTML=cols.map(c=>`
     <tr>
       <td>${c}</td>
       <td><input type="checkbox" checked data-col="${c}" class="col-import" style="width:14px;height:14px;cursor:pointer"></td>
-      <td>
-        <label class="toggle-switch" id="col-toggle-wrap-${c}">
-          <input type="checkbox" checked data-col="${c}" class="col-rank">
-          <span class="toggle-slider"></span>
-        </label>
-      </td>
+      <td><label class="toggle-switch" id="col-tw-${c}">
+        <input type="checkbox" checked data-col="${c}" class="col-rank">
+        <span class="toggle-slider"></span>
+      </label></td>
     </tr>`).join('');
-  document.querySelectorAll('.col-import').forEach(cb=>{
-    cb.addEventListener('change',()=>{
-      const wrap=document.getElementById(`col-toggle-wrap-${cb.dataset.col}`);
-      if(wrap) wrap.classList.toggle('disabled',!cb.checked);
-    });
-  });
+  document.querySelectorAll('.col-import').forEach(cb=>cb.addEventListener('change',()=>{
+    const w=document.getElementById(`col-tw-${cb.dataset.col}`);
+    if(w) w.classList.toggle('disabled',!cb.checked);
+  }));
   document.getElementById('col-modal').style.display='flex';
 }
 function bulkImport(v){document.querySelectorAll('.col-import').forEach(i=>{i.checked=v;i.dispatchEvent(new Event('change'));});}
@@ -458,16 +457,15 @@ function calcTotalForView(t,view){
   });
   return wsum>0?+(sum/wsum).toFixed(2):0;
 }
-
 function getSorted(){
-  const defaultView=rlViews.find(v=>v.id==='rl_default')||rlViews[0];
-  const activeView=rlViews.find(v=>v.id===activeRLView)||rlViews[0];
+  const defView=rlViews.find(v=>v.id==='rl_default')||rlViews[0];
+  const actView=rlViews.find(v=>v.id===activeRLView)||rlViews[0];
   const arr=Object.values(teams);
-  arr.forEach(t=>t.__total__=calcTotalForView(t,defaultView));
+  arr.forEach(t=>t.__total__=calcTotalForView(t,defView));
   arr.sort((a,b)=>{
     if(a.dnp!==b.dnp) return a.dnp?1:-1;
     let av,bv;
-    if(sortCol==='__total__'){av=calcTotalForView(a,activeView);bv=calcTotalForView(b,activeView);}
+    if(sortCol==='__total__'){av=calcTotalForView(a,actView);bv=calcTotalForView(b,actView);}
     else if(sortCol==='name'){av=a.name;bv=b.name;}
     else if(sortCol==='num'){av=a.num;bv=b.num;}
     else{const c=criteria.find(x=>x.id===sortCol)||{};av=getScore(a,c);bv=getScore(b,c);}
@@ -480,15 +478,14 @@ function getSorted(){
 }
 
 // ── Render ──
-function renderAll(){renderTable();renderRankings();renderSummary();renderRLTabs();}
-
+function renderAll(){renderTable();renderRankings();renderSummary();renderRLTabs();renderMobile();}
 function renderTable(){
   const sorted=getSorted();
   const si=col=>col===sortCol?(sortAsc?'↑':'↓'):'';
   document.getElementById('thead').innerHTML=`<tr>
     <th onclick="setSort('num')"># ${si('num')}</th>
     <th onclick="setSort('name')">Name ${si('name')}</th>
-    ${criteria.map(c=>`<th onclick="setSort('${c.id}')" title="source:${c.source} w:${c.weight}">${c.name} ${si(c.id)}</th>`).join('')}
+    ${criteria.map(c=>`<th onclick="setSort('${c.id}')" title="w:${c.weight}">${c.name} ${si(c.id)}</th>`).join('')}
     <th onclick="setSort('__total__')">Total ${si('__total__')}</th>
     <th>Notes</th><th>DNP</th></tr>`;
   document.getElementById('tbody').innerHTML=sorted.map(t=>`
@@ -510,20 +507,15 @@ function renderTable(){
       <td style="text-align:center;vertical-align:middle"><input type="checkbox" ${t.dnp?'checked':''} onchange="toggleDNP(${t.num},this.checked)"></td>
     </tr>`).join('');
 }
-
 function renderRLTabs(){
   document.getElementById('rl-tabs').innerHTML=rlViews.map(v=>`
     <button class="rl-tab ${v.id===activeRLView?'active':''}" onclick="setRLView('${v.id}')">${v.name}</button>`).join('');
 }
-
 function renderRankings(){
   const view=rlViews.find(v=>v.id===activeRLView)||rlViews[0];
   const arr=Object.values(teams);
   arr.forEach(t=>t.__rl_score__=calcTotalForView(t,view));
-  arr.sort((a,b)=>{
-    if(a.dnp!==b.dnp) return a.dnp?1:-1;
-    return b.__rl_score__-a.__rl_score__;
-  });
+  arr.sort((a,b)=>{if(a.dnp!==b.dnp)return a.dnp?1:-1;return b.__rl_score__-a.__rl_score__;});
   const el=document.getElementById('rank-list');
   if(!arr.length){el.innerHTML='<p style="font-size:12px;color:var(--text3)">No teams yet</p>';return;}
   let rank=0;
@@ -537,7 +529,6 @@ function renderRankings(){
     </div>`;
   }).join('');
 }
-
 function renderSummary(){
   const arr=Object.values(teams),dnp=arr.filter(t=>t.dnp).length;
   document.getElementById('summary').innerHTML=`Teams: ${arr.length}<br>Ranked: ${arr.length-dnp}<br>DNP: ${dnp}<br>Criteria: ${criteria.length}<br>Views: ${rlViews.length}`;
@@ -559,11 +550,9 @@ function renderRLViewsList(){
         <input type="text" value="${v.name}" style="width:130px;font-size:13px" onchange="rlViews[${vi}].name=this.value;renderRLTabs()">
         ${vi>0?`<button class="danger" style="font-size:11px;padding:2px 7px" onclick="removeRLView(${vi})">Remove</button>`:'<span style="font-size:10px;color:var(--text3)">(uses all criteria)</span>'}
       </div>
-      ${vi===0?'':`<div class="rl-criteria-check">${criteria.map(c=>`
-        <label>
-          <input type="checkbox" ${v.criteriaIds.includes(c.id)?'checked':''} onchange="toggleRLCriteria(${vi},'${c.id}',this.checked)">
-          ${c.name} <span style="font-size:10px;color:var(--text3)">(${c.source})</span>
-        </label>`).join('')}
+      ${vi===0?'':`<div class="rl-criteria-check">${criteria.length?criteria.map(c=>`
+        <label><input type="checkbox" ${v.criteriaIds.includes(c.id)?'checked':''} onchange="toggleRLCriteria(${vi},'${c.id}',this.checked)">
+        ${c.name} <span style="font-size:10px;color:var(--text3)">(${c.source})</span></label>`).join(''):'<p style="font-size:12px;color:var(--text3)">No criteria loaded yet.</p>'}
       </div>`}
     </div>`).join('');
 }
@@ -587,14 +576,14 @@ function addTag(){
 }
 function removeTag(i){noteTags.splice(i,1);renderTagList();renderTable();}
 
-// ── Criteria Modal ──
+// ── Criteria ──
 function openCriteriaModal(){renderCriteriaModal();document.getElementById('criteria-modal').style.display='flex';}
 function closeCriteriaModal(){document.getElementById('criteria-modal').style.display='none';renderAll();}
 function renderCriteriaModal(){
   document.getElementById('criteria-list').innerHTML=criteria.map((c,i)=>`
     <div class="criteria-row">
       <input type="text" style="flex:1" value="${c.name}" onchange="criteria[${i}].name=this.value">
-      <input type="number" style="width:46px;text-align:center" value="${c.weight}" min="0" max="10" step="0.1" onchange="criteria[${i}].weight=+this.value" title="Weight (0=display only)">
+      <input type="number" style="width:46px;text-align:center" value="${c.weight}" min="0" max="10" step="0.1" onchange="criteria[${i}].weight=+this.value" title="Weight">
       <span class="badge-src">${c.source||'manual'}</span>
       <button class="danger" onclick="removeCriteria(${i})">×</button>
     </div>`).join('')||'<p style="font-size:12px;color:var(--text3)">No criteria yet.</p>';
@@ -612,6 +601,164 @@ function exportCSV(){
 }
 
 renderTagList();renderAll();
+setupMobile();
+
+// ── Mobile accordion ──
+function setupMobile(){
+  const mq=window.matchMedia('(max-width:700px)');
+  applyMobile(mq.matches);
+  mq.addEventListener('change',e=>applyMobile(e.matches));
+}
+
+function applyMobile(isMobile){
+  const desktop=document.querySelector('.layout');
+  const mobileEl=document.getElementById('mobile-layout');
+  if(!isMobile){
+    desktop.style.display='';
+    mobileEl.style.display='none';
+    return;
+  }
+  desktop.style.display='none';
+  mobileEl.style.display='flex';
+  if(mobileEl.children.length) return; // already built
+
+  const sections=[
+    {
+      title:'Controls',
+      html:`<div style="padding:10px">
+        <div style="display:flex;flex-wrap:wrap;gap:7px;align-items:center">
+          <input type="text" id="event-code-m" placeholder="Event code (e.g. 2026mslr)" style="flex:1;min-width:140px">
+          <button class="primary" onclick="fetchMobile()" id="fetch-btn-m">Fetch Statbotics</button>
+          <label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">Match CSV<input type="file" accept=".csv" style="display:none" onchange="loadCSV(event,'match')"></label>
+          <label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">Pit CSV<input type="file" accept=".csv" style="display:none" onchange="loadCSV(event,'pit')"></label>
+          <button onclick="openCriteriaModal()">Criteria</button>
+          <button onclick="addTeamManual()">+ Team</button>
+          <button onclick="exportCSV()" class="primary">Export</button>
+          <button onclick="toggleTheme()" id="theme-btn-m" style="border-radius:20px">Light mode</button>
+        </div>
+        <div id="status-bar-m" style="font-size:12px;padding:4px 0;min-height:18px;color:var(--text2)"></div>
+      </div>`
+    },
+    {
+      title:'Live Rankings',
+      html:`<div style="padding:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <div class="rl-tabs" id="rl-tabs-m"></div>
+          <button style="font-size:10px;padding:3px 7px" onclick="openRLModal()">+ View</button>
+        </div>
+        <div class="rank-scroll" id="rank-list-m"><p style="font-size:12px;color:var(--text3)">No teams yet</p></div>
+      </div>`
+    },
+    {
+      title:'Team Table',
+      html:`<div style="padding:0">
+        <div class="table-wrap" style="border:none;border-radius:0">
+          <table><thead id="thead-m"></thead><tbody id="tbody-m"></tbody></table>
+        </div>
+      </div>`
+    },
+    {
+      title:'Notes & Tags',
+      html:`<div style="padding:10px">
+        <p style="font-size:11px;color:var(--text3);margin-bottom:6px">Note tags</p>
+        <div id="tag-list-m"></div>
+        <div class="flex-gap" style="margin-top:8px"><input type="text" id="new-tag-m" placeholder="New tag..." style="flex:1"><button onclick="addTagMobile()">+</button></div>
+      </div>`
+    },
+    {
+      title:'Summary',
+      html:`<div style="padding:10px"><div id="summary-m" style="font-size:12px;color:var(--text2);line-height:1.9"></div></div>`
+    }
+  ];
+
+  mobileEl.innerHTML=sections.map((s,i)=>`
+    <div class="mobile-section" style="border:0.5px solid var(--border);border-radius:10px;overflow:hidden">
+      <div class="mobile-section-header ${i===0||i===1?'open':''}" onclick="toggleSection(this)" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg);cursor:pointer;user-select:none;font-size:13px;font-weight:500">
+        <span>${s.title}</span><span class="chevron" style="font-size:12px;color:var(--text3);transition:transform .2s">${i===0||i===1?'▲':'▼'}</span>
+      </div>
+      <div class="mobile-section-body ${i===0||i===1?'open':''}" style="${i===0||i===1?'':'display:none'}">${s.html}</div>
+    </div>`).join('');
+
+  // Sync theme button
+  syncMobileThemeBtn();
+  renderAll();
+}
+
+function toggleSection(header){
+  const body=header.nextElementSibling;
+  const chevron=header.querySelector('.chevron');
+  const isOpen=body.style.display!=='none';
+  body.style.display=isOpen?'none':'block';
+  chevron.textContent=isOpen?'▼':'▲';
+}
+
+function syncMobileThemeBtn(){
+  const btn=document.getElementById('theme-btn-m');
+  if(btn) btn.textContent=darkMode?'Light mode':'Dark mode';
+}
+
+// Mobile-specific overrides
+function fetchMobile(){
+  const codeM=document.getElementById('event-code-m');
+  const codeD=document.getElementById('event-code');
+  if(codeM) codeD.value=codeM.value;
+  fetchEventData();
+}
+
+function addTagMobile(){
+  const inp=document.getElementById('new-tag-m');
+  if(!inp) return;
+  const val=inp.value.trim();
+  if(!val||noteTags.includes(val)) return;
+  noteTags.push(val);inp.value='';
+  renderTagList();renderTable();
+}
+
+
+
+function renderMobile(){
+  const isMobile=window.matchMedia('(max-width:700px)').matches;
+  if(!isMobile) return;
+
+  // Status
+  const sbm=document.getElementById('status-bar-m');
+  const sb=document.getElementById('status-bar');
+  if(sbm&&sb){sbm.textContent=sb.textContent;sbm.style.color=sb.style.color;}
+
+  // Rankings tabs
+  const tabsM=document.getElementById('rl-tabs-m');
+  const tabsD=document.getElementById('rl-tabs');
+  if(tabsM&&tabsD) tabsM.innerHTML=tabsD.innerHTML.replace(/setRLView/g,'setRLViewM');
+
+  // Rankings list
+  const rlM=document.getElementById('rank-list-m');
+  const rlD=document.getElementById('rank-list');
+  if(rlM&&rlD) rlM.innerHTML=rlD.innerHTML;
+
+  // Table
+  const theadM=document.getElementById('thead-m');
+  const tbodyM=document.getElementById('tbody-m');
+  const theadD=document.getElementById('thead');
+  const tbodyD=document.getElementById('tbody');
+  if(theadM&&theadD) theadM.innerHTML=theadD.innerHTML;
+  if(tbodyM&&tbodyD) tbodyM.innerHTML=tbodyD.innerHTML;
+
+  // Tags
+  const tlM=document.getElementById('tag-list-m');
+  const tlD=document.getElementById('tag-list');
+  if(tlM&&tlD) tlM.innerHTML=tlD.innerHTML;
+
+  // Summary
+  const sumM=document.getElementById('summary-m');
+  const sumD=document.getElementById('summary');
+  if(sumM&&sumD) sumM.innerHTML=sumD.innerHTML;
+
+  syncMobileThemeBtn();
+}
+
+function setRLViewM(id){setRLView(id);}
+
+
 </script>
 </body>
 </html>
