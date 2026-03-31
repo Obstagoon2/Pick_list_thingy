@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FRC Pick List</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%230c2a45'/><text y='44' x='8' font-size='40' font-family='system-ui,sans-serif' font-weight='700' fill='%2378b4e8'>P</text><circle cx='48' cy='20' r='10' fill='%2378b4e8'/><text y='25' x='44' font-size='13' font-family='system-ui,sans-serif' font-weight='700' fill='%230c2a45'>1</text></svg>">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
@@ -30,7 +31,8 @@ textarea{resize:vertical;min-height:40px}
 .rl-tab{font-size:11px;padding:3px 8px;border-radius:12px;border:0.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer}
 .rl-tab.active{background:var(--info-bg);color:var(--info-text);border-color:var(--info-border)}
 .rank-scroll{overflow-y:auto;max-height:360px}
-.rank-item{display:flex;align-items:center;gap:5px;padding:4px 7px;border-radius:6px;border:0.5px solid var(--border);margin-bottom:3px;background:var(--bg)}
+.rank-item{display:flex;align-items:center;gap:5px;padding:4px 7px;border-radius:6px;border:0.5px solid var(--border);margin-bottom:3px;background:var(--bg);cursor:pointer;transition:background .1s}
+.rank-item:hover{background:var(--bg3)}
 .rank-item.dnp{opacity:.35;text-decoration:line-through}
 .rank-num{font-size:10px;color:var(--text3);min-width:16px;text-align:right}
 .rank-score{font-size:11px;color:var(--text2);margin-left:auto}
@@ -77,7 +79,6 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 .criteria-row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
 .rl-criteria-check label{display:flex;align-items:center;gap:6px;font-size:12px;padding:2px 0;cursor:pointer;color:var(--text)}
 .rl-view-row{padding:10px 12px;border:0.5px solid var(--border);border-radius:8px;margin-bottom:8px;background:var(--bg2)}
-/* Photo modal */
 .photo-modal{background:var(--bg);border:1px solid var(--border2);border-radius:14px;padding:20px;width:580px;max-width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.5)}
 .photo-carousel{position:relative;width:100%;aspect-ratio:16/9;background:#111;border-radius:8px;overflow:hidden;margin-bottom:8px;display:flex;align-items:center;justify-content:center}
 .photo-carousel img{width:100%;height:100%;object-fit:contain;display:none;position:absolute;top:0;left:0}
@@ -127,7 +128,6 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
       <div class="top-bar">
         <input type="text" id="event-code" placeholder="Event code (e.g. 2026mslr)" style="width:185px">
         <button class="primary" onclick="fetchStatbotics()" id="fetch-stat-btn">Fetch from Statbotics</button>
-        <button class="primary" onclick="fetchTBA()" id="fetch-tba-btn">Fetch from TBA</button>
         <label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">Match CSV<input type="file" accept=".csv" style="display:none" onchange="loadCSV(event,'match')"></label>
         <label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">Pit CSV<input type="file" accept=".csv" style="display:none" onchange="loadCSV(event,'pit')"></label>
         <label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">&#128247; Photos<input type="file" accept=".zip" style="display:none" onchange="loadPhotoZip(event)"></label>
@@ -146,17 +146,13 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 
 <!-- Team Detail Modal -->
 <div id="detail-modal" style="display:none" class="modal-backdrop">
-  <div class="modal" style="width:620px">
+  <div class="modal" style="width:620px;max-width:100%">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-      <div>
-        <span id="detail-num" style="font-size:18px;font-weight:700;color:var(--info-text)"></span>
-        <span id="detail-name" style="font-size:14px;color:var(--text2);margin-left:10px"></span>
-      </div>
+      <div><span id="detail-num" style="font-size:18px;font-weight:700;color:var(--info-text)"></span><span id="detail-name" style="font-size:14px;color:var(--text2);margin-left:10px"></span></div>
       <button onclick="closeDetailModal()" style="font-size:20px;padding:2px 8px;border:none;background:none;color:var(--text2);cursor:pointer">&#215;</button>
     </div>
-    <!-- Photo carousel (compact) -->
     <div id="detail-photo-wrap" style="display:none;margin-bottom:14px">
-      <div class="photo-carousel" id="detail-carousel" style="aspect-ratio:16/9">
+      <div class="photo-carousel" id="detail-carousel">
         <button class="carousel-btn carousel-prev" onclick="detailCarouselStep(-1)">&#8249;</button>
         <span class="photo-placeholder" id="detail-photo-placeholder">No photos</span>
         <div id="detail-carousel-images"></div>
@@ -165,12 +161,10 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
       <div class="photo-counter" id="detail-photo-counter"></div>
       <div class="carousel-dots" id="detail-carousel-dots"></div>
     </div>
-    <!-- Stats grid -->
     <div style="margin-bottom:14px">
       <p style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Stats</p>
       <div id="detail-stats" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px"></div>
     </div>
-    <!-- Notes -->
     <div id="detail-notes-wrap">
       <p style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Notes</p>
       <div id="detail-notes"></div>
@@ -180,25 +174,6 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
       <label for="detail-dnp" style="font-size:12px;color:var(--text2);cursor:pointer">DNP</label>
       <button onclick="closeDetailModal()" style="margin-left:auto">Close</button>
     </div>
-  </div>
-</div>
-
-<!-- Photo Modal -->
-<div id="photo-modal" style="display:none" class="modal-backdrop">
-  <div class="photo-modal">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <div><span id="photo-team-num" style="font-size:16px;font-weight:600"></span><span id="photo-team-name" style="font-size:13px;color:var(--text2);margin-left:8px"></span></div>
-      <button onclick="closePhotoModal()" style="font-size:20px;padding:2px 8px;border:none;background:none;color:var(--text2);cursor:pointer">&#215;</button>
-    </div>
-    <div class="photo-carousel" id="photo-carousel">
-      <button class="carousel-btn carousel-prev" onclick="carouselStep(-1)">&#8249;</button>
-      <span class="photo-placeholder" id="photo-placeholder">No photos for this team</span>
-      <div id="carousel-images"></div>
-      <button class="carousel-btn carousel-next" onclick="carouselStep(1)">&#8250;</button>
-    </div>
-    <div class="photo-counter" id="photo-counter"></div>
-    <div class="carousel-dots" id="carousel-dots"></div>
-    <div class="modal-footer"><button onclick="closePhotoModal()">Close</button></div>
   </div>
 </div>
 
@@ -241,20 +216,6 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
   </div>
 </div>
 
-<!-- TBA Column Picker -->
-<div id="tba-col-modal" style="display:none" class="modal-backdrop">
-  <div class="modal">
-    <h2>TBA columns</h2>
-    <p class="modal-sub">Choose which TBA fields to add and whether each counts toward the weighted total.</p>
-    <div class="bulk-bar">
-      <span>Import:</span><button onclick="bulkSet('.tba-import',true)" style="font-size:11px;padding:3px 8px">All</button><button onclick="bulkSet('.tba-import',false)" style="font-size:11px;padding:3px 8px">None</button>
-      <span style="margin-left:4px">Count toward total:</span><button onclick="bulkSet('.tba-rank',true)" style="font-size:11px;padding:3px 8px">All</button><button onclick="bulkSet('.tba-rank',false)" style="font-size:11px;padding:3px 8px">None</button>
-    </div>
-    <div class="col-scroll"><table class="col-table"><thead><tr><th>Field</th><th>Import</th><th>Count toward total</th></tr></thead><tbody id="tba-col-checkboxes"></tbody></table></div>
-    <div class="modal-footer"><button onclick="cancelTBAModal()">Cancel</button><button class="primary" onclick="confirmTBAModal()">Apply</button></div>
-  </div>
-</div>
-
 <!-- Ranking Views Modal -->
 <div id="rl-modal" style="display:none" class="modal-backdrop">
   <div class="modal">
@@ -270,19 +231,7 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 <div id="mobile-layout" style="display:none;flex-direction:column;gap:6px;padding:6px"></div>
 
 <script>
-var TBA_KEY = '__TBA_KEY_PLACEHOLDER__';
 var ALWAYS_SKIP = new Set(['org_key','year','event_key','match_key','match_number','time','alliance','scouter','team_key','otherNotes','superNotes','RedCard','YellowCard','describeAuto','autoCodeTeleop','preferredStrategy','describepizzatoppings','doAutoCodeTeleop','StartPos','AutoMistake\uD83D\uDEA9','DidScoreMistake\uD83D\uDEA9','DidintakeMistake\uD83D\uDEA9']);
-
-var TBA_FIELDS = [
-  ['tba_rank','Rank',false],
-  ['tba_opr','OPR',true],
-  ['tba_dpr','DPR',false],
-  ['tba_ccwm','CCWM',true],
-  ['tba_wins','W',false],
-  ['tba_losses','L',false],
-  ['tba_ties','Ties',false],
-  ['tba_rp','RPs',false]
-];
 
 var STAT_FIELDS = [
   ['epa','EPA',true],
@@ -298,46 +247,38 @@ var STAT_FIELDS = [
 
 var teams={}, criteria=[], noteTags=['Strategy','Autos','Concerns'];
 var sortCol='__total__', sortAsc=false;
-var pendingCSV=null, pendingStatData=null, pendingTBAData=null;
+var pendingCSV=null, pendingStatData=null;
 var rlViews=[{id:'rl_default',name:'Overall',criteriaIds:[]}];
 var activeRLView='rl_default';
 var darkMode=true;
 var teamPhotos={};
+var carouselIndex=0, carouselPhotos=[];
 var detailTeamNum=null;
 var detailCarouselIndex=0, detailCarouselPhotos=[];
 
-// ── Theme ──
 function toggleTheme(){
   darkMode=!darkMode;
   document.body.setAttribute('data-theme',darkMode?'':'light');
   document.getElementById('theme-btn').textContent=darkMode?'Light mode':'Dark mode';
   syncMobileThemeBtn();
 }
-
 function setStatus(msg,type){
   type=type||'info';
   var el=document.getElementById('status-bar');
   el.textContent=msg;
   el.style.color=type==='error'?'var(--danger-text)':type==='success'?'var(--success)':'var(--text2)';
 }
-
 function parseTeamNum(val){
   if(val==null) return null;
   var n=parseInt(String(val).trim().toLowerCase().replace('frc',''));
   return isNaN(n)?null:n;
 }
-
 function mkToggleRow(id,label,def,importCls,rankCls){
   return '<tr><td>'+label+'</td><td><input type="checkbox" checked data-id="'+id+'" class="'+importCls+'" style="width:14px;height:14px;cursor:pointer"></td><td><label class="toggle-switch" id="tw-'+importCls+'-'+id+'"><input type="checkbox" '+(def?'checked':'')+' data-id="'+id+'" class="'+rankCls+'"><span class="toggle-slider"></span></label></td></tr>';
 }
-
 function bulkSet(sel,v){
-  document.querySelectorAll(sel).forEach(function(i){
-    i.checked=v;
-    i.dispatchEvent(new Event('change'));
-  });
+  document.querySelectorAll(sel).forEach(function(i){i.checked=v;i.dispatchEvent(new Event('change'));});
 }
-
 function syncToggleDisable(importCls,prefix){
   document.querySelectorAll('.'+importCls).forEach(function(cb){
     cb.addEventListener('change',function(){
@@ -358,8 +299,7 @@ function loadPhotoZip(evt){
       var fname=relPath.split('/').pop();
       var m=fname.match(/^frc(\d+)_?(\d*)\.(?:jpg|jpeg|png|gif|webp)$/i);
       if(!m) return;
-      var num=parseInt(m[1]);
-      var photoNum=parseInt(m[2])||1;
+      var num=parseInt(m[1]), photoNum=parseInt(m[2])||1;
       promises.push(entry.async('blob').then(function(blob){
         var url=URL.createObjectURL(blob);
         if(!teamPhotos[num]) teamPhotos[num]=[];
@@ -371,56 +311,10 @@ function loadPhotoZip(evt){
     Object.keys(teamPhotos).forEach(function(num){
       teamPhotos[num].sort(function(a,b){return a.photoNum-b.photoNum;});
     });
-    var count=Object.keys(teamPhotos).length;
-    setStatus('Loaded photos for '+count+' teams','success');
+    setStatus('Loaded photos for '+Object.keys(teamPhotos).length+' teams','success');
     renderTable();
   }).catch(function(e){setStatus('Photo load failed: '+e.message,'error');});
 }
-
-function openPhotoModal(num){
-  var t=teams[num]; if(!t) return;
-  document.getElementById('photo-team-num').textContent=num;
-  document.getElementById('photo-team-name').textContent=t.name;
-  carouselPhotos=teamPhotos[num]||[];
-  carouselIndex=0;
-  renderCarousel();
-  document.getElementById('photo-modal').style.display='flex';
-}
-function closePhotoModal(){document.getElementById('photo-modal').style.display='none';}
-
-function renderCarousel(){
-  var imgs=document.getElementById('carousel-images');
-  var dots=document.getElementById('carousel-dots');
-  var counter=document.getElementById('photo-counter');
-  var placeholder=document.getElementById('photo-placeholder');
-  var prevBtn=document.querySelector('.carousel-prev');
-  var nextBtn=document.querySelector('.carousel-next');
-  if(!carouselPhotos.length){
-    imgs.innerHTML='';
-    placeholder.style.display='block';
-    dots.innerHTML=''; counter.textContent='';
-    prevBtn.style.display='none'; nextBtn.style.display='none';
-    return;
-  }
-  placeholder.style.display='none';
-  prevBtn.style.display=carouselPhotos.length>1?'flex':'none';
-  nextBtn.style.display=carouselPhotos.length>1?'flex':'none';
-  imgs.innerHTML=carouselPhotos.map(function(p,i){
-    return '<img src="'+p.url+'" class="'+(i===carouselIndex?'active':'')+'" alt="Photo '+(i+1)+'">';
-  }).join('');
-  dots.innerHTML=carouselPhotos.length>1?carouselPhotos.map(function(p,i){
-    return '<button class="carousel-dot '+(i===carouselIndex?'active':'')+'" onclick="goToSlide('+i+')"></button>';
-  }).join(''):'';
-  counter.textContent=carouselPhotos.length>1?(carouselIndex+1)+' / '+carouselPhotos.length:'';
-}
-function carouselStep(dir){
-  if(!carouselPhotos.length) return;
-  carouselIndex=(carouselIndex+dir+carouselPhotos.length)%carouselPhotos.length;
-  renderCarousel();
-}
-function goToSlide(i){carouselIndex=i;renderCarousel();}
-
-var carouselIndex=0, carouselPhotos=[];
 
 // ── Team Detail Modal ──
 function openDetailModal(num){
@@ -429,45 +323,32 @@ function openDetailModal(num){
   document.getElementById('detail-num').textContent=num;
   document.getElementById('detail-name').textContent=t.name;
   document.getElementById('detail-dnp').checked=t.dnp;
-
-  // Photos
   detailCarouselPhotos=teamPhotos[num]||[];
   detailCarouselIndex=0;
   var photoWrap=document.getElementById('detail-photo-wrap');
   photoWrap.style.display=detailCarouselPhotos.length>0?'block':'none';
   if(detailCarouselPhotos.length>0) renderDetailCarousel();
-
-  // Stats
-  var statsEl=document.getElementById('detail-stats');
-  var statItems='';
-  // Total
   var defView=rlViews.find(function(v){return v.id==='rl_default';})||rlViews[0];
-  statItems+='<div style="background:var(--info-bg);border:0.5px solid var(--info-border);border-radius:8px;padding:8px 10px"><div style="font-size:10px;color:var(--info-text);margin-bottom:2px">Weighted Total</div><div style="font-size:18px;font-weight:700;color:var(--info-text)">'+calcTotalForView(t,defView)+'</div></div>';
+  var statItems='<div style="background:var(--info-bg);border:0.5px solid var(--info-border);border-radius:8px;padding:8px 10px"><div style="font-size:10px;color:var(--info-text);margin-bottom:2px">Weighted Total</div><div style="font-size:18px;font-weight:700;color:var(--info-text)">'+calcTotalForView(t,defView)+'</div></div>';
   criteria.forEach(function(c){
     var v=getScore(t,c);
     if(v===''||v==null) return;
     statItems+='<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:8px 10px"><div style="font-size:10px;color:var(--text3);margin-bottom:2px">'+c.name+(c.weight>0?' <span style="color:var(--info-text);font-size:9px">w:'+c.weight+'</span>':'')+'</div><div style="font-size:16px;font-weight:600;color:var(--text)">'+v+'</div></div>';
   });
-  statsEl.innerHTML=statItems||'<p style="font-size:12px;color:var(--text3)">No data yet</p>';
-
-  // Notes
-  var notesEl=document.getElementById('detail-notes');
+  document.getElementById('detail-stats').innerHTML=statItems||'<p style="font-size:12px;color:var(--text3)">No data yet</p>';
   var hasNotes=noteTags.some(function(tag){return t.notes[tag]&&t.notes[tag].trim();});
   if(hasNotes){
-    notesEl.innerHTML=noteTags.filter(function(tag){return t.notes[tag]&&t.notes[tag].trim();}).map(function(tag){
+    document.getElementById('detail-notes').innerHTML=noteTags.filter(function(tag){return t.notes[tag]&&t.notes[tag].trim();}).map(function(tag){
       return '<div style="margin-bottom:8px"><span style="font-size:10px;font-weight:600;color:var(--text3)">'+tag+'</span><p style="font-size:13px;color:var(--text);margin-top:3px;white-space:pre-wrap">'+t.notes[tag]+'</p></div>';
     }).join('');
     document.getElementById('detail-notes-wrap').style.display='block';
   } else {
     document.getElementById('detail-notes-wrap').style.display='none';
   }
-
   document.getElementById('detail-modal').style.display='flex';
 }
 function closeDetailModal(){document.getElementById('detail-modal').style.display='none';detailTeamNum=null;}
-function setDetailDNP(val){
-  if(detailTeamNum&&teams[detailTeamNum]){teams[detailTeamNum].dnp=val;renderAll();}
-}
+function setDetailDNP(val){if(detailTeamNum&&teams[detailTeamNum]){teams[detailTeamNum].dnp=val;renderAll();}}
 function renderDetailCarousel(){
   var imgs=document.getElementById('detail-carousel-images');
   var dots=document.getElementById('detail-carousel-dots');
@@ -492,6 +373,8 @@ function detailCarouselStep(dir){
   renderDetailCarousel();
 }
 function goToDetailSlide(i){detailCarouselIndex=i;renderDetailCarousel();}
+
+// ── Statbotics ──
 function fetchStatbotics(){
   var code=document.getElementById('event-code').value.trim().toLowerCase();
   if(!code){setStatus('Enter an event code','error');return;}
@@ -513,7 +396,6 @@ function fetchStatbotics(){
   .catch(function(e){setStatus('Fetch failed: '+e.message,'error');})
   .finally(function(){btn.innerHTML='Fetch from Statbotics';btn.disabled=false;});
 }
-
 function openStatModal(){
   document.getElementById('stat-col-checkboxes').innerHTML=STAT_FIELDS.map(function(f){return mkToggleRow(f[0],f[1],f[2],'stat-import','stat-rank');}).join('');
   syncToggleDisable('stat-import','stat-import');
@@ -555,73 +437,7 @@ function confirmStatModal(){
   pendingStatData=null;
 }
 
-// ── TBA ──
-function fetchTBA(){
-  var code=document.getElementById('event-code').value.trim().toLowerCase();
-  if(!code){setStatus('Enter an event code','error');return;}
-  if(TBA_KEY==='__TBA_KEY_PLACEHOLDER__'){setStatus('TBA key not injected — add vercel.json and redeploy','error');return;}
-  var btn=document.getElementById('fetch-tba-btn');
-  btn.innerHTML='<span class="spinner"></span>Fetching...';
-  btn.disabled=true;
-  setStatus('Fetching from TBA...');
-  var h={'X-TBA-Auth-Key':TBA_KEY};
-  var base='https://www.thebluealliance.com/api/v3';
-  Promise.all([
-    fetch(base+'/event/'+code+'/teams/simple',{headers:h}).then(function(r){if(!r.ok)throw new Error('TBA '+r.status+' — check event code');return r.json();}),
-    fetch(base+'/event/'+code+'/rankings',{headers:h}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
-    fetch(base+'/event/'+code+'/oprs',{headers:h}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};})
-  ])
-  .then(function(results){
-    var tbaTeams=results[0], tbaRank=results[1], tbaOpr=results[2];
-    var rankMap={};
-    (tbaRank.rankings||[]).forEach(function(r){
-      rankMap[r.team_key]={rank:r.rank,wins:r.record?r.record.wins:'',losses:r.record?r.record.losses:'',ties:r.record?r.record.ties:'',rp:r.extra_stats?r.extra_stats[0]:''};
-    });
-    var oprMap=tbaOpr.oprs||{}, dprMap=tbaOpr.dprs||{}, ccwmMap=tbaOpr.ccwms||{};
-    pendingTBAData={tbaTeams:tbaTeams,rankMap:rankMap,oprMap:oprMap,dprMap:dprMap,ccwmMap:ccwmMap};
-    openTBAModal();
-  })
-  .catch(function(e){setStatus('TBA fetch failed: '+e.message,'error');})
-  .finally(function(){btn.innerHTML='Fetch from TBA';btn.disabled=false;});
-}
-
-function openTBAModal(){
-  document.getElementById('tba-col-checkboxes').innerHTML=TBA_FIELDS.map(function(f){return mkToggleRow(f[0],f[1],f[2],'tba-import','tba-rank');}).join('');
-  syncToggleDisable('tba-import','tba-import');
-  document.getElementById('tba-col-modal').style.display='flex';
-}
-function cancelTBAModal(){document.getElementById('tba-col-modal').style.display='none';pendingTBAData=null;}
-function confirmTBAModal(){
-  document.getElementById('tba-col-modal').style.display='none';
-  if(!pendingTBAData) return;
-  var d=pendingTBAData;
-  var importIds=new Set(Array.from(document.querySelectorAll('.tba-import:checked')).map(function(i){return i.dataset.id;}));
-  var rankIds=new Set(Array.from(document.querySelectorAll('.tba-rank:checked')).map(function(i){return i.dataset.id;}));
-  TBA_FIELDS.forEach(function(f){
-    if(!importIds.has(f[0])) return;
-    if(!criteria.find(function(c){return c.id===f[0];}))
-      criteria.push({id:f[0],name:f[1],weight:rankIds.has(f[0])?1:0,source:'tba',editable:false});
-  });
-  d.tbaTeams.forEach(function(t){
-    var num=t.team_number, key=t.key;
-    if(!teams[num]) teams[num]={num:num,name:t.nickname||key,notes:{},scores:{},dnp:false,statbotics:{}};
-    else teams[num].name=t.nickname||teams[num].name;
-    var r=d.rankMap[key]||{};
-    teams[num].tba={
-      tba_rank:   r.rank!=null?r.rank:'',
-      tba_opr:    d.oprMap[key]!=null?+d.oprMap[key].toFixed(1):'',
-      tba_dpr:    d.dprMap[key]!=null?+d.dprMap[key].toFixed(1):'',
-      tba_ccwm:   d.ccwmMap[key]!=null?+d.ccwmMap[key].toFixed(1):'',
-      tba_wins:   r.wins!=null?r.wins:'',
-      tba_losses: r.losses!=null?r.losses:'',
-      tba_ties:   r.ties!=null?r.ties:'',
-      tba_rp:     r.rp!=null?r.rp:''
-    };
-  });
-  renderAll();
-  setStatus('Loaded '+d.tbaTeams.length+' teams from TBA','success');
-  pendingTBAData=null;
-}
+// ── CSV ──
 function loadCSV(evt,type){
   var file=evt.target.files[0]; if(!file) return; evt.target.value='';
   Papa.parse(file,{header:true,dynamicTyping:true,skipEmptyLines:true,complete:function(res){
@@ -662,7 +478,7 @@ function confirmColModal(){
   });
   Object.keys(grouped).forEach(function(num){
     var n=+num, rowArr=grouped[num];
-    if(!teams[n]) teams[n]={num:n,name:'Team '+n,notes:{},scores:{},dnp:false,tba:{},statbotics:{}};
+    if(!teams[n]) teams[n]={num:n,name:'Team '+n,notes:{},scores:{},dnp:false,statbotics:{}};
     checked.forEach(function(col){
       var vals=rowArr.map(function(r){return typeof r[col]==='number'?r[col]:parseFloat(r[col]);}).filter(function(v){return !isNaN(v);});
       if(vals.length) teams[n].scores[type+'_'+col]=+(vals.reduce(function(a,b){return a+b;},0)/vals.length).toFixed(2);
@@ -683,7 +499,6 @@ function addTeamManual(){
 
 // ── Scoring ──
 function getScore(t,c){
-  if(c.source==='tba') return (t.tba&&t.tba[c.id]!=null)?t.tba[c.id]:'';
   if(c.source==='statbotics') return t.statbotics[c.id]!=null?t.statbotics[c.id]:'';
   return t.scores[c.id]!=null?t.scores[c.id]:'';
 }
@@ -732,7 +547,7 @@ function renderTable(){
   document.getElementById('tbody').innerHTML=sorted.map(function(t){
     var hasPhotos=teamPhotos[t.num]&&teamPhotos[t.num].length>0;
     return '<tr class="'+(t.dnp?'dnp-row':'')+'"><td>'
-      +'<span style="cursor:pointer;color:var(--info-text);font-weight:600" onclick="openPhotoModal('+t.num+')" title="View photos">'+t.num+(hasPhotos?' &#128247;':'')+'</span>'
+      +'<span style="cursor:pointer;color:var(--info-text);font-weight:600" onclick="openDetailModal('+t.num+')" title="View details">'+t.num+(hasPhotos?' &#128247;':'')+'</span>'
       +'</td><td style="white-space:nowrap">'+t.name+'</td>'
       +criteria.map(function(c){
         var v=getScore(t,c);
@@ -763,7 +578,7 @@ function renderRankings(){
   var rank=0;
   el.innerHTML=arr.map(function(t){
     if(!t.dnp) rank++;
-    return '<div class="rank-item '+(t.dnp?'dnp':'')+'" onclick="openDetailModal('+t.num+')" style="cursor:pointer" title="View details">'
+    return '<div class="rank-item '+(t.dnp?'dnp':'')+'" onclick="openDetailModal('+t.num+')" title="View details">'
       +'<span class="rank-num">'+(t.dnp?'—':rank)+'</span>'
       +'<span style="font-weight:600;font-size:13px">'+t.num+'</span>'
       +'<span style="font-size:11px;color:var(--text3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:3px">'+(t.name.length>13?t.name.slice(0,13)+'&#8230;':t.name)+'</span>'
@@ -859,7 +674,6 @@ function applyMobile(isMobile){
     {title:'Controls',open:true,html:'<div style="padding:10px"><div style="display:flex;flex-wrap:wrap;gap:7px;align-items:center">'
       +'<input type="text" id="event-code-m" placeholder="Event code" style="flex:1;min-width:130px">'
       +'<button class="primary" onclick="fetchStatMobile()">Fetch Statbotics</button>'
-      +'<button class="primary" onclick="fetchTBAMobile()">Fetch TBA</button>'
       +'<label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">Match CSV<input type="file" accept=".csv" style="display:none" onchange="loadCSV(event,\'match\')"></label>'
       +'<label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">Pit CSV<input type="file" accept=".csv" style="display:none" onchange="loadCSV(event,\'pit\')"></label>'
       +'<label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">&#128247; Photos<input type="file" accept=".zip" style="display:none" onchange="loadPhotoZip(event)"></label>'
@@ -889,7 +703,6 @@ function toggleSection(header){
 }
 function syncMobileThemeBtn(){var btn=document.getElementById('theme-btn-m');if(btn)btn.textContent=darkMode?'Light mode':'Dark mode';}
 function fetchStatMobile(){var m=document.getElementById('event-code-m');if(m)document.getElementById('event-code').value=m.value;fetchStatbotics();}
-function fetchTBAMobile(){var m=document.getElementById('event-code-m');if(m)document.getElementById('event-code').value=m.value;fetchTBA();}
 function addTagMobile(){var inp=document.getElementById('new-tag-m');if(!inp)return;var val=inp.value.trim();if(!val||noteTags.indexOf(val)>=0)return;noteTags.push(val);inp.value='';renderTagList();renderTable();}
 function renderMobile(){
   if(!window.matchMedia('(max-width:700px)').matches) return;
