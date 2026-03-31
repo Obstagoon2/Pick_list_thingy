@@ -101,10 +101,6 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
   .modal,.photo-modal{width:98vw;padding:14px}
 }
 </style>
-  <script>
-  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-</script>
-<script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body data-theme="">
 
@@ -132,14 +128,13 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
         <input type="text" id="event-code" placeholder="Event code (e.g. 2026mslr)" style="width:185px">
         <button class="primary" onclick="fetchStatbotics()" id="fetch-stat-btn">Fetch from Statbotics</button>
         <button class="primary" onclick="fetchTBA()" id="fetch-tba-btn">Fetch from TBA</button>
-
         <label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">Match CSV<input type="file" accept=".csv" style="display:none" onchange="loadCSV(event,'match')"></label>
         <label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">Pit CSV<input type="file" accept=".csv" style="display:none" onchange="loadCSV(event,'pit')"></label>
         <label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">&#128247; Photos<input type="file" accept=".zip" style="display:none" onchange="loadPhotoZip(event)"></label>
         <button onclick="openCriteriaModal()">Criteria</button>
         <button onclick="addTeamManual()">+ Team</button>
         <button onclick="exportCSV()" class="primary">Export</button>
-        <button onclick="toggleTheme()" id="theme-btn" style="padding:5px 10px;border-radius:20px">Light Mode</button>
+        <button onclick="toggleTheme()" id="theme-btn" style="padding:5px 10px;border-radius:20px">Light mode</button>
       </div>
       <div id="status-bar" class="status-bar"></div>
     </div>
@@ -149,7 +144,7 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
   </div>
 </div>
 
-<!-- Team Detail Modals -->
+<!-- Team Detail Modal -->
 <div id="detail-modal" style="display:none" class="modal-backdrop">
   <div class="modal" style="width:620px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
@@ -539,7 +534,7 @@ function confirmStatModal(){
   pendingStatData.details.forEach(function(s){
     if(!s) return;
     var num=s.team;
-    if(!teams[num]) teams[num]={num:num,name:s.team_name||'Team '+num,notes:{},scores:{},dnp:false,tba:{},statbotics:{}};
+    if(!teams[num]) teams[num]={num:num,name:s.team_name||'Team '+num,notes:{},scores:{},dnp:false,statbotics:{}};
     else if(s.team_name) teams[num].name=s.team_name;
     var b=(s.epa&&s.epa.breakdown)||{};
     teams[num].statbotics={
