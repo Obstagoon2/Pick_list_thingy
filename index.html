@@ -14,7 +14,7 @@
 body{font-family:system-ui,sans-serif;font-size:14px;color:var(--text);background:var(--bg2)}
 button{cursor:pointer;font-family:inherit;font-size:12px;padding:5px 11px;border:0.5px solid var(--border2);border-radius:6px;background:transparent;color:var(--text);transition:background .15s}
 button:hover{background:var(--bg3)}
-button.primary{background:var(--info-bg);color:var(--info-text);border-color:var(--info-border)}
+button.act{background:var(--info-bg);color:var(--info-text);border-color:var(--info-border)}
 button.danger{background:var(--danger-bg);color:var(--danger-text);border-color:var(--danger-border)}
 input[type=text],input[type=number],textarea{font-family:inherit;font-size:13px;padding:5px 8px;border:0.5px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);width:100%}
 textarea{resize:vertical;min-height:40px}
@@ -28,7 +28,7 @@ textarea{resize:vertical;min-height:40px}
 .rl-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .rl-header h3{margin:0}
 .rl-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
-.rl-tab{font-size:11px;padding:3px 8px;border-radius:12px;border:0.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer}
+.rl-tab{font-size:11px;padding:3px 8px;border-radius:12px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer}
 .rl-tab.active{background:var(--info-bg);color:var(--info-text);border-color:var(--info-border)}
 .rank-scroll{overflow-y:auto;max-height:360px}
 .rank-item{display:flex;align-items:center;gap:5px;padding:4px 7px;border-radius:6px;border:0.5px solid var(--border);margin-bottom:3px;background:var(--bg);cursor:pointer;transition:background .1s}
@@ -44,6 +44,7 @@ td{padding:5px 8px;border-bottom:0.5px solid var(--border);vertical-align:top;ba
 tr:last-child td{border-bottom:none}
 tr.dnp-row td{opacity:.4;background:var(--bg2)}
 .score-input{width:50px;text-align:center;padding:3px 4px}
+.text-input-cell{width:100px;padding:3px 4px;font-size:11px}
 .notes-fields{display:flex;flex-direction:column;gap:3px;min-width:180px}
 .note-row{display:flex;gap:5px;align-items:flex-start}
 .note-label{font-size:10px;color:var(--text2);min-width:54px;padding-top:5px;font-weight:500}
@@ -79,7 +80,14 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 .criteria-row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
 .rl-criteria-check label{display:flex;align-items:center;gap:6px;font-size:12px;padding:2px 0;cursor:pointer;color:var(--text)}
 .rl-view-row{padding:10px 12px;border:0.5px solid var(--border);border-radius:8px;margin-bottom:8px;background:var(--bg2)}
-.photo-modal{background:var(--bg);border:1px solid var(--border2);border-radius:14px;padding:20px;width:580px;max-width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+/* dropdown menu */
+.dd-wrap{position:relative;display:inline-block}
+.dd-menu{position:absolute;top:calc(100% + 4px);left:0;background:var(--bg);border:0.5px solid var(--border2);border-radius:8px;min-width:190px;box-shadow:0 6px 20px rgba(0,0,0,.4);z-index:300;overflow:hidden}
+.dd-menu button{display:block;width:100%;text-align:left;border:none;border-radius:0;padding:9px 14px;font-size:13px;border-bottom:0.5px solid var(--border)}
+.dd-menu button:last-child{border-bottom:none}
+.dd-menu button:hover{background:var(--bg2)}
+/* photo/detail modal */
+.photo-modal{background:var(--bg);border:1px solid var(--border2);border-radius:14px;padding:20px;width:620px;max-width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.5)}
 .photo-carousel{position:relative;width:100%;aspect-ratio:16/9;background:#111;border-radius:8px;overflow:hidden;margin-bottom:8px;display:flex;align-items:center;justify-content:center}
 .photo-carousel img{width:100%;height:100%;object-fit:contain;display:none;position:absolute;top:0;left:0}
 .photo-carousel img.active{display:block}
@@ -92,14 +100,17 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 .carousel-dot{width:8px;height:8px;border-radius:50%;background:var(--border2);cursor:pointer;border:none;padding:0;flex-shrink:0}
 .carousel-dot.active{background:var(--info-text)}
 .photo-counter{font-size:12px;color:var(--text3);text-align:center;margin-bottom:4px}
+/* export option rows */
+.export-row{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:0.5px solid var(--border);border-radius:7px;margin-bottom:6px}
+.export-row span{font-size:13px;color:var(--text)}
 @media(max-width:700px){
   .layout{flex-direction:column;padding:6px;gap:6px}
   .sidebar{width:100%;position:static;max-height:none;overflow-y:visible}
   .top-bar{gap:6px}
-  .top-bar input{width:100%!important;flex:1 1 140px}
   table{font-size:11px}
   th,td{padding:5px 5px}
   .modal,.photo-modal{width:98vw;padding:14px}
+  .dd-menu{min-width:160px}
 }
 </style>
 </head>
@@ -108,7 +119,7 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 <div class="layout">
   <div class="sidebar">
     <div class="card">
-      <div class="rl-header"><h3>Live Rankings</h3><button style="font-size:10px;padding:3px 7px" onclick="openRLModal()">+ View</button></div>
+      <div class="rl-header"><h3>Live Rankings</h3><button onclick="openRLModal()">+ View</button></div>
       <div class="rl-tabs" id="rl-tabs"></div>
       <div class="rank-scroll" id="rank-list"><p style="font-size:12px;color:var(--text3)">No teams yet</p></div>
     </div>
@@ -127,14 +138,31 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
     <div class="card">
       <div class="top-bar">
         <input type="text" id="event-code" placeholder="Event code (e.g. 2026mslr)" style="width:185px">
-        <button class="primary" onclick="fetchStatbotics()" id="fetch-stat-btn">Fetch from Statbotics</button>
-        <label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">Match CSV<input type="file" accept=".csv" style="display:none" onchange="loadCSV(event,'match')"></label>
-        <label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">Pit CSV<input type="file" accept=".csv" style="display:none" onchange="loadCSV(event,'pit')"></label>
-        <label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">&#128247; Photos<input type="file" accept=".zip" style="display:none" onchange="loadPhotoZip(event)"></label>
+        <button onclick="fetchStatbotics()" id="fetch-stat-btn">Fetch Statbotics</button>
+        <!-- Import dropdown -->
+        <div class="dd-wrap" id="import-wrap">
+          <button onclick="toggleDD('import-dd')">&#8595; Import</button>
+          <div class="dd-menu" id="import-dd" style="display:none">
+            <button onclick="closeDD();document.getElementById('match-file').click()">Match CSV</button>
+            <button onclick="closeDD();document.getElementById('pit-file').click()">Pit CSV</button>
+            <button onclick="closeDD();document.getElementById('photo-file').click()">&#128247; Photos (.zip)</button>
+            <button onclick="closeDD();document.getElementById('project-file').click()">&#128196; Open Project</button>
+          </div>
+        </div>
+        <!-- Export dropdown -->
+        <div class="dd-wrap" id="export-wrap">
+          <button onclick="toggleDD('export-dd')">&#8593; Export</button>
+          <div class="dd-menu" id="export-dd" style="display:none">
+            <button onclick="closeDD();openExportModal()">Export options...</button>
+          </div>
+        </div>
+        <input type="file" id="match-file" accept=".csv" style="display:none" onchange="loadCSV(event,'match')">
+        <input type="file" id="pit-file" accept=".csv" style="display:none" onchange="loadCSV(event,'pit')">
+        <input type="file" id="photo-file" accept=".zip" style="display:none" onchange="loadPhotoZip(event)">
+        <input type="file" id="project-file" accept=".zip" style="display:none" onchange="importProject(event)">
         <button onclick="openCriteriaModal()">Criteria</button>
         <button onclick="addTeamManual()">+ Team</button>
-        <button onclick="exportCSV()" class="primary">Export</button>
-        <button onclick="toggleTheme()" id="theme-btn" style="padding:5px 10px;border-radius:20px">Light mode</button>
+        <button onclick="toggleTheme()" id="theme-btn">Light mode</button>
       </div>
       <div id="status-bar" class="status-bar"></div>
     </div>
@@ -146,7 +174,7 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 
 <!-- Team Detail Modal -->
 <div id="detail-modal" style="display:none" class="modal-backdrop">
-  <div class="modal" style="width:620px;max-width:100%">
+  <div class="photo-modal">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
       <div><span id="detail-num" style="font-size:18px;font-weight:700;color:var(--info-text)"></span><span id="detail-name" style="font-size:14px;color:var(--text2);margin-left:10px"></span></div>
       <button onclick="closeDetailModal()" style="font-size:20px;padding:2px 8px;border:none;background:none;color:var(--text2);cursor:pointer">&#215;</button>
@@ -181,7 +209,7 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 <div id="criteria-modal" style="display:none" class="modal-backdrop">
   <div class="modal">
     <h2>Manage criteria & weights</h2>
-    <p class="modal-sub">Weight 0 = shown in table but excluded from total.</p>
+    <p class="modal-sub">Weight 0 = display only. Text columns are always display only.</p>
     <div id="criteria-list"></div>
     <button onclick="addCriteria()" style="margin-top:8px">+ Add manual criteria</button>
     <div class="modal-footer"><button onclick="closeCriteriaModal()">Done</button></div>
@@ -192,13 +220,13 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 <div id="col-modal" style="display:none" class="modal-backdrop">
   <div class="modal">
     <h2 id="col-modal-title">Select columns</h2>
-    <p class="modal-sub">Choose which columns to import and whether each counts toward the weighted total.</p>
+    <p class="modal-sub">Numeric columns can count toward rankings. Text columns are display only.</p>
     <div class="bulk-bar">
       <span>Import:</span><button onclick="bulkSet('.col-import',true)" style="font-size:11px;padding:3px 8px">All</button><button onclick="bulkSet('.col-import',false)" style="font-size:11px;padding:3px 8px">None</button>
       <span style="margin-left:4px">Count toward total:</span><button onclick="bulkSet('.col-rank',true)" style="font-size:11px;padding:3px 8px">All</button><button onclick="bulkSet('.col-rank',false)" style="font-size:11px;padding:3px 8px">None</button>
     </div>
-    <div class="col-scroll"><table class="col-table"><thead><tr><th>Column</th><th>Import</th><th>Count toward total</th></tr></thead><tbody id="col-checkboxes"></tbody></table></div>
-    <div class="modal-footer"><button onclick="cancelColModal()">Cancel</button><button class="primary" onclick="confirmColModal()">Import selected</button></div>
+    <div class="col-scroll"><table class="col-table"><thead><tr><th>Column</th><th>Type</th><th>Import</th><th>Count toward total</th></tr></thead><tbody id="col-checkboxes"></tbody></table></div>
+    <div class="modal-footer"><button onclick="cancelColModal()">Cancel</button><button class="act" onclick="confirmColModal()">Import selected</button></div>
   </div>
 </div>
 
@@ -212,7 +240,17 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
       <span style="margin-left:4px">Count toward total:</span><button onclick="bulkSet('.stat-rank',true)" style="font-size:11px;padding:3px 8px">All</button><button onclick="bulkSet('.stat-rank',false)" style="font-size:11px;padding:3px 8px">None</button>
     </div>
     <div class="col-scroll"><table class="col-table"><thead><tr><th>Field</th><th>Import</th><th>Count toward total</th></tr></thead><tbody id="stat-col-checkboxes"></tbody></table></div>
-    <div class="modal-footer"><button onclick="cancelStatModal()">Cancel</button><button class="primary" onclick="confirmStatModal()">Apply</button></div>
+    <div class="modal-footer"><button onclick="cancelStatModal()">Cancel</button><button class="act" onclick="confirmStatModal()">Apply</button></div>
+  </div>
+</div>
+
+<!-- Export Modal -->
+<div id="export-modal" style="display:none" class="modal-backdrop">
+  <div class="modal">
+    <h2>Export</h2>
+    <p class="modal-sub">Download your data in various formats.</p>
+    <div id="export-options"></div>
+    <div class="modal-footer"><button onclick="closeExportModal()">Close</button></div>
   </div>
 </div>
 
@@ -231,31 +269,19 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 <div id="mobile-layout" style="display:none;flex-direction:column;gap:6px;padding:6px"></div>
 
 <script>
-var ALWAYS_SKIP = new Set(['org_key','year','event_key','match_key','match_number','time','alliance','scouter','team_key','RedCard','YellowCard']);
+var ALWAYS_SKIP=new Set(['org_key','year','event_key','match_key','match_number','time','alliance','scouter','team_key','otherNotes','superNotes','RedCard','YellowCard','describeAuto','autoCodeTeleop','preferredStrategy','describepizzatoppings','doAutoCodeTeleop','StartPos','AutoMistake\uD83D\uDEA9','DidScoreMistake\uD83D\uDEA9','DidintakeMistake\uD83D\uDEA9']);
+var STAT_FIELDS=[['epa','EPA',true],['auto_epa','Auto EPA',true],['teleop_epa','Teleop EPA',true],['endgame_epa','Endgame EPA',true],['rank','Rank',false],['wins','W',false],['losses','L',false],['rps','RPs',false],['winrate','Win%',false]];
 
-var STAT_FIELDS = [
-  ['epa','EPA',true],
-  ['auto_epa','Auto EPA',true],
-  ['teleop_epa','Teleop EPA',true],
-  ['endgame_epa','Endgame EPA',true],
-  ['rank','Rank',false],
-  ['wins','W',false],
-  ['losses','L',false],
-  ['rps','RPs',false],
-  ['winrate','Win%',false]
-];
-
-var teams={}, criteria=[], noteTags=['Strategy','Autos','Concerns'];
-var sortCol='__total__', sortAsc=false;
-var pendingCSV=null, pendingStatData=null;
+var teams={},criteria=[],noteTags=['Strategy','Autos','Concerns'];
+var sortCol='__total__',sortAsc=false;
+var pendingCSV=null,pendingStatData=null;
 var rlViews=[{id:'rl_default',name:'Overall',criteriaIds:[]}];
 var activeRLView='rl_default';
 var darkMode=true;
 var teamPhotos={};
-var carouselIndex=0, carouselPhotos=[];
-var detailTeamNum=null;
-var detailCarouselIndex=0, detailCarouselPhotos=[];
+var detailTeamNum=null,detailCarouselIndex=0,detailCarouselPhotos=[];
 
+// ── Theme ──
 function toggleTheme(){
   darkMode=!darkMode;
   document.body.setAttribute('data-theme',darkMode?'':'light');
@@ -273,12 +299,29 @@ function parseTeamNum(val){
   var n=parseInt(String(val).trim().toLowerCase().replace('frc',''));
   return isNaN(n)?null:n;
 }
-function mkToggleRow(id,label,def,importCls,rankCls){
-  return '<tr><td>'+label+'</td><td><input type="checkbox" checked data-id="'+id+'" class="'+importCls+'" style="width:14px;height:14px;cursor:pointer"></td><td><label class="toggle-switch" id="tw-'+importCls+'-'+id+'"><input type="checkbox" '+(def?'checked':'')+' data-id="'+id+'" class="'+rankCls+'"><span class="toggle-slider"></span></label></td></tr>';
+
+// ── Dropdown menus ──
+function toggleDD(id){
+  var all=['import-dd','export-dd'];
+  all.forEach(function(x){
+    var el=document.getElementById(x);
+    if(el) el.style.display=(x===id&&el.style.display==='none')?'block':'none';
+  });
 }
-function bulkSet(sel,v){
-  document.querySelectorAll(sel).forEach(function(i){i.checked=v;i.dispatchEvent(new Event('change'));});
+function closeDD(){['import-dd','export-dd'].forEach(function(x){var el=document.getElementById(x);if(el)el.style.display='none';});}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.dd-wrap')) closeDD();
+});
+
+// ── Toggle helpers ──
+function mkToggleRow(id,label,def,importCls,rankCls,isText){
+  var disabledClass=isText?' disabled':'';
+  return '<tr><td>'+label+'</td>'
+    +(isText!==undefined?'<td style="font-size:10px;color:var(--text3)">'+(isText?'text':'num')+'</td>':'')
+    +'<td><input type="checkbox" checked data-id="'+id+'" class="'+importCls+'" style="width:14px;height:14px;cursor:pointer"></td>'
+    +'<td><label class="toggle-switch'+disabledClass+'" id="tw-'+importCls+'-'+id+'"><input type="checkbox" '+(def&&!isText?'checked':'')+' data-id="'+id+'" class="'+rankCls+'" '+(isText?'disabled':'')+' ><span class="toggle-slider"></span></label></td></tr>';
 }
+function bulkSet(sel,v){document.querySelectorAll(sel).forEach(function(i){i.checked=v;i.dispatchEvent(new Event('change'));});}
 function syncToggleDisable(importCls,prefix){
   document.querySelectorAll('.'+importCls).forEach(function(cb){
     cb.addEventListener('change',function(){
@@ -290,7 +333,7 @@ function syncToggleDisable(importCls,prefix){
 
 // ── Photos ──
 function loadPhotoZip(evt){
-  var file=evt.target.files[0]; if(!file) return; evt.target.value='';
+  var file=evt.target.files[0];if(!file)return;evt.target.value='';
   setStatus('Loading photos...');
   JSZip.loadAsync(file).then(function(zip){
     var promises=[];
@@ -299,18 +342,16 @@ function loadPhotoZip(evt){
       var fname=relPath.split('/').pop();
       var m=fname.match(/^frc(\d+)_?(\d*)\.(?:jpg|jpeg|png|gif|webp)$/i);
       if(!m) return;
-      var num=parseInt(m[1]), photoNum=parseInt(m[2])||1;
+      var num=parseInt(m[1]),photoNum=parseInt(m[2])||1;
       promises.push(entry.async('blob').then(function(blob){
         var url=URL.createObjectURL(blob);
         if(!teamPhotos[num]) teamPhotos[num]=[];
-        teamPhotos[num].push({url:url,photoNum:photoNum});
+        teamPhotos[num].push({url:url,photoNum:photoNum,blob:blob,fname:fname});
       }));
     });
     return Promise.all(promises);
   }).then(function(){
-    Object.keys(teamPhotos).forEach(function(num){
-      teamPhotos[num].sort(function(a,b){return a.photoNum-b.photoNum;});
-    });
+    Object.keys(teamPhotos).forEach(function(num){teamPhotos[num].sort(function(a,b){return a.photoNum-b.photoNum;});});
     setStatus('Loaded photos for '+Object.keys(teamPhotos).length+' teams','success');
     renderTable();
   }).catch(function(e){setStatus('Photo load failed: '+e.message,'error');});
@@ -318,24 +359,23 @@ function loadPhotoZip(evt){
 
 // ── Team Detail Modal ──
 function openDetailModal(num){
-  var t=teams[num]; if(!t) return;
+  var t=teams[num];if(!t)return;
   detailTeamNum=num;
   document.getElementById('detail-num').textContent=num;
   document.getElementById('detail-name').textContent=t.name;
   document.getElementById('detail-dnp').checked=t.dnp;
   detailCarouselPhotos=teamPhotos[num]||[];
   detailCarouselIndex=0;
-  var photoWrap=document.getElementById('detail-photo-wrap');
-  photoWrap.style.display=detailCarouselPhotos.length>0?'block':'none';
-  if(detailCarouselPhotos.length>0) renderDetailCarousel();
+  var pw=document.getElementById('detail-photo-wrap');
+  pw.style.display=detailCarouselPhotos.length>0?'block':'none';
+  if(detailCarouselPhotos.length) renderDetailCarousel();
   var defView=rlViews.find(function(v){return v.id==='rl_default';})||rlViews[0];
-  var statItems='<div style="background:var(--info-bg);border:0.5px solid var(--info-border);border-radius:8px;padding:8px 10px"><div style="font-size:10px;color:var(--info-text);margin-bottom:2px">Weighted Total</div><div style="font-size:18px;font-weight:700;color:var(--info-text)">'+calcTotalForView(t,defView)+'</div></div>';
+  var si='<div style="background:var(--info-bg);border:0.5px solid var(--info-border);border-radius:8px;padding:8px 10px"><div style="font-size:10px;color:var(--info-text);margin-bottom:2px">Weighted Total</div><div style="font-size:18px;font-weight:700;color:var(--info-text)">'+calcTotalForView(t,defView)+'</div></div>';
   criteria.forEach(function(c){
-    var v=getScore(t,c);
-    if(v===''||v==null) return;
-    statItems+='<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:8px 10px"><div style="font-size:10px;color:var(--text3);margin-bottom:2px">'+c.name+(c.weight>0?' <span style="color:var(--info-text);font-size:9px">w:'+c.weight+'</span>':'')+'</div><div style="font-size:16px;font-weight:600;color:var(--text)">'+v+'</div></div>';
+    var v=getScore(t,c);if(v===''||v==null) return;
+    si+='<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:8px 10px"><div style="font-size:10px;color:var(--text3);margin-bottom:2px">'+c.name+(c.weight>0?' <span style="color:var(--info-text);font-size:9px">w:'+c.weight+'</span>':'')+'</div><div style="font-size:'+(c.isText?'12':'16')+'px;font-weight:600;color:var(--text)">'+v+'</div></div>';
   });
-  document.getElementById('detail-stats').innerHTML=statItems||'<p style="font-size:12px;color:var(--text3)">No data yet</p>';
+  document.getElementById('detail-stats').innerHTML=si||'<p style="font-size:12px;color:var(--text3)">No data yet</p>';
   var hasNotes=noteTags.some(function(tag){return t.notes[tag]&&t.notes[tag].trim();});
   if(hasNotes){
     document.getElementById('detail-notes').innerHTML=noteTags.filter(function(tag){return t.notes[tag]&&t.notes[tag].trim();}).map(function(tag){
@@ -353,18 +393,14 @@ function renderDetailCarousel(){
   var imgs=document.getElementById('detail-carousel-images');
   var dots=document.getElementById('detail-carousel-dots');
   var counter=document.getElementById('detail-photo-counter');
-  var placeholder=document.getElementById('detail-photo-placeholder');
-  var prevBtn=document.querySelector('#detail-carousel .carousel-prev');
-  var nextBtn=document.querySelector('#detail-carousel .carousel-next');
-  placeholder.style.display='none';
-  prevBtn.style.display=detailCarouselPhotos.length>1?'flex':'none';
-  nextBtn.style.display=detailCarouselPhotos.length>1?'flex':'none';
-  imgs.innerHTML=detailCarouselPhotos.map(function(p,i){
-    return '<img src="'+p.url+'" class="'+(i===detailCarouselIndex?'active':'')+'" alt="Photo '+(i+1)+'">';
-  }).join('');
-  dots.innerHTML=detailCarouselPhotos.length>1?detailCarouselPhotos.map(function(p,i){
-    return '<button class="carousel-dot '+(i===detailCarouselIndex?'active':'')+'" onclick="goToDetailSlide('+i+')"></button>';
-  }).join(''):'';
+  var ph=document.getElementById('detail-photo-placeholder');
+  var prev=document.querySelector('#detail-carousel .carousel-prev');
+  var next=document.querySelector('#detail-carousel .carousel-next');
+  ph.style.display='none';
+  prev.style.display=detailCarouselPhotos.length>1?'flex':'none';
+  next.style.display=detailCarouselPhotos.length>1?'flex':'none';
+  imgs.innerHTML=detailCarouselPhotos.map(function(p,i){return '<img src="'+p.url+'" class="'+(i===detailCarouselIndex?'active':'')+'" alt="Photo '+(i+1)+'">';}).join('');
+  dots.innerHTML=detailCarouselPhotos.length>1?detailCarouselPhotos.map(function(p,i){return '<button class="carousel-dot '+(i===detailCarouselIndex?'active':'')+'" onclick="goToDetailSlide('+i+')"></button>';}).join(''):'';
   counter.textContent=detailCarouselPhotos.length>1?(detailCarouselIndex+1)+' / '+detailCarouselPhotos.length:'';
 }
 function detailCarouselStep(dir){
@@ -394,7 +430,7 @@ function fetchStatbotics(){
   })
   .then(function(details){pendingStatData={details:details};openStatModal();})
   .catch(function(e){setStatus('Fetch failed: '+e.message,'error');})
-  .finally(function(){btn.innerHTML='Fetch from Statbotics';btn.disabled=false;});
+  .finally(function(){btn.innerHTML='Fetch Statbotics';btn.disabled=false;});
 }
 function openStatModal(){
   document.getElementById('stat-col-checkboxes').innerHTML=STAT_FIELDS.map(function(f){return mkToggleRow(f[0],f[1],f[2],'stat-import','stat-rank');}).join('');
@@ -410,13 +446,13 @@ function confirmStatModal(){
   STAT_FIELDS.forEach(function(f){
     if(!importIds.has(f[0])) return;
     if(!criteria.find(function(c){return c.id===f[0];}))
-      criteria.push({id:f[0],name:f[1],weight:rankIds.has(f[0])?1:0,source:'statbotics',editable:false});
+      criteria.push({id:f[0],name:f[1],weight:rankIds.has(f[0])?1:0,source:'statbotics',editable:false,isText:false});
   });
   var loaded=0;
   pendingStatData.details.forEach(function(s){
     if(!s) return;
     var num=s.team;
-    if(!teams[num]) teams[num]={num:num,name:s.team_name||'Team '+num,notes:{},scores:{},dnp:false,statbotics:{}};
+    if(!teams[num]) teams[num]={num:num,name:s.team_name||'Team '+num,notes:{},scores:{},textScores:{},dnp:false,statbotics:{}};
     else if(s.team_name) teams[num].name=s.team_name;
     var b=(s.epa&&s.epa.breakdown)||{};
     teams[num].statbotics={
@@ -438,28 +474,32 @@ function confirmStatModal(){
 }
 
 // ── CSV ──
+function isNumericCol(rows,header){
+  var vals=rows.map(function(r){return r[header];}).filter(function(v){return v!=null&&v!=='';});
+  if(!vals.length) return false;
+  var nc=vals.filter(function(v){return typeof v==='number'||(!isNaN(parseFloat(v))&&isFinite(v));}).length;
+  return nc/vals.length>=0.5;
+}
 function loadCSV(evt,type){
-  var file=evt.target.files[0]; if(!file) return; evt.target.value='';
+  var file=evt.target.files[0];if(!file)return;evt.target.value='';
   Papa.parse(file,{header:true,dynamicTyping:true,skipEmptyLines:true,complete:function(res){
-    var rows=res.data, headers=res.meta.fields;
+    var rows=res.data,headers=res.meta.fields;
     var teamCol=headers.find(function(h){return /^team_key$/i.test(h);})||headers.find(function(h){return /team.*num|team.*key|^team$/i.test(h);});
     if(!teamCol){setStatus('Could not find team column','error');return;}
     var grouped={};
     rows.forEach(function(r){var n=parseTeamNum(r[teamCol]);if(n!=null){if(!grouped[n])grouped[n]=[];grouped[n].push(r);}});
-    var numCols=headers.filter(function(h){
-      if(h===teamCol||ALWAYS_SKIP.has(h)) return false;
-      var vals=rows.map(function(r){return r[h];}).filter(function(v){return v!=null&&v!=='';});
-      var nc=vals.filter(function(v){return typeof v==='number'||!isNaN(parseFloat(v));}).length;
-      return vals.length>0&&nc/vals.length>=0.5;
-    });
-    if(!numCols.length){setStatus('No numeric columns found','error');return;}
-    pendingCSV={type:type,numCols:numCols,grouped:grouped};
-    openColModal(type,numCols);
+    var usableCols=headers.filter(function(h){return h!==teamCol&&!ALWAYS_SKIP.has(h);});
+    if(!usableCols.length){setStatus('No usable columns found','error');return;}
+    pendingCSV={type:type,usableCols:usableCols,grouped:grouped,rows:rows};
+    openColModal(type,usableCols,rows);
   }});
 }
-function openColModal(type,cols){
+function openColModal(type,cols,rows){
   document.getElementById('col-modal-title').textContent='Select '+type+' scouting columns';
-  document.getElementById('col-checkboxes').innerHTML=cols.map(function(c){return mkToggleRow(c,c,true,'col-import','col-rank');}).join('');
+  document.getElementById('col-checkboxes').innerHTML=cols.map(function(c){
+    var isText=!isNumericCol(rows,c);
+    return mkToggleRow(c,c,!isText,'col-import','col-rank',isText);
+  }).join('');
   syncToggleDisable('col-import','col-import');
   document.getElementById('col-modal').style.display='flex';
 }
@@ -467,21 +507,31 @@ function cancelColModal(){document.getElementById('col-modal').style.display='no
 function confirmColModal(){
   document.getElementById('col-modal').style.display='none';
   if(!pendingCSV) return;
-  var type=pendingCSV.type, grouped=pendingCSV.grouped;
+  var type=pendingCSV.type,grouped=pendingCSV.grouped,rows=pendingCSV.rows;
   var checked=Array.from(document.querySelectorAll('.col-import:checked')).map(function(i){return i.dataset.id;});
   var rankCols=new Set(Array.from(document.querySelectorAll('.col-rank:checked')).map(function(i){return i.dataset.id;}));
   if(!checked.length){setStatus('No columns selected','error');pendingCSV=null;return;}
   checked.forEach(function(col){
     var id=type+'_'+col;
+    var isText=!isNumericCol(rows,col);
     if(!criteria.find(function(c){return c.id===id;}))
-      criteria.push({id:id,name:col,weight:rankCols.has(col)?1:0,source:type,editable:true});
+      criteria.push({id:id,name:col,weight:(rankCols.has(col)&&!isText)?1:0,source:type,editable:true,isText:isText});
   });
   Object.keys(grouped).forEach(function(num){
-    var n=+num, rowArr=grouped[num];
-    if(!teams[n]) teams[n]={num:n,name:'Team '+n,notes:{},scores:{},dnp:false,statbotics:{}};
+    var n=+num,rowArr=grouped[num];
+    if(!teams[n]) teams[n]={num:n,name:'Team '+n,notes:{},scores:{},textScores:{},dnp:false,statbotics:{}};
+    if(!teams[n].textScores) teams[n].textScores={};
     checked.forEach(function(col){
-      var vals=rowArr.map(function(r){return typeof r[col]==='number'?r[col]:parseFloat(r[col]);}).filter(function(v){return !isNaN(v);});
-      if(vals.length) teams[n].scores[type+'_'+col]=+(vals.reduce(function(a,b){return a+b;},0)/vals.length).toFixed(2);
+      var id=type+'_'+col;
+      var isText=!isNumericCol(rows,col);
+      if(isText){
+        // Use most recent row's value
+        var val=rowArr[rowArr.length-1][col];
+        if(val!=null&&val!=='') teams[n].textScores[id]=String(val);
+      } else {
+        var vals=rowArr.map(function(r){return typeof r[col]==='number'?r[col]:parseFloat(r[col]);}).filter(function(v){return !isNaN(v);});
+        if(vals.length) teams[n].scores[id]=+(vals.reduce(function(a,b){return a+b;},0)/vals.length).toFixed(2);
+      }
     });
   });
   renderAll();
@@ -490,23 +540,28 @@ function confirmColModal(){
 }
 
 function addTeamManual(){
-  var raw=prompt('Team number:'); if(!raw) return;
+  var raw=prompt('Team number:');if(!raw)return;
   var n=parseTeamNum(raw);
   if(!n){setStatus('Invalid team number','error');return;}
-  if(!teams[n]) teams[n]={num:n,name:'Team '+n,notes:{},scores:{},dnp:false,statbotics:{}};
+  if(!teams[n]) teams[n]={num:n,name:'Team '+n,notes:{},scores:{},textScores:{},dnp:false,statbotics:{}};
   renderAll();
 }
 
 // ── Scoring ──
 function getScore(t,c){
-  if(c.source==='statbotics') return t.statbotics[c.id]!=null?t.statbotics[c.id]:'';
-  return t.scores[c.id]!=null?t.scores[c.id]:'';
+  if(!t) return '';
+  if(c.isText){
+    var ts=t.textScores||{};
+    return ts[c.id]!=null?ts[c.id]:'';
+  }
+  if(c.source==='statbotics') return t.statbotics&&t.statbotics[c.id]!=null?t.statbotics[c.id]:'';
+  return t.scores&&t.scores[c.id]!=null?t.scores[c.id]:'';
 }
 function calcTotalForView(t,view){
   var use=view.criteriaIds.length===0?criteria:criteria.filter(function(c){return view.criteriaIds.indexOf(c.id)>=0;});
   var sum=0,wsum=0;
   use.forEach(function(c){
-    if(!(c.weight>0)) return;
+    if(c.isText||!(c.weight>0)) return;
     var v=parseFloat(getScore(t,c));
     if(!isNaN(v)){sum+=v*c.weight;wsum+=c.weight;}
   });
@@ -534,23 +589,22 @@ function getSorted(){
 
 // ── Render ──
 function renderAll(){renderTable();renderRankings();renderSummary();renderRLTabs();renderMobile();}
-
 function renderTable(){
   var sorted=getSorted();
   var si=function(col){return col===sortCol?(sortAsc?'&#8593;':'&#8595;'):'';};
-  document.getElementById('thead').innerHTML='<tr>'
-    +'<th onclick="setSort(\'num\')"># '+si('num')+'</th>'
-    +'<th onclick="setSort(\'name\')">Name '+si('name')+'</th>'
-    +criteria.map(function(c){return '<th onclick="setSort(\''+c.id+'\')" title="w:'+c.weight+'">'+c.name+' '+si(c.id)+'</th>';}).join('')
-    +'<th onclick="setSort(\'__total__\')">Total '+si('__total__')+'</th>'
-    +'<th>Notes</th><th>DNP</th></tr>';
+  document.getElementById('thead').innerHTML='<tr><th onclick="setSort(\'num\')"># '+si('num')+'</th><th onclick="setSort(\'name\')">Name '+si('name')+'</th>'
+    +criteria.map(function(c){return '<th onclick="setSort(\''+c.id+'\')" title="w:'+c.weight+(c.isText?' [text]':'')+'">'+c.name+' '+si(c.id)+'</th>';}).join('')
+    +'<th onclick="setSort(\'__total__\')">Total '+si('__total__')+'</th><th>Notes</th><th>DNP</th></tr>';
   document.getElementById('tbody').innerHTML=sorted.map(function(t){
-    var hasPhotos=teamPhotos[t.num]&&teamPhotos[t.num].length>0;
-    return '<tr class="'+(t.dnp?'dnp-row':'')+'"><td>'
-      +'<span style="cursor:pointer;color:var(--info-text);font-weight:600" onclick="openDetailModal('+t.num+')" title="View details">'+t.num+(hasPhotos?' &#128247;':'')+'</span>'
-      +'</td><td style="white-space:nowrap">'+t.name+'</td>'
+    var hp=teamPhotos[t.num]&&teamPhotos[t.num].length>0;
+    return '<tr class="'+(t.dnp?'dnp-row':'')+'"><td><span style="cursor:pointer;color:var(--info-text);font-weight:600" onclick="openDetailModal('+t.num+')" title="View details">'+t.num+(hp?' &#128247;':'')+'</span></td>'
+      +'<td style="white-space:nowrap">'+t.name+'</td>'
       +criteria.map(function(c){
         var v=getScore(t,c);
+        if(c.isText){
+          if(!c.editable) return '<td style="font-size:11px;color:var(--text2)">'+(v||'—')+'</td>';
+          return '<td><input type="text" class="text-input-cell" value="'+(v||'')+'" placeholder="—" onchange="setTextScore('+t.num+',\''+c.id+'\',this.value)"></td>';
+        }
         if(!c.editable||c.source==='statbotics') return '<td style="text-align:center">'+(v!==''&&v!=null?v:'—')+'</td>';
         return '<td><input type="number" class="score-input" value="'+(v!==''?v:'')+'" placeholder="—" min="0" max="200" step="0.1" onchange="setScore('+t.num+',\''+c.id+'\',this.value)"></td>';
       }).join('')
@@ -561,13 +615,11 @@ function renderTable(){
       +'<td style="text-align:center;vertical-align:middle"><input type="checkbox" '+(t.dnp?'checked':'')+' onchange="toggleDNP('+t.num+',this.checked)"></td></tr>';
   }).join('');
 }
-
 function renderRLTabs(){
   document.getElementById('rl-tabs').innerHTML=rlViews.map(function(v){
     return '<button class="rl-tab '+(v.id===activeRLView?'active':'')+'" onclick="setRLView(\''+v.id+'\')">'+v.name+'</button>';
   }).join('');
 }
-
 function renderRankings(){
   var view=rlViews.find(function(v){return v.id===activeRLView;})||rlViews[0];
   var arr=Object.values(teams);
@@ -578,16 +630,14 @@ function renderRankings(){
   var rank=0;
   el.innerHTML=arr.map(function(t){
     if(!t.dnp) rank++;
-    return '<div class="rank-item '+(t.dnp?'dnp':'')+'" onclick="openDetailModal('+t.num+')" title="View details">'
+    return '<div class="rank-item '+(t.dnp?'dnp':'')+'" onclick="openDetailModal('+t.num+')">'
       +'<span class="rank-num">'+(t.dnp?'—':rank)+'</span>'
       +'<span style="font-weight:600;font-size:13px">'+t.num+'</span>'
       +'<span style="font-size:11px;color:var(--text3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:3px">'+(t.name.length>13?t.name.slice(0,13)+'&#8230;':t.name)+'</span>'
       +'<span class="rank-score">'+t.__rl__+'</span>'
-      +(teamPhotos[t.num]&&teamPhotos[t.num].length?' <span style="font-size:10px">&#128247;</span>':'')
-      +'</div>';
+      +(teamPhotos[t.num]&&teamPhotos[t.num].length?' <span style="font-size:10px">&#128247;</span>':'')+'</div>';
   }).join('');
 }
-
 function renderSummary(){
   var arr=Object.values(teams),dnp=arr.filter(function(t){return t.dnp;}).length;
   document.getElementById('summary').innerHTML='Teams: '+arr.length+'<br>Ranked: '+(arr.length-dnp)+'<br>DNP: '+dnp+'<br>Criteria: '+criteria.length+'<br>Views: '+rlViews.length;
@@ -596,6 +646,7 @@ function renderSummary(){
 function setRLView(id){activeRLView=id;renderRLTabs();renderRankings();}
 function setSort(col){if(sortCol===col)sortAsc=!sortAsc;else{sortCol=col;sortAsc=false;}renderTable();renderRankings();}
 function setScore(num,id,val){if(!teams[num])return;teams[num].scores[id]=val===''?'':+parseFloat(val).toFixed(2);renderRankings();renderSummary();}
+function setTextScore(num,id,val){if(!teams[num])return;if(!teams[num].textScores)teams[num].textScores={};teams[num].textScores[id]=val;}
 function setNote(num,tag,val){if(teams[num])teams[num].notes[tag]=val;}
 function toggleDNP(num,val){if(teams[num]){teams[num].dnp=val;renderAll();}}
 
@@ -608,9 +659,9 @@ function renderRLViewsList(){
       +'<input type="text" value="'+v.name+'" style="width:130px;font-size:13px" onchange="rlViews['+vi+'].name=this.value;renderRLTabs()">'
       +(vi>0?'<button class="danger" style="font-size:11px;padding:2px 7px" onclick="removeRLView('+vi+')">Remove</button>':'<span style="font-size:10px;color:var(--text3)">(uses all criteria)</span>')
       +'</div>'+(vi===0?'':'<div class="rl-criteria-check">'
-      +(criteria.length?criteria.map(function(c){
+      +(criteria.length?criteria.filter(function(c){return !c.isText;}).map(function(c){
         return '<label><input type="checkbox" '+(v.criteriaIds.indexOf(c.id)>=0?'checked':'')+' onchange="toggleRLCriteria('+vi+',\''+c.id+'\',this.checked)"> '+c.name+' <span style="font-size:10px;color:var(--text3)">('+c.source+')</span></label>';
-      }).join(''):'<p style="font-size:12px;color:var(--text3)">No criteria loaded yet.</p>')
+      }).join(''):'<p style="font-size:12px;color:var(--text3)">No numeric criteria loaded yet.</p>')
       +'</div>')+'</div>';
   }).join('');
 }
@@ -624,9 +675,7 @@ function toggleRLCriteria(vi,id,checked){
 
 // ── Tags ──
 function renderTagList(){
-  document.getElementById('tag-list').innerHTML=noteTags.map(function(t,i){
-    return '<span class="tag-chip">'+t+'<button onclick="removeTag('+i+')">&#215;</button></span>';
-  }).join('');
+  document.getElementById('tag-list').innerHTML=noteTags.map(function(t,i){return '<span class="tag-chip">'+t+'<button onclick="removeTag('+i+')">&#215;</button></span>';}).join('');
 }
 function addTag(){
   var inp=document.getElementById('new-tag'),val=inp.value.trim();
@@ -640,21 +689,165 @@ function openCriteriaModal(){renderCriteriaModal();document.getElementById('crit
 function closeCriteriaModal(){document.getElementById('criteria-modal').style.display='none';renderAll();}
 function renderCriteriaModal(){
   document.getElementById('criteria-list').innerHTML=criteria.map(function(c,i){
-    return '<div class="criteria-row"><input type="text" style="flex:1" value="'+c.name+'" onchange="criteria['+i+'].name=this.value"><input type="number" style="width:46px;text-align:center" value="'+c.weight+'" min="0" max="10" step="0.1" onchange="criteria['+i+'].weight=+this.value" title="Weight"><span class="badge-src">'+(c.source||'manual')+'</span><button class="danger" onclick="removeCriteria('+i+')">&#215;</button></div>';
+    return '<div class="criteria-row">'
+      +'<input type="text" style="flex:1" value="'+c.name+'" onchange="criteria['+i+'].name=this.value">'
+      +(c.isText
+        ?'<span class="badge-src">text</span>'
+        :'<input type="number" style="width:46px;text-align:center" value="'+c.weight+'" min="0" max="10" step="0.1" onchange="criteria['+i+'].weight=+this.value" title="Weight">')
+      +'<span class="badge-src">'+(c.source||'manual')+'</span>'
+      +'<button class="danger" onclick="removeCriteria('+i+')">&#215;</button></div>';
   }).join('')||'<p style="font-size:12px;color:var(--text3)">No criteria yet.</p>';
 }
-function addCriteria(){criteria.push({id:'manual_'+Date.now(),name:'New Criteria',weight:1,source:'manual',editable:true});renderCriteriaModal();}
+function addCriteria(){criteria.push({id:'manual_'+Date.now(),name:'New Criteria',weight:1,source:'manual',editable:true,isText:false});renderCriteriaModal();}
 function removeCriteria(i){criteria.splice(i,1);renderCriteriaModal();}
 
 // ── Export ──
-function exportCSV(){
+function openExportModal(){
+  var opts='';
+  // Full project zip
+  opts+='<div class="export-row"><span>&#128196; Full project (.zip) — everything</span><button class="act" onclick="exportProject()">Download</button></div>';
+  // Ranking CSVs
+  rlViews.forEach(function(v){
+    opts+='<div class="export-row"><span>&#128202; Rankings: '+v.name+'</span><button onclick="exportRankingCSV(\''+v.id+'\')">Download CSV</button></div>';
+  });
+  // All data CSV
+  opts+='<div class="export-row"><span>&#128202; All team data (.csv)</span><button onclick="exportAllCSV()">Download CSV</button></div>';
+  document.getElementById('export-options').innerHTML=opts;
+  document.getElementById('export-modal').style.display='flex';
+}
+function closeExportModal(){document.getElementById('export-modal').style.display='none';}
+
+function exportAllCSV(){
   var sorted=getSorted();
   var headers=['Team','Name'].concat(criteria.map(function(c){return c.name;})).concat(['Weighted Total']).concat(noteTags).concat(['DNP']);
   var rows=sorted.map(function(t){
     return [t.num,t.name].concat(criteria.map(function(c){return getScore(t,c);})).concat([t.__total__]).concat(noteTags.map(function(tag){return t.notes[tag]||'';})).concat([t.dnp?'Y':'N']);
   });
   var csv=Papa.unparse({fields:headers,data:rows});
-  var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='picklist.csv';a.click();
+  dlText(csv,'picklist_all.csv','text/csv');
+}
+
+function exportRankingCSV(viewId){
+  var view=rlViews.find(function(v){return v.id===viewId;})||rlViews[0];
+  var arr=Object.values(teams);
+  arr.forEach(function(t){t.__rl__=calcTotalForView(t,view);});
+  arr.sort(function(a,b){if(a.dnp!==b.dnp)return a.dnp?1:-1;return b.__rl__-a.__rl__;});
+  var rank=0;
+  var headers=['Rank','Team','Name','Score','DNP'];
+  var rows=arr.map(function(t){if(!t.dnp)rank++;return [t.dnp?'DNP':rank,t.num,t.name,t.__rl__,t.dnp?'Y':'N'];});
+  var csv=Papa.unparse({fields:headers,data:rows});
+  dlText(csv,'ranking_'+view.name.replace(/\s+/g,'_')+'.csv','text/csv');
+}
+
+function exportProject(){
+  setStatus('Building project zip...','info');
+  var zip=new JSZip();
+  // State JSON
+  var state={
+    teams:{},
+    criteria:criteria,
+    noteTags:noteTags,
+    rlViews:rlViews,
+    activeRLView:activeRLView,
+    sortCol:sortCol,
+    sortAsc:sortAsc,
+    darkMode:darkMode
+  };
+  // Strip blob URLs from teams, save scores/notes/statbotics/etc
+  Object.values(teams).forEach(function(t){
+    state.teams[t.num]={num:t.num,name:t.name,notes:t.notes,scores:t.scores,textScores:t.textScores||{},dnp:t.dnp,statbotics:t.statbotics||{}};
+  });
+  zip.file('project.json',JSON.stringify(state,null,2));
+  // Photos
+  var photoZip=zip.folder('photos');
+  var photoPromises=[];
+  Object.keys(teamPhotos).forEach(function(num){
+    teamPhotos[num].forEach(function(p){
+      if(p.blob){
+        photoPromises.push(photoZip.file(p.fname,p.blob));
+      }
+    });
+  });
+  // Rankings CSVs
+  var csvZip=zip.folder('rankings');
+  rlViews.forEach(function(v){
+    var arr=Object.values(teams);
+    arr.forEach(function(t){t.__rl__=calcTotalForView(t,v);});
+    arr.sort(function(a,b){if(a.dnp!==b.dnp)return a.dnp?1:-1;return b.__rl__-a.__rl__;});
+    var rank=0;
+    var headers=['Rank','Team','Name','Score','DNP'];
+    var rows=arr.map(function(t){if(!t.dnp)rank++;return [t.dnp?'DNP':rank,t.num,t.name,t.__rl__,t.dnp?'Y':'N'];});
+    csvZip.file(v.name.replace(/\s+/g,'_')+'.csv',Papa.unparse({fields:headers,data:rows}));
+  });
+  // All data CSV
+  var sorted=getSorted();
+  var allHeaders=['Team','Name'].concat(criteria.map(function(c){return c.name;})).concat(['Weighted Total']).concat(noteTags).concat(['DNP']);
+  var allRows=sorted.map(function(t){
+    return [t.num,t.name].concat(criteria.map(function(c){return getScore(t,c);})).concat([t.__total__]).concat(noteTags.map(function(tag){return t.notes[tag]||'';})).concat([t.dnp?'Y':'N']);
+  });
+  zip.file('all_data.csv',Papa.unparse({fields:allHeaders,data:allRows}));
+
+  zip.generateAsync({type:'blob'}).then(function(blob){
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');a.href=url;a.download='frc_picklist_project.zip';a.click();
+    URL.revokeObjectURL(url);
+    setStatus('Project exported','success');
+  });
+}
+
+function dlText(content,filename,mime){
+  var a=document.createElement('a');
+  a.href='data:'+mime+';charset=utf-8,'+encodeURIComponent(content);
+  a.download=filename;a.click();
+}
+
+// ── Import Project ──
+function importProject(evt){
+  var file=evt.target.files[0];if(!file)return;evt.target.value='';
+  setStatus('Loading project...');
+  JSZip.loadAsync(file).then(function(zip){
+    var stateFile=zip.file('project.json');
+    if(!stateFile) throw new Error('Not a valid project zip — missing project.json');
+    return stateFile.async('string').then(function(json){
+      var state=JSON.parse(json);
+      // Restore state
+      criteria=state.criteria||[];
+      noteTags=state.noteTags||['Strategy','Autos','Concerns'];
+      rlViews=state.rlViews||[{id:'rl_default',name:'Overall',criteriaIds:[]}];
+      activeRLView=state.activeRLView||'rl_default';
+      sortCol=state.sortCol||'__total__';
+      sortAsc=state.sortAsc||false;
+      if(typeof state.darkMode==='boolean'&&state.darkMode!==darkMode) toggleTheme();
+      // Restore teams
+      teams={};
+      Object.values(state.teams||{}).forEach(function(t){
+        teams[t.num]={num:t.num,name:t.name,notes:t.notes||{},scores:t.scores||{},textScores:t.textScores||{},dnp:t.dnp||false,statbotics:t.statbotics||{}};
+      });
+      // Restore photos
+      teamPhotos={};
+      var photoFolder=zip.folder('photos');
+      if(!photoFolder) return;
+      var photoPromises=[];
+      zip.folder('photos').forEach(function(relPath,entry){
+        if(entry.dir) return;
+        var fname=relPath.split('/').pop();
+        var m=fname.match(/^frc(\d+)_?(\d*)\.(?:jpg|jpeg|png|gif|webp)$/i);
+        if(!m) return;
+        var num=parseInt(m[1]),photoNum=parseInt(m[2])||1;
+        photoPromises.push(entry.async('blob').then(function(blob){
+          var url=URL.createObjectURL(blob);
+          if(!teamPhotos[num]) teamPhotos[num]=[];
+          teamPhotos[num].push({url:url,photoNum:photoNum,blob:blob,fname:fname});
+        }));
+      });
+      return Promise.all(photoPromises);
+    });
+  }).then(function(){
+    Object.keys(teamPhotos).forEach(function(num){teamPhotos[num].sort(function(a,b){return a.photoNum-b.photoNum;});});
+    renderTagList();
+    renderAll();
+    setStatus('Project loaded successfully','success');
+  }).catch(function(e){setStatus('Import failed: '+e.message,'error');});
 }
 
 // ── Mobile ──
@@ -667,22 +860,26 @@ function applyMobile(isMobile){
   var desktop=document.querySelector('.layout');
   var mob=document.getElementById('mobile-layout');
   if(!isMobile){desktop.style.display='';mob.style.display='none';return;}
-  desktop.style.display='none';
-  mob.style.display='flex';
+  desktop.style.display='none';mob.style.display='flex';
   if(mob.children.length) return;
   var sections=[
     {title:'Controls',open:true,html:'<div style="padding:10px"><div style="display:flex;flex-wrap:wrap;gap:7px;align-items:center">'
       +'<input type="text" id="event-code-m" placeholder="Event code" style="flex:1;min-width:130px">'
-      +'<button class="primary" onclick="fetchStatMobile()">Fetch Statbotics</button>'
-      +'<label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">Match CSV<input type="file" accept=".csv" style="display:none" onchange="loadCSV(event,\'match\')"></label>'
-      +'<label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">Pit CSV<input type="file" accept=".csv" style="display:none" onchange="loadCSV(event,\'pit\')"></label>'
-      +'<label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">&#128247; Photos<input type="file" accept=".zip" style="display:none" onchange="loadPhotoZip(event)"></label>'
-      +'<button onclick="openCriteriaModal()">Criteria</button><button onclick="addTeamManual()">+ Team</button><button onclick="exportCSV()" class="primary">Export</button>'
-      +'<button onclick="toggleTheme()" id="theme-btn-m" style="border-radius:20px">Light mode</button>'
+      +'<button onclick="fetchStatMobile()">Fetch Statbotics</button>'
+      +'<button onclick="toggleDD(\'import-dd-m\')">&#8595; Import</button>'
+      +'<div class="dd-wrap"><div class="dd-menu" id="import-dd-m" style="display:none">'
+      +'<button onclick="closeDD();document.getElementById(\'match-file\').click()">Match CSV</button>'
+      +'<button onclick="closeDD();document.getElementById(\'pit-file\').click()">Pit CSV</button>'
+      +'<button onclick="closeDD();document.getElementById(\'photo-file\').click()">Photos</button>'
+      +'<button onclick="closeDD();document.getElementById(\'project-file\').click()">Open Project</button>'
+      +'</div></div>'
+      +'<button onclick="openExportModal()">&#8593; Export</button>'
+      +'<button onclick="openCriteriaModal()">Criteria</button><button onclick="addTeamManual()">+ Team</button>'
+      +'<button onclick="toggleTheme()" id="theme-btn-m">Light mode</button>'
       +'</div><div id="status-bar-m" style="font-size:12px;padding:4px 0;min-height:18px;color:var(--text2)"></div></div>'},
-    {title:'Live Rankings',open:true,html:'<div style="padding:10px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div class="rl-tabs" id="rl-tabs-m"></div><button style="font-size:10px;padding:3px 7px" onclick="openRLModal()">+ View</button></div><div class="rank-scroll" id="rank-list-m"><p style="font-size:12px;color:var(--text3)">No teams yet</p></div></div>'},
+    {title:'Live Rankings',open:true,html:'<div style="padding:10px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div class="rl-tabs" id="rl-tabs-m"></div><button onclick="openRLModal()">+ View</button></div><div class="rank-scroll" id="rank-list-m"><p style="font-size:12px;color:var(--text3)">No teams yet</p></div></div>'},
     {title:'Team Table',open:false,html:'<div><div class="table-wrap" style="border:none;border-radius:0"><table><thead id="thead-m"></thead><tbody id="tbody-m"></tbody></table></div></div>'},
-    {title:'Notes & Tags',open:false,html:'<div style="padding:10px"><p style="font-size:11px;color:var(--text3);margin-bottom:6px">Note tags</p><div id="tag-list-m"></div><div class="flex-gap" style="margin-top:8px"><input type="text" id="new-tag-m" placeholder="New tag..." style="flex:1"><button onclick="addTagMobile()">+</button></div></div>'},
+    {title:'Notes & Tags',open:false,html:'<div style="padding:10px"><div id="tag-list-m"></div><div class="flex-gap" style="margin-top:8px"><input type="text" id="new-tag-m" placeholder="New tag..." style="flex:1"><button onclick="addTagMobile()">+</button></div></div>'},
     {title:'Summary',open:false,html:'<div style="padding:10px"><div id="summary-m" style="font-size:12px;color:var(--text2);line-height:1.9"></div></div>'}
   ];
   mob.innerHTML=sections.map(function(s){
@@ -691,32 +888,23 @@ function applyMobile(isMobile){
       +'<span>'+s.title+'</span><span style="font-size:12px;color:var(--text3)">'+(s.open?'&#9650;':'&#9660;')+'</span></div>'
       +'<div style="'+(s.open?'':'display:none')+'">'+s.html+'</div></div>';
   }).join('');
-  syncMobileThemeBtn();
-  renderAll();
+  syncMobileThemeBtn();renderAll();
 }
-function toggleSection(header){
-  var body=header.nextElementSibling;
-  var chevron=header.querySelector('span:last-child');
-  var isOpen=body.style.display!=='none';
-  body.style.display=isOpen?'none':'block';
-  chevron.innerHTML=isOpen?'&#9660;':'&#9650;';
+function toggleSection(hdr){
+  var body=hdr.nextElementSibling,chev=hdr.querySelector('span:last-child'),open=body.style.display!=='none';
+  body.style.display=open?'none':'block';chev.innerHTML=open?'&#9660;':'&#9650;';
 }
-function syncMobileThemeBtn(){var btn=document.getElementById('theme-btn-m');if(btn)btn.textContent=darkMode?'Light mode':'Dark mode';}
+function syncMobileThemeBtn(){var b=document.getElementById('theme-btn-m');if(b)b.textContent=darkMode?'Light mode':'Dark mode';}
 function fetchStatMobile(){var m=document.getElementById('event-code-m');if(m)document.getElementById('event-code').value=m.value;fetchStatbotics();}
 function addTagMobile(){var inp=document.getElementById('new-tag-m');if(!inp)return;var val=inp.value.trim();if(!val||noteTags.indexOf(val)>=0)return;noteTags.push(val);inp.value='';renderTagList();renderTable();}
 function renderMobile(){
   if(!window.matchMedia('(max-width:700px)').matches) return;
   var pairs=[['status-bar','status-bar-m'],['rl-tabs','rl-tabs-m'],['rank-list','rank-list-m'],['thead','thead-m'],['tbody','tbody-m'],['tag-list','tag-list-m'],['summary','summary-m']];
-  pairs.forEach(function(p){
-    var src=document.getElementById(p[0]),dst=document.getElementById(p[1]);
-    if(src&&dst){dst.innerHTML=src.innerHTML;if(p[0]==='status-bar')dst.style.color=src.style.color;}
-  });
+  pairs.forEach(function(p){var s=document.getElementById(p[0]),d=document.getElementById(p[1]);if(s&&d){d.innerHTML=s.innerHTML;if(p[0]==='status-bar')d.style.color=s.style.color;}});
   syncMobileThemeBtn();
 }
 
-renderTagList();
-renderAll();
-setupMobile();
+renderTagList();renderAll();setupMobile();
 </script>
 </body>
 </html>
