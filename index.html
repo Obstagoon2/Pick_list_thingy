@@ -101,7 +101,7 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
   .modal,.photo-modal{width:98vw;padding:14px}
 }
 </style>
-<script>
+  <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -131,6 +131,8 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
       <div class="top-bar">
         <input type="text" id="event-code" placeholder="Event code (e.g. 2026mslr)" style="width:185px">
         <button class="primary" onclick="fetchStatbotics()" id="fetch-stat-btn">Fetch from Statbotics</button>
+        <button class="primary" onclick="fetchTBA()" id="fetch-tba-btn">Fetch from TBA</button>
+
         <label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">Match CSV<input type="file" accept=".csv" style="display:none" onchange="loadCSV(event,'match')"></label>
         <label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">Pit CSV<input type="file" accept=".csv" style="display:none" onchange="loadCSV(event,'pit')"></label>
         <label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">&#128247; Photos<input type="file" accept=".zip" style="display:none" onchange="loadPhotoZip(event)"></label>
@@ -244,6 +246,20 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
   </div>
 </div>
 
+<!-- TBA Column Picker -->
+<div id="tba-col-modal" style="display:none" class="modal-backdrop">
+  <div class="modal">
+    <h2>TBA columns</h2>
+    <p class="modal-sub">Choose which TBA fields to add and whether each counts toward the weighted total.</p>
+    <div class="bulk-bar">
+      <span>Import:</span><button onclick="bulkSet('.tba-import',true)" style="font-size:11px;padding:3px 8px">All</button><button onclick="bulkSet('.tba-import',false)" style="font-size:11px;padding:3px 8px">None</button>
+      <span style="margin-left:4px">Count toward total:</span><button onclick="bulkSet('.tba-rank',true)" style="font-size:11px;padding:3px 8px">All</button><button onclick="bulkSet('.tba-rank',false)" style="font-size:11px;padding:3px 8px">None</button>
+    </div>
+    <div class="col-scroll"><table class="col-table"><thead><tr><th>Field</th><th>Import</th><th>Count toward total</th></tr></thead><tbody id="tba-col-checkboxes"></tbody></table></div>
+    <div class="modal-footer"><button onclick="cancelTBAModal()">Cancel</button><button class="primary" onclick="confirmTBAModal()">Apply</button></div>
+  </div>
+</div>
+
 <!-- Ranking Views Modal -->
 <div id="rl-modal" style="display:none" class="modal-backdrop">
   <div class="modal">
@@ -259,7 +275,19 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 <div id="mobile-layout" style="display:none;flex-direction:column;gap:6px;padding:6px"></div>
 
 <script>
+var TBA_KEY = '__TBA_KEY_PLACEHOLDER__';
 var ALWAYS_SKIP = new Set(['org_key','year','event_key','match_key','match_number','time','alliance','scouter','team_key','otherNotes','superNotes','RedCard','YellowCard','describeAuto','autoCodeTeleop','preferredStrategy','describepizzatoppings','doAutoCodeTeleop','StartPos','AutoMistake\uD83D\uDEA9','DidScoreMistake\uD83D\uDEA9','DidintakeMistake\uD83D\uDEA9']);
+
+var TBA_FIELDS = [
+  ['tba_rank','Rank',false],
+  ['tba_opr','OPR',true],
+  ['tba_dpr','DPR',false],
+  ['tba_ccwm','CCWM',true],
+  ['tba_wins','W',false],
+  ['tba_losses','L',false],
+  ['tba_ties','Ties',false],
+  ['tba_rp','RPs',false]
+];
 
 var STAT_FIELDS = [
   ['epa','EPA',true],
@@ -275,7 +303,7 @@ var STAT_FIELDS = [
 
 var teams={}, criteria=[], noteTags=['Strategy','Autos','Concerns'];
 var sortCol='__total__', sortAsc=false;
-var pendingCSV=null, pendingStatData=null;
+var pendingCSV=null, pendingStatData=null, pendingTBAData=null;
 var rlViews=[{id:'rl_default',name:'Overall',criteriaIds:[]}];
 var activeRLView='rl_default';
 var darkMode=true;
@@ -511,7 +539,7 @@ function confirmStatModal(){
   pendingStatData.details.forEach(function(s){
     if(!s) return;
     var num=s.team;
-    if(!teams[num]) teams[num]={num:num,name:s.team_name||'Team '+num,notes:{},scores:{},dnp:false,statbotics:{}};
+    if(!teams[num]) teams[num]={num:num,name:s.team_name||'Team '+num,notes:{},scores:{},dnp:false,tba:{},statbotics:{}};
     else if(s.team_name) teams[num].name=s.team_name;
     var b=(s.epa&&s.epa.breakdown)||{};
     teams[num].statbotics={
@@ -532,7 +560,73 @@ function confirmStatModal(){
   pendingStatData=null;
 }
 
-// ── CSV ──
+// ── TBA ──
+function fetchTBA(){
+  var code=document.getElementById('event-code').value.trim().toLowerCase();
+  if(!code){setStatus('Enter an event code','error');return;}
+  if(TBA_KEY==='__TBA_KEY_PLACEHOLDER__'){setStatus('TBA key not injected — add vercel.json and redeploy','error');return;}
+  var btn=document.getElementById('fetch-tba-btn');
+  btn.innerHTML='<span class="spinner"></span>Fetching...';
+  btn.disabled=true;
+  setStatus('Fetching from TBA...');
+  var h={'X-TBA-Auth-Key':TBA_KEY};
+  var base='https://www.thebluealliance.com/api/v3';
+  Promise.all([
+    fetch(base+'/event/'+code+'/teams/simple',{headers:h}).then(function(r){if(!r.ok)throw new Error('TBA '+r.status+' — check event code');return r.json();}),
+    fetch(base+'/event/'+code+'/rankings',{headers:h}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
+    fetch(base+'/event/'+code+'/oprs',{headers:h}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};})
+  ])
+  .then(function(results){
+    var tbaTeams=results[0], tbaRank=results[1], tbaOpr=results[2];
+    var rankMap={};
+    (tbaRank.rankings||[]).forEach(function(r){
+      rankMap[r.team_key]={rank:r.rank,wins:r.record?r.record.wins:'',losses:r.record?r.record.losses:'',ties:r.record?r.record.ties:'',rp:r.extra_stats?r.extra_stats[0]:''};
+    });
+    var oprMap=tbaOpr.oprs||{}, dprMap=tbaOpr.dprs||{}, ccwmMap=tbaOpr.ccwms||{};
+    pendingTBAData={tbaTeams:tbaTeams,rankMap:rankMap,oprMap:oprMap,dprMap:dprMap,ccwmMap:ccwmMap};
+    openTBAModal();
+  })
+  .catch(function(e){setStatus('TBA fetch failed: '+e.message,'error');})
+  .finally(function(){btn.innerHTML='Fetch from TBA';btn.disabled=false;});
+}
+
+function openTBAModal(){
+  document.getElementById('tba-col-checkboxes').innerHTML=TBA_FIELDS.map(function(f){return mkToggleRow(f[0],f[1],f[2],'tba-import','tba-rank');}).join('');
+  syncToggleDisable('tba-import','tba-import');
+  document.getElementById('tba-col-modal').style.display='flex';
+}
+function cancelTBAModal(){document.getElementById('tba-col-modal').style.display='none';pendingTBAData=null;}
+function confirmTBAModal(){
+  document.getElementById('tba-col-modal').style.display='none';
+  if(!pendingTBAData) return;
+  var d=pendingTBAData;
+  var importIds=new Set(Array.from(document.querySelectorAll('.tba-import:checked')).map(function(i){return i.dataset.id;}));
+  var rankIds=new Set(Array.from(document.querySelectorAll('.tba-rank:checked')).map(function(i){return i.dataset.id;}));
+  TBA_FIELDS.forEach(function(f){
+    if(!importIds.has(f[0])) return;
+    if(!criteria.find(function(c){return c.id===f[0];}))
+      criteria.push({id:f[0],name:f[1],weight:rankIds.has(f[0])?1:0,source:'tba',editable:false});
+  });
+  d.tbaTeams.forEach(function(t){
+    var num=t.team_number, key=t.key;
+    if(!teams[num]) teams[num]={num:num,name:t.nickname||key,notes:{},scores:{},dnp:false,statbotics:{}};
+    else teams[num].name=t.nickname||teams[num].name;
+    var r=d.rankMap[key]||{};
+    teams[num].tba={
+      tba_rank:   r.rank!=null?r.rank:'',
+      tba_opr:    d.oprMap[key]!=null?+d.oprMap[key].toFixed(1):'',
+      tba_dpr:    d.dprMap[key]!=null?+d.dprMap[key].toFixed(1):'',
+      tba_ccwm:   d.ccwmMap[key]!=null?+d.ccwmMap[key].toFixed(1):'',
+      tba_wins:   r.wins!=null?r.wins:'',
+      tba_losses: r.losses!=null?r.losses:'',
+      tba_ties:   r.ties!=null?r.ties:'',
+      tba_rp:     r.rp!=null?r.rp:''
+    };
+  });
+  renderAll();
+  setStatus('Loaded '+d.tbaTeams.length+' teams from TBA','success');
+  pendingTBAData=null;
+}
 function loadCSV(evt,type){
   var file=evt.target.files[0]; if(!file) return; evt.target.value='';
   Papa.parse(file,{header:true,dynamicTyping:true,skipEmptyLines:true,complete:function(res){
@@ -573,7 +667,7 @@ function confirmColModal(){
   });
   Object.keys(grouped).forEach(function(num){
     var n=+num, rowArr=grouped[num];
-    if(!teams[n]) teams[n]={num:n,name:'Team '+n,notes:{},scores:{},dnp:false,statbotics:{}};
+    if(!teams[n]) teams[n]={num:n,name:'Team '+n,notes:{},scores:{},dnp:false,tba:{},statbotics:{}};
     checked.forEach(function(col){
       var vals=rowArr.map(function(r){return typeof r[col]==='number'?r[col]:parseFloat(r[col]);}).filter(function(v){return !isNaN(v);});
       if(vals.length) teams[n].scores[type+'_'+col]=+(vals.reduce(function(a,b){return a+b;},0)/vals.length).toFixed(2);
@@ -594,6 +688,7 @@ function addTeamManual(){
 
 // ── Scoring ──
 function getScore(t,c){
+  if(c.source==='tba') return (t.tba&&t.tba[c.id]!=null)?t.tba[c.id]:'';
   if(c.source==='statbotics') return t.statbotics[c.id]!=null?t.statbotics[c.id]:'';
   return t.scores[c.id]!=null?t.scores[c.id]:'';
 }
@@ -769,6 +864,7 @@ function applyMobile(isMobile){
     {title:'Controls',open:true,html:'<div style="padding:10px"><div style="display:flex;flex-wrap:wrap;gap:7px;align-items:center">'
       +'<input type="text" id="event-code-m" placeholder="Event code" style="flex:1;min-width:130px">'
       +'<button class="primary" onclick="fetchStatMobile()">Fetch Statbotics</button>'
+      +'<button class="primary" onclick="fetchTBAMobile()">Fetch TBA</button>'
       +'<label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">Match CSV<input type="file" accept=".csv" style="display:none" onchange="loadCSV(event,\'match\')"></label>'
       +'<label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">Pit CSV<input type="file" accept=".csv" style="display:none" onchange="loadCSV(event,\'pit\')"></label>'
       +'<label style="padding:5px 10px;border:0.5px solid var(--info-border);border-radius:6px;background:var(--info-bg);color:var(--info-text);cursor:pointer;font-size:12px">&#128247; Photos<input type="file" accept=".zip" style="display:none" onchange="loadPhotoZip(event)"></label>'
@@ -798,6 +894,7 @@ function toggleSection(header){
 }
 function syncMobileThemeBtn(){var btn=document.getElementById('theme-btn-m');if(btn)btn.textContent=darkMode?'Light mode':'Dark mode';}
 function fetchStatMobile(){var m=document.getElementById('event-code-m');if(m)document.getElementById('event-code').value=m.value;fetchStatbotics();}
+function fetchTBAMobile(){var m=document.getElementById('event-code-m');if(m)document.getElementById('event-code').value=m.value;fetchTBA();}
 function addTagMobile(){var inp=document.getElementById('new-tag-m');if(!inp)return;var val=inp.value.trim();if(!val||noteTags.indexOf(val)>=0)return;noteTags.push(val);inp.value='';renderTagList();renderTable();}
 function renderMobile(){
   if(!window.matchMedia('(max-width:700px)').matches) return;
