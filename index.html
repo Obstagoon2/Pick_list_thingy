@@ -143,6 +143,45 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
   </div>
 </div>
 
+<!-- Team Detail Modal -->
+<div id="detail-modal" style="display:none" class="modal-backdrop">
+  <div class="modal" style="width:620px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div>
+        <span id="detail-num" style="font-size:18px;font-weight:700;color:var(--info-text)"></span>
+        <span id="detail-name" style="font-size:14px;color:var(--text2);margin-left:10px"></span>
+      </div>
+      <button onclick="closeDetailModal()" style="font-size:20px;padding:2px 8px;border:none;background:none;color:var(--text2);cursor:pointer">&#215;</button>
+    </div>
+    <!-- Photo carousel (compact) -->
+    <div id="detail-photo-wrap" style="display:none;margin-bottom:14px">
+      <div class="photo-carousel" id="detail-carousel" style="aspect-ratio:16/9">
+        <button class="carousel-btn carousel-prev" onclick="detailCarouselStep(-1)">&#8249;</button>
+        <span class="photo-placeholder" id="detail-photo-placeholder">No photos</span>
+        <div id="detail-carousel-images"></div>
+        <button class="carousel-btn carousel-next" onclick="detailCarouselStep(1)">&#8250;</button>
+      </div>
+      <div class="photo-counter" id="detail-photo-counter"></div>
+      <div class="carousel-dots" id="detail-carousel-dots"></div>
+    </div>
+    <!-- Stats grid -->
+    <div style="margin-bottom:14px">
+      <p style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Stats</p>
+      <div id="detail-stats" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px"></div>
+    </div>
+    <!-- Notes -->
+    <div id="detail-notes-wrap">
+      <p style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Notes</p>
+      <div id="detail-notes"></div>
+    </div>
+    <div class="modal-footer">
+      <input type="checkbox" id="detail-dnp" onchange="setDetailDNP(this.checked)" style="width:14px;height:14px;cursor:pointer">
+      <label for="detail-dnp" style="font-size:12px;color:var(--text2);cursor:pointer">DNP</label>
+      <button onclick="closeDetailModal()" style="margin-left:auto">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- Photo Modal -->
 <div id="photo-modal" style="display:none" class="modal-backdrop">
   <div class="photo-modal">
@@ -237,7 +276,8 @@ var rlViews=[{id:'rl_default',name:'Overall',criteriaIds:[]}];
 var activeRLView='rl_default';
 var darkMode=true;
 var teamPhotos={};
-var carouselIndex=0, carouselPhotos=[];
+var detailTeamNum=null;
+var detailCarouselIndex=0, detailCarouselPhotos=[];
 
 // ── Theme ──
 function toggleTheme(){
@@ -353,7 +393,78 @@ function carouselStep(dir){
 }
 function goToSlide(i){carouselIndex=i;renderCarousel();}
 
-// ── Statbotics ──
+var carouselIndex=0, carouselPhotos=[];
+
+// ── Team Detail Modal ──
+function openDetailModal(num){
+  var t=teams[num]; if(!t) return;
+  detailTeamNum=num;
+  document.getElementById('detail-num').textContent=num;
+  document.getElementById('detail-name').textContent=t.name;
+  document.getElementById('detail-dnp').checked=t.dnp;
+
+  // Photos
+  detailCarouselPhotos=teamPhotos[num]||[];
+  detailCarouselIndex=0;
+  var photoWrap=document.getElementById('detail-photo-wrap');
+  photoWrap.style.display=detailCarouselPhotos.length>0?'block':'none';
+  if(detailCarouselPhotos.length>0) renderDetailCarousel();
+
+  // Stats
+  var statsEl=document.getElementById('detail-stats');
+  var statItems='';
+  // Total
+  var defView=rlViews.find(function(v){return v.id==='rl_default';})||rlViews[0];
+  statItems+='<div style="background:var(--info-bg);border:0.5px solid var(--info-border);border-radius:8px;padding:8px 10px"><div style="font-size:10px;color:var(--info-text);margin-bottom:2px">Weighted Total</div><div style="font-size:18px;font-weight:700;color:var(--info-text)">'+calcTotalForView(t,defView)+'</div></div>';
+  criteria.forEach(function(c){
+    var v=getScore(t,c);
+    if(v===''||v==null) return;
+    statItems+='<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:8px 10px"><div style="font-size:10px;color:var(--text3);margin-bottom:2px">'+c.name+(c.weight>0?' <span style="color:var(--info-text);font-size:9px">w:'+c.weight+'</span>':'')+'</div><div style="font-size:16px;font-weight:600;color:var(--text)">'+v+'</div></div>';
+  });
+  statsEl.innerHTML=statItems||'<p style="font-size:12px;color:var(--text3)">No data yet</p>';
+
+  // Notes
+  var notesEl=document.getElementById('detail-notes');
+  var hasNotes=noteTags.some(function(tag){return t.notes[tag]&&t.notes[tag].trim();});
+  if(hasNotes){
+    notesEl.innerHTML=noteTags.filter(function(tag){return t.notes[tag]&&t.notes[tag].trim();}).map(function(tag){
+      return '<div style="margin-bottom:8px"><span style="font-size:10px;font-weight:600;color:var(--text3)">'+tag+'</span><p style="font-size:13px;color:var(--text);margin-top:3px;white-space:pre-wrap">'+t.notes[tag]+'</p></div>';
+    }).join('');
+    document.getElementById('detail-notes-wrap').style.display='block';
+  } else {
+    document.getElementById('detail-notes-wrap').style.display='none';
+  }
+
+  document.getElementById('detail-modal').style.display='flex';
+}
+function closeDetailModal(){document.getElementById('detail-modal').style.display='none';detailTeamNum=null;}
+function setDetailDNP(val){
+  if(detailTeamNum&&teams[detailTeamNum]){teams[detailTeamNum].dnp=val;renderAll();}
+}
+function renderDetailCarousel(){
+  var imgs=document.getElementById('detail-carousel-images');
+  var dots=document.getElementById('detail-carousel-dots');
+  var counter=document.getElementById('detail-photo-counter');
+  var placeholder=document.getElementById('detail-photo-placeholder');
+  var prevBtn=document.querySelector('#detail-carousel .carousel-prev');
+  var nextBtn=document.querySelector('#detail-carousel .carousel-next');
+  placeholder.style.display='none';
+  prevBtn.style.display=detailCarouselPhotos.length>1?'flex':'none';
+  nextBtn.style.display=detailCarouselPhotos.length>1?'flex':'none';
+  imgs.innerHTML=detailCarouselPhotos.map(function(p,i){
+    return '<img src="'+p.url+'" class="'+(i===detailCarouselIndex?'active':'')+'" alt="Photo '+(i+1)+'">';
+  }).join('');
+  dots.innerHTML=detailCarouselPhotos.length>1?detailCarouselPhotos.map(function(p,i){
+    return '<button class="carousel-dot '+(i===detailCarouselIndex?'active':'')+'" onclick="goToDetailSlide('+i+')"></button>';
+  }).join(''):'';
+  counter.textContent=detailCarouselPhotos.length>1?(detailCarouselIndex+1)+' / '+detailCarouselPhotos.length:'';
+}
+function detailCarouselStep(dir){
+  if(!detailCarouselPhotos.length) return;
+  detailCarouselIndex=(detailCarouselIndex+dir+detailCarouselPhotos.length)%detailCarouselPhotos.length;
+  renderDetailCarousel();
+}
+function goToDetailSlide(i){detailCarouselIndex=i;renderDetailCarousel();}
 function fetchStatbotics(){
   var code=document.getElementById('event-code').value.trim().toLowerCase();
   if(!code){setStatus('Enter an event code','error');return;}
@@ -558,10 +669,13 @@ function renderRankings(){
   var rank=0;
   el.innerHTML=arr.map(function(t){
     if(!t.dnp) rank++;
-    return '<div class="rank-item '+(t.dnp?'dnp':'')+'"><span class="rank-num">'+(t.dnp?'—':rank)+'</span>'
+    return '<div class="rank-item '+(t.dnp?'dnp':'')+'" onclick="openDetailModal('+t.num+')" style="cursor:pointer" title="View details">'
+      +'<span class="rank-num">'+(t.dnp?'—':rank)+'</span>'
       +'<span style="font-weight:600;font-size:13px">'+t.num+'</span>'
       +'<span style="font-size:11px;color:var(--text3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:3px">'+(t.name.length>13?t.name.slice(0,13)+'&#8230;':t.name)+'</span>'
-      +'<span class="rank-score">'+t.__rl__+'</span></div>';
+      +'<span class="rank-score">'+t.__rl__+'</span>'
+      +(teamPhotos[t.num]&&teamPhotos[t.num].length?' <span style="font-size:10px">&#128247;</span>':'')
+      +'</div>';
   }).join('');
 }
 
