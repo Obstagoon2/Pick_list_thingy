@@ -316,9 +316,11 @@ function toggleTheme(){
 }
 function setStatus(msg,type){
   type=type||'info';
-  var el=document.getElementById('status-bar');
-  el.textContent=msg;
-  el.style.color=type==='error'?'var(--danger-text)':type==='success'?'var(--success)':'var(--text2)';
+  var color=type==='error'?'var(--danger-text)':type==='success'?'var(--success)':'var(--text2)';
+  ['status-bar','status-bar-m'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el){el.textContent=msg;el.style.color=color;}
+  });
 }
 function parseTeamNum(val){
   if(val==null) return null;
@@ -987,7 +989,11 @@ function toggleSection(hdr){
   body.style.display=open?'none':'block';chev.innerHTML=open?'&#9660;':'&#9650;';
 }
 function syncMobileThemeBtn(){var b=document.getElementById('theme-btn-m');if(b)b.textContent=darkMode?'Light mode':'Dark mode';}
-function fetchStatMobile(){var m=document.getElementById('event-code-m');if(m)document.getElementById('event-code').value=m.value;fetchStatbotics();}
+function fetchStatMobile(){
+  var m=document.getElementById('event-code-m');
+  if(m) document.getElementById('event-code').value=m.value;
+  fetchStatbotics();
+}
 function addTagMobile(){var inp=document.getElementById('new-tag-m');if(!inp)return;var val=inp.value.trim();if(!val||noteTags.indexOf(val)>=0)return;noteTags.push(val);inp.value='';renderTagList();renderTable();}
 function renderMobile(){
   if(!window.matchMedia('(max-width:700px)').matches) return;
