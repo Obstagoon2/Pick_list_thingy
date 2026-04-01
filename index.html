@@ -139,6 +139,7 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
       <div class="top-bar">
         <input type="text" id="event-code" placeholder="Event code (e.g. 2026mslr)" style="width:185px">
         <button onclick="fetchStatbotics()" id="fetch-stat-btn">Fetch Statbotics</button>
+        <button onclick="fetchTBA()" id="fetch-tba-btn">Fetch TBA</button>
         <!-- Import dropdown -->
         <div class="dd-wrap" id="import-wrap">
           <button onclick="toggleDD('import-dd')">&#8595; Import</button>
@@ -244,6 +245,20 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
   </div>
 </div>
 
+<!-- TBA Column Picker -->
+<div id="tba-col-modal" style="display:none" class="modal-backdrop">
+  <div class="modal">
+    <h2>TBA columns</h2>
+    <p class="modal-sub">Choose which TBA fields to add and whether each counts toward the weighted total.</p>
+    <div class="bulk-bar">
+      <span>Import:</span><button onclick="bulkSet('.tba-import',true)" style="font-size:11px;padding:3px 8px">All</button><button onclick="bulkSet('.tba-import',false)" style="font-size:11px;padding:3px 8px">None</button>
+      <span style="margin-left:4px">Count toward total:</span><button onclick="bulkSet('.tba-rank',true)" style="font-size:11px;padding:3px 8px">All</button><button onclick="bulkSet('.tba-rank',false)" style="font-size:11px;padding:3px 8px">None</button>
+    </div>
+    <div class="col-scroll"><table class="col-table"><thead><tr><th>Field</th><th>Import</th><th>Count toward total</th></tr></thead><tbody id="tba-col-checkboxes"></tbody></table></div>
+    <div class="modal-footer"><button onclick="cancelTBAModal()">Cancel</button><button class="act" onclick="confirmTBAModal()">Apply</button></div>
+  </div>
+</div>
+
 <!-- Export Modal -->
 <div id="export-modal" style="display:none" class="modal-backdrop">
   <div class="modal">
@@ -269,12 +284,23 @@ tr.dnp-row td{opacity:.4;background:var(--bg2)}
 <div id="mobile-layout" style="display:none;flex-direction:column;gap:6px;padding:6px"></div>
 
 <script>
+var TBA_KEY='k3RQ7yVrZdKqUt6RjDlOKYadDOglo2B41X1CE6Fv5eUozinzBfDhr2aw3hg5D22z';
 var ALWAYS_SKIP=new Set(['org_key','year','event_key','match_key','match_number','time','alliance','scouter','team_key','otherNotes','superNotes','RedCard','YellowCard','describeAuto','autoCodeTeleop','preferredStrategy','describepizzatoppings','doAutoCodeTeleop','StartPos','AutoMistake\uD83D\uDEA9','DidScoreMistake\uD83D\uDEA9','DidintakeMistake\uD83D\uDEA9']);
+var TBA_FIELDS=[
+  ['tba_rank','Rank',false],
+  ['tba_opr','OPR',true],
+  ['tba_dpr','DPR',false],
+  ['tba_ccwm','CCWM',true],
+  ['tba_wins','W',false],
+  ['tba_losses','L',false],
+  ['tba_ties','Ties',false],
+  ['tba_rp','RPs',false]
+];
 var STAT_FIELDS=[['epa','EPA',true],['auto_epa','Auto EPA',true],['teleop_epa','Teleop EPA',true],['endgame_epa','Endgame EPA',true],['rank','Rank',false],['wins','W',false],['losses','L',false],['rps','RPs',false],['winrate','Win%',false]];
 
 var teams={},criteria=[],noteTags=['Strategy','Autos','Concerns'];
 var sortCol='__total__',sortAsc=false;
-var pendingCSV=null,pendingStatData=null;
+var pendingCSV=null,pendingStatData=null,pendingTBAData=null;
 var rlViews=[{id:'rl_default',name:'Overall',criteriaIds:[]}];
 var activeRLView='rl_default';
 var darkMode=true;
@@ -473,6 +499,74 @@ function confirmStatModal(){
   pendingStatData=null;
 }
 
+// ── TBA ──
+function fetchTBA(){
+  var code=document.getElementById('event-code').value.trim().toLowerCase();
+  if(!code){setStatus('Enter an event code','error');return;}
+  if(TBA_KEY==='__TBA_KEY_PLACEHOLDER__'){setStatus('TBA key not injected — see setup instructions','error');return;}
+  var btn=document.getElementById('fetch-tba-btn');
+  btn.innerHTML='<span class="spinner"></span>Fetching...';
+  btn.disabled=true;
+  setStatus('Fetching from TBA...');
+  var h={'X-TBA-Auth-Key':TBA_KEY};
+  var base='https://www.thebluealliance.com/api/v3';
+  Promise.all([
+    fetch(base+'/event/'+code+'/teams/simple',{headers:h}).then(function(r){if(!r.ok)throw new Error('TBA '+r.status+' — check event code');return r.json();}),
+    fetch(base+'/event/'+code+'/rankings',{headers:h}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
+    fetch(base+'/event/'+code+'/oprs',{headers:h}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};})
+  ])
+  .then(function(res){
+    var tbaTeams=res[0],tbaRank=res[1],tbaOpr=res[2];
+    var rankMap={};
+    (tbaRank.rankings||[]).forEach(function(r){
+      rankMap[r.team_key]={rank:r.rank,wins:r.record?r.record.wins:'',losses:r.record?r.record.losses:'',ties:r.record?r.record.ties:'',rp:r.extra_stats?r.extra_stats[0]:''};
+    });
+    var oprMap=tbaOpr.oprs||{},dprMap=tbaOpr.dprs||{},ccwmMap=tbaOpr.ccwms||{};
+    pendingTBAData={tbaTeams:tbaTeams,rankMap:rankMap,oprMap:oprMap,dprMap:dprMap,ccwmMap:ccwmMap};
+    openTBAModal();
+  })
+  .catch(function(e){setStatus('TBA fetch failed: '+e.message,'error');})
+  .finally(function(){btn.innerHTML='Fetch TBA';btn.disabled=false;});
+}
+function openTBAModal(){
+  document.getElementById('tba-col-checkboxes').innerHTML=TBA_FIELDS.map(function(f){return mkToggleRow(f[0],f[1],f[2],'tba-import','tba-rank');}).join('');
+  syncToggleDisable('tba-import','tba-import');
+  document.getElementById('tba-col-modal').style.display='flex';
+}
+function cancelTBAModal(){document.getElementById('tba-col-modal').style.display='none';pendingTBAData=null;}
+function confirmTBAModal(){
+  document.getElementById('tba-col-modal').style.display='none';
+  if(!pendingTBAData) return;
+  var d=pendingTBAData;
+  var importIds=new Set(Array.from(document.querySelectorAll('.tba-import:checked')).map(function(i){return i.dataset.id;}));
+  var rankIds=new Set(Array.from(document.querySelectorAll('.tba-rank:checked')).map(function(i){return i.dataset.id;}));
+  TBA_FIELDS.forEach(function(f){
+    if(!importIds.has(f[0])) return;
+    if(!criteria.find(function(c){return c.id===f[0];}))
+      criteria.push({id:f[0],name:f[1],weight:rankIds.has(f[0])?1:0,source:'tba',editable:false,isText:false});
+  });
+  d.tbaTeams.forEach(function(t){
+    var num=t.team_number,key=t.key;
+    if(!teams[num]) teams[num]={num:num,name:t.nickname||key,notes:{},scores:{},textScores:{},dnp:false,statbotics:{},tba:{}};
+    else teams[num].name=t.nickname||teams[num].name;
+    if(!teams[num].tba) teams[num].tba={};
+    var r=d.rankMap[key]||{};
+    teams[num].tba={
+      tba_rank:  r.rank!=null?r.rank:'',
+      tba_opr:   d.oprMap[key]!=null?+d.oprMap[key].toFixed(1):'',
+      tba_dpr:   d.dprMap[key]!=null?+d.dprMap[key].toFixed(1):'',
+      tba_ccwm:  d.ccwmMap[key]!=null?+d.ccwmMap[key].toFixed(1):'',
+      tba_wins:  r.wins!=null?r.wins:'',
+      tba_losses:r.losses!=null?r.losses:'',
+      tba_ties:  r.ties!=null?r.ties:'',
+      tba_rp:    r.rp!=null?r.rp:''
+    };
+  });
+  renderAll();
+  setStatus('Loaded '+d.tbaTeams.length+' teams from TBA','success');
+  pendingTBAData=null;
+}
+
 // ── CSV ──
 function isNumericCol(rows,header){
   var vals=rows.map(function(r){return r[header];}).filter(function(v){return v!=null&&v!=='';});
@@ -550,12 +644,10 @@ function addTeamManual(){
 // ── Scoring ──
 function getScore(t,c){
   if(!t) return '';
-  if(c.isText){
-    var ts=t.textScores||{};
-    return ts[c.id]!=null?ts[c.id]:'';
-  }
-  if(c.source==='statbotics') return t.statbotics&&t.statbotics[c.id]!=null?t.statbotics[c.id]:'';
-  return t.scores&&t.scores[c.id]!=null?t.scores[c.id]:'';
+  if(c.isText){var ts=t.textScores||{};return ts[c.id]!=null?ts[c.id]:'';}
+  if(c.source==='tba') return (t.tba&&t.tba[c.id]!=null)?t.tba[c.id]:'';
+  if(c.source==='statbotics') return (t.statbotics&&t.statbotics[c.id]!=null)?t.statbotics[c.id]:'';
+  return (t.scores&&t.scores[c.id]!=null)?t.scores[c.id]:'';
 }
 function calcTotalForView(t,view){
   var use=view.criteriaIds.length===0?criteria:criteria.filter(function(c){return view.criteriaIds.indexOf(c.id)>=0;});
@@ -755,7 +847,7 @@ function exportProject(){
   };
   // Strip blob URLs from teams, save scores/notes/statbotics/etc
   Object.values(teams).forEach(function(t){
-    state.teams[t.num]={num:t.num,name:t.name,notes:t.notes,scores:t.scores,textScores:t.textScores||{},dnp:t.dnp,statbotics:t.statbotics||{}};
+    state.teams[t.num]={num:t.num,name:t.name,notes:t.notes,scores:t.scores,textScores:t.textScores||{},dnp:t.dnp,statbotics:t.statbotics||{},tba:t.tba||{}};
   });
   zip.file('project.json',JSON.stringify(state,null,2));
   // Photos
@@ -821,7 +913,7 @@ function importProject(evt){
       // Restore teams
       teams={};
       Object.values(state.teams||{}).forEach(function(t){
-        teams[t.num]={num:t.num,name:t.name,notes:t.notes||{},scores:t.scores||{},textScores:t.textScores||{},dnp:t.dnp||false,statbotics:t.statbotics||{}};
+        teams[t.num]={num:t.num,name:t.name,notes:t.notes||{},scores:t.scores||{},textScores:t.textScores||{},dnp:t.dnp||false,statbotics:t.statbotics||{},tba:t.tba||{}};
       });
       // Restore photos
       teamPhotos={};
