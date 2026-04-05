@@ -33,20 +33,16 @@ textarea{resize:vertical;min-height:40px}
 .rank-scroll{overflow-y:auto;max-height:360px}
 .rank-item{display:flex;align-items:center;gap:5px;padding:4px 7px;border-radius:6px;border:0.5px solid var(--border);margin-bottom:3px;background:var(--bg);cursor:pointer;transition:background .1s}
 .rank-item:hover{background:var(--bg3)}
-.rank-item.dnp{opacity:.5;background:var(--bg2)}
+.rank-item.dnp{opacity:.35;text-decoration:line-through}
 .rank-num{font-size:10px;color:var(--text3);min-width:16px;text-align:right}
 .rank-score{font-size:11px;color:var(--text2);margin-left:auto}
-/* Sticky horizontal scrollbar at bottom of viewport */
-.table-outer{overflow-x:auto;border-radius:8px;border:0.5px solid var(--border);position:relative;}
-.table-outer::-webkit-scrollbar{height:8px}
-.table-outer::-webkit-scrollbar-track{background:var(--bg2)}
-.table-outer::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.table-wrap{overflow-x:auto;border-radius:8px;border:0.5px solid var(--border);-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{background:var(--bg2);font-weight:500;padding:7px 8px;text-align:left;white-space:nowrap;border-bottom:0.5px solid var(--border);cursor:pointer;user-select:none;position:sticky;top:0;z-index:1}
+th{background:var(--bg2);font-weight:500;padding:7px 8px;text-align:left;white-space:nowrap;border-bottom:0.5px solid var(--border);cursor:pointer;user-select:none}
 th:hover{background:var(--bg3)}
 td{padding:5px 8px;border-bottom:0.5px solid var(--border);vertical-align:top;background:var(--bg)}
 tr:last-child td{border-bottom:none}
-tr.dnp-row td{opacity:.5;background:var(--bg2)}
+tr.dnp-row td{opacity:.4;background:var(--bg2)}
 .score-input{width:50px;text-align:center;padding:3px 4px}
 .text-input-cell{width:100px;padding:3px 4px;font-size:11px}
 .notes-fields{display:flex;flex-direction:column;gap:3px;min-width:180px}
@@ -58,7 +54,7 @@ tr.dnp-row td{opacity:.5;background:var(--bg2)}
 .modal{background:var(--bg);border:1px solid var(--border2);border-radius:14px;padding:20px;width:500px;max-width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.5)}
 .modal h2{font-size:15px;font-weight:500;margin-bottom:4px}
 .modal-sub{font-size:12px;color:var(--text2);margin-bottom:12px}
-.modal-footer{display:flex;gap:8px;align-items:center;margin-top:14px;padding-top:10px;border-top:0.5px solid var(--border)}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;padding-top:10px;border-top:0.5px solid var(--border)}
 .col-table{width:100%;border-collapse:collapse;font-size:12px}
 .col-table th{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;padding:4px 8px;text-align:left;border-bottom:0.5px solid var(--border);background:var(--bg2)}
 .col-table th:not(:first-child){text-align:center}
@@ -84,43 +80,42 @@ tr.dnp-row td{opacity:.5;background:var(--bg2)}
 .criteria-row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
 .rl-criteria-check label{display:flex;align-items:center;gap:6px;font-size:12px;padding:2px 0;cursor:pointer;color:var(--text)}
 .rl-view-row{padding:10px 12px;border:0.5px solid var(--border);border-radius:8px;margin-bottom:8px;background:var(--bg2)}
+/* dropdown menu */
 .dd-wrap{position:relative;display:inline-block}
 .dd-menu{position:absolute;top:calc(100% + 4px);left:0;background:var(--bg);border:0.5px solid var(--border2);border-radius:8px;min-width:190px;box-shadow:0 6px 20px rgba(0,0,0,.4);z-index:300;overflow:hidden}
 .dd-menu button{display:block;width:100%;text-align:left;border:none;border-radius:0;padding:9px 14px;font-size:13px;border-bottom:0.5px solid var(--border)}
 .dd-menu button:last-child{border-bottom:none}
 .dd-menu button:hover{background:var(--bg2)}
-/* Detail modal */
-.detail-modal{background:var(--bg);border:1px solid var(--border2);border-radius:14px;padding:20px;width:700px;max-width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+/* photo/detail modal */
+.photo-modal{background:var(--bg);border:1px solid var(--border2);border-radius:14px;padding:20px;width:620px;max-width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.5)}
 .photo-carousel{position:relative;width:100%;aspect-ratio:16/9;background:#111;border-radius:8px;overflow:hidden;margin-bottom:8px;display:flex;align-items:center;justify-content:center}
 .photo-carousel img{width:100%;height:100%;object-fit:contain;display:none;position:absolute;top:0;left:0}
 .photo-carousel img.active{display:block}
 .photo-placeholder{color:var(--text3);font-size:13px}
 .carousel-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:34px;height:34px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;padding:0;line-height:1}
 .carousel-btn:hover{background:rgba(0,0,0,.85)}
-.carousel-prev{left:8px}.carousel-next{right:8px}
+.carousel-prev{left:8px}
+.carousel-next{right:8px}
 .carousel-dots{display:flex;justify-content:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
 .carousel-dot{width:8px;height:8px;border-radius:50%;background:var(--border2);cursor:pointer;border:none;padding:0;flex-shrink:0}
 .carousel-dot.active{background:var(--info-text)}
 .photo-counter{font-size:12px;color:var(--text3);text-align:center;margin-bottom:4px}
+/* export option rows */
 .export-row{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:0.5px solid var(--border);border-radius:7px;margin-bottom:6px}
 .export-row span{font-size:13px;color:var(--text)}
-/* Notes panel inside detail modal */
-.detail-layout{display:flex;gap:14px}
-.detail-main{flex:1;min-width:0}
-.detail-notes-panel{width:200px;flex-shrink:0;border-left:0.5px solid var(--border);padding-left:14px}
 @media(max-width:700px){
   .layout{flex-direction:column;padding:6px;gap:6px}
   .sidebar{width:100%;position:static;max-height:none;overflow-y:visible}
   .top-bar{gap:6px}
-  table{font-size:11px}th,td{padding:5px 5px}
-  .modal,.detail-modal{width:98vw;padding:14px}
-  .detail-layout{flex-direction:column}
-  .detail-notes-panel{width:100%;border-left:none;border-top:0.5px solid var(--border);padding-left:0;padding-top:14px;margin-top:4px}
+  table{font-size:11px}
+  th,td{padding:5px 5px}
+  .modal,.photo-modal{width:98vw;padding:14px}
   .dd-menu{min-width:160px}
 }
 </style>
 </head>
 <body data-theme="">
+
 <div class="layout">
   <div class="sidebar">
     <div class="card">
@@ -138,13 +133,15 @@ tr.dnp-row td{opacity:.5;background:var(--bg2)}
       <div id="summary" style="font-size:12px;color:var(--text2);line-height:1.9"></div>
     </div>
   </div>
+
   <div class="main">
     <div class="card">
       <div class="top-bar">
         <input type="text" id="event-code" placeholder="Event code (e.g. 2026mslr)" style="width:185px">
         <button onclick="fetchStatbotics()" id="fetch-stat-btn">Fetch Statbotics</button>
         <button onclick="fetchTBA()" id="fetch-tba-btn">Fetch TBA</button>
-        <div class="dd-wrap">
+        <!-- Import dropdown -->
+        <div class="dd-wrap" id="import-wrap">
           <button onclick="toggleDD('import-dd')">&#8595; Import</button>
           <div class="dd-menu" id="import-dd" style="display:none">
             <button onclick="closeDD();document.getElementById('match-file').click()">Match CSV</button>
@@ -153,7 +150,8 @@ tr.dnp-row td{opacity:.5;background:var(--bg2)}
             <button onclick="closeDD();document.getElementById('project-file').click()">&#128196; Open Project</button>
           </div>
         </div>
-        <div class="dd-wrap">
+        <!-- Export dropdown -->
+        <div class="dd-wrap" id="export-wrap">
           <button onclick="toggleDD('export-dd')">&#8593; Export</button>
           <div class="dd-menu" id="export-dd" style="display:none">
             <button onclick="closeDD();openExportModal()">Export options...</button>
@@ -169,66 +167,41 @@ tr.dnp-row td{opacity:.5;background:var(--bg2)}
       </div>
       <div id="status-bar" class="status-bar"></div>
     </div>
-    <div class="card" style="padding:0;overflow:hidden">
-      <div class="table-outer" id="table-outer">
-        <table><thead id="thead"></thead><tbody id="tbody"></tbody></table>
-      </div>
+    <div class="card" style="padding:0">
+      <div class="table-wrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
     </div>
   </div>
 </div>
 
 <!-- Team Detail Modal -->
 <div id="detail-modal" style="display:none" class="modal-backdrop">
-  <div class="detail-modal">
-    <!-- Header with nav arrows -->
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-      <button onclick="detailNav(-1)" style="font-size:18px;padding:2px 10px;border-radius:50%">&#8249;</button>
-      <div style="flex:1">
-        <div style="display:flex;align-items:baseline;gap:10px">
-          <span id="detail-num" style="font-size:18px;font-weight:700;color:var(--info-text)"></span>
-          <span id="detail-name" style="font-size:14px;color:var(--text2)"></span>
-          <span id="detail-rank-badge" style="font-size:12px;color:var(--text3)"></span>
-        </div>
-        <div style="font-size:13px;color:var(--text3);margin-top:2px" id="detail-view-scores"></div>
-      </div>
-      <button onclick="detailNav(1)" style="font-size:18px;padding:2px 10px;border-radius:50%">&#8250;</button>
+  <div class="photo-modal">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div><span id="detail-num" style="font-size:18px;font-weight:700;color:var(--info-text)"></span><span id="detail-name" style="font-size:14px;color:var(--text2);margin-left:10px"></span></div>
       <button onclick="closeDetailModal()" style="font-size:20px;padding:2px 8px;border:none;background:none;color:var(--text2);cursor:pointer">&#215;</button>
     </div>
-    <div class="detail-layout">
-      <div class="detail-main">
-        <!-- Photos -->
-        <div id="detail-photo-wrap" style="display:none;margin-bottom:14px">
-          <div class="photo-carousel" id="detail-carousel">
-            <button class="carousel-btn carousel-prev" onclick="detailCarouselStep(-1)">&#8249;</button>
-            <span class="photo-placeholder" id="detail-photo-placeholder">No photos</span>
-            <div id="detail-carousel-images"></div>
-            <button class="carousel-btn carousel-next" onclick="detailCarouselStep(1)">&#8250;</button>
-          </div>
-          <div class="photo-counter" id="detail-photo-counter"></div>
-          <div class="carousel-dots" id="detail-carousel-dots"></div>
-        </div>
-        <!-- Stats grid -->
-        <div style="margin-bottom:10px">
-          <p style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Stats</p>
-          <div id="detail-stats" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:7px"></div>
-        </div>
+    <div id="detail-photo-wrap" style="display:none;margin-bottom:14px">
+      <div class="photo-carousel" id="detail-carousel">
+        <button class="carousel-btn carousel-prev" onclick="detailCarouselStep(-1)">&#8249;</button>
+        <span class="photo-placeholder" id="detail-photo-placeholder">No photos</span>
+        <div id="detail-carousel-images"></div>
+        <button class="carousel-btn carousel-next" onclick="detailCarouselStep(1)">&#8250;</button>
       </div>
-      <!-- Notes panel -->
-      <div class="detail-notes-panel">
-        <p style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Notes</p>
-        <div id="detail-notes-edit"></div>
-        <p style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin:10px 0 6px">Tags</p>
-        <div id="detail-tag-list"></div>
-        <div class="flex-gap" style="margin-top:6px">
-          <input type="text" id="detail-new-tag" placeholder="New tag..." style="flex:1;font-size:11px">
-          <button onclick="addTagFromDetail()" style="padding:3px 7px">+</button>
-        </div>
-      </div>
+      <div class="photo-counter" id="detail-photo-counter"></div>
+      <div class="carousel-dots" id="detail-carousel-dots"></div>
+    </div>
+    <div style="margin-bottom:14px">
+      <p style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Stats</p>
+      <div id="detail-stats" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px"></div>
+    </div>
+    <div id="detail-notes-wrap">
+      <p style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Notes</p>
+      <div id="detail-notes"></div>
     </div>
     <div class="modal-footer">
       <input type="checkbox" id="detail-dnp" onchange="setDetailDNP(this.checked)" style="width:14px;height:14px;cursor:pointer">
-      <label for="detail-dnp" style="font-size:12px;color:var(--text2);cursor:pointer;margin-right:auto">DNP</label>
-      <button onclick="closeDetailModal()">Close</button>
+      <label for="detail-dnp" style="font-size:12px;color:var(--text2);cursor:pointer">DNP</label>
+      <button onclick="closeDetailModal()" style="margin-left:auto">Close</button>
     </div>
   </div>
 </div>
@@ -240,7 +213,7 @@ tr.dnp-row td{opacity:.5;background:var(--bg2)}
     <p class="modal-sub">Weight 0 = display only. Text columns are always display only.</p>
     <div id="criteria-list"></div>
     <button onclick="addCriteria()" style="margin-top:8px">+ Add manual criteria</button>
-    <div class="modal-footer"><button onclick="closeCriteriaModal()" style="margin-left:auto">Done</button></div>
+    <div class="modal-footer"><button onclick="closeCriteriaModal()">Done</button></div>
   </div>
 </div>
 
@@ -254,7 +227,7 @@ tr.dnp-row td{opacity:.5;background:var(--bg2)}
       <span style="margin-left:4px">Count toward total:</span><button onclick="bulkSet('.col-rank',true)" style="font-size:11px;padding:3px 8px">All</button><button onclick="bulkSet('.col-rank',false)" style="font-size:11px;padding:3px 8px">None</button>
     </div>
     <div class="col-scroll"><table class="col-table"><thead><tr><th>Column</th><th>Type</th><th>Import</th><th>Count toward total</th></tr></thead><tbody id="col-checkboxes"></tbody></table></div>
-    <div class="modal-footer"><button onclick="cancelColModal()">Cancel</button><button class="act" onclick="confirmColModal()" style="margin-left:auto">Import selected</button></div>
+    <div class="modal-footer"><button onclick="cancelColModal()">Cancel</button><button class="act" onclick="confirmColModal()">Import selected</button></div>
   </div>
 </div>
 
@@ -268,7 +241,7 @@ tr.dnp-row td{opacity:.5;background:var(--bg2)}
       <span style="margin-left:4px">Count toward total:</span><button onclick="bulkSet('.stat-rank',true)" style="font-size:11px;padding:3px 8px">All</button><button onclick="bulkSet('.stat-rank',false)" style="font-size:11px;padding:3px 8px">None</button>
     </div>
     <div class="col-scroll"><table class="col-table"><thead><tr><th>Field</th><th>Import</th><th>Count toward total</th></tr></thead><tbody id="stat-col-checkboxes"></tbody></table></div>
-    <div class="modal-footer"><button onclick="cancelStatModal()">Cancel</button><button class="act" onclick="confirmStatModal()" style="margin-left:auto">Apply</button></div>
+    <div class="modal-footer"><button onclick="cancelStatModal()">Cancel</button><button class="act" onclick="confirmStatModal()">Apply</button></div>
   </div>
 </div>
 
@@ -282,7 +255,7 @@ tr.dnp-row td{opacity:.5;background:var(--bg2)}
       <span style="margin-left:4px">Count toward total:</span><button onclick="bulkSet('.tba-rank',true)" style="font-size:11px;padding:3px 8px">All</button><button onclick="bulkSet('.tba-rank',false)" style="font-size:11px;padding:3px 8px">None</button>
     </div>
     <div class="col-scroll"><table class="col-table"><thead><tr><th>Field</th><th>Import</th><th>Count toward total</th></tr></thead><tbody id="tba-col-checkboxes"></tbody></table></div>
-    <div class="modal-footer"><button onclick="cancelTBAModal()">Cancel</button><button class="act" onclick="confirmTBAModal()" style="margin-left:auto">Apply</button></div>
+    <div class="modal-footer"><button onclick="cancelTBAModal()">Cancel</button><button class="act" onclick="confirmTBAModal()">Apply</button></div>
   </div>
 </div>
 
@@ -292,7 +265,7 @@ tr.dnp-row td{opacity:.5;background:var(--bg2)}
     <h2>Export</h2>
     <p class="modal-sub">Download your data in various formats.</p>
     <div id="export-options"></div>
-    <div class="modal-footer"><button onclick="closeExportModal()" style="margin-left:auto">Close</button></div>
+    <div class="modal-footer"><button onclick="closeExportModal()">Close</button></div>
   </div>
 </div>
 
@@ -303,18 +276,27 @@ tr.dnp-row td{opacity:.5;background:var(--bg2)}
     <p class="modal-sub">Each view ranks teams using only its selected criteria.</p>
     <div id="rl-views-list"></div>
     <button onclick="addRLView()" style="margin-top:8px">+ New view</button>
-    <div class="modal-footer"><button onclick="closeRLModal()" style="margin-left:auto">Done</button></div>
+    <div class="modal-footer"><button onclick="closeRLModal()">Done</button></div>
   </div>
 </div>
 
+<!-- Mobile accordion -->
 <div id="mobile-layout" style="display:none;flex-direction:column;gap:6px;padding:6px"></div>
 
 <script>
 var TBA_KEY='k3RQ7yVrZdKqUt6RjDlOKYadDOglo2B41X1CE6Fv5eUozinzBfDhr2aw3hg5D22z';
 var ALWAYS_SKIP=new Set(['org_key','year','event_key','match_key','match_number','time','alliance','scouter','team_key','otherNotes','superNotes','RedCard','YellowCard','describeAuto','autoCodeTeleop','preferredStrategy','describepizzatoppings','doAutoCodeTeleop','StartPos','AutoMistake\uD83D\uDEA9','DidScoreMistake\uD83D\uDEA9','DidintakeMistake\uD83D\uDEA9']);
+var TBA_FIELDS=[
+  ['tba_rank','Rank',false],
+  ['tba_opr','OPR',true],
+  ['tba_dpr','DPR',false],
+  ['tba_ccwm','CCWM',true],
+  ['tba_wins','W',false],
+  ['tba_losses','L',false],
+  ['tba_ties','Ties',false],
+  ['tba_rp','RPs',false]
+];
 var STAT_FIELDS=[['epa','EPA',true],['auto_epa','Auto EPA',true],['teleop_epa','Teleop EPA',true],['endgame_epa','Endgame EPA',true],['rank','Rank',false],['wins','W',false],['losses','L',false],['rps','RPs',false],['winrate','Win%',false]];
-// CCWM renamed to Win Margin, DPR to Def Power Rating
-var TBA_FIELDS=[['tba_rank','Rank',false],['tba_opr','OPR',true],['tba_dpr','Def Power Rating',false],['tba_ccwm','Win Margin',true],['tba_wins','W',false],['tba_losses','L',false],['tba_ties','Ties',false],['tba_rp','RPs',false]];
 
 var teams={},criteria=[],noteTags=['Strategy','Autos','Concerns'];
 var sortCol='__total__',sortAsc=false;
@@ -324,7 +306,6 @@ var activeRLView='rl_default';
 var darkMode=true;
 var teamPhotos={};
 var detailTeamNum=null,detailCarouselIndex=0,detailCarouselPhotos=[];
-var detailSortedNums=[];
 
 // ── Theme ──
 function toggleTheme(){
@@ -333,7 +314,6 @@ function toggleTheme(){
   document.getElementById('theme-btn').textContent=darkMode?'Light mode':'Dark mode';
   syncMobileThemeBtn();
 }
-
 function setStatus(msg,type){
   type=type||'info';
   var color=type==='error'?'var(--danger-text)':type==='success'?'var(--success)':'var(--text2)';
@@ -342,33 +322,39 @@ function setStatus(msg,type){
     if(el){el.textContent=msg;el.style.color=color;}
   });
 }
-
 function parseTeamNum(val){
   if(val==null) return null;
   var n=parseInt(String(val).trim().toLowerCase().replace('frc',''));
   return isNaN(n)?null:n;
 }
 
-// ── Dropdowns ──
+// ── Dropdown menus ──
 function toggleDD(id){
   var all=['import-dd','export-dd'];
-  all.forEach(function(x){var el=document.getElementById(x);if(el)el.style.display=(x===id&&el.style.display==='none')?'block':'none';});
+  all.forEach(function(x){
+    var el=document.getElementById(x);
+    if(el) el.style.display=(x===id&&el.style.display==='none')?'block':'none';
+  });
 }
 function closeDD(){['import-dd','export-dd'].forEach(function(x){var el=document.getElementById(x);if(el)el.style.display='none';});}
-document.addEventListener('click',function(e){if(!e.target.closest('.dd-wrap'))closeDD();});
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.dd-wrap')) closeDD();
+});
 
+// ── Toggle helpers ──
 function mkToggleRow(id,label,def,importCls,rankCls,isText){
-  var dis=isText?' disabled':'';
-  return '<tr><td>'+label+'</td>'+(isText!==undefined?'<td style="font-size:10px;color:var(--text3)">'+(isText?'text':'num')+'</td>':'')
+  var disabledClass=isText?' disabled':'';
+  return '<tr><td>'+label+'</td>'
+    +(isText!==undefined?'<td style="font-size:10px;color:var(--text3)">'+(isText?'text':'num')+'</td>':'')
     +'<td><input type="checkbox" checked data-id="'+id+'" class="'+importCls+'" style="width:14px;height:14px;cursor:pointer"></td>'
-    +'<td><label class="toggle-switch'+dis+'" id="tw-'+importCls+'-'+id+'"><input type="checkbox" '+(def&&!isText?'checked':'')+' data-id="'+id+'" class="'+rankCls+'" '+(isText?'disabled':'')+' ><span class="toggle-slider"></span></label></td></tr>';
+    +'<td><label class="toggle-switch'+disabledClass+'" id="tw-'+importCls+'-'+id+'"><input type="checkbox" '+(def&&!isText?'checked':'')+' data-id="'+id+'" class="'+rankCls+'" '+(isText?'disabled':'')+' ><span class="toggle-slider"></span></label></td></tr>';
 }
 function bulkSet(sel,v){document.querySelectorAll(sel).forEach(function(i){i.checked=v;i.dispatchEvent(new Event('change'));});}
 function syncToggleDisable(importCls,prefix){
   document.querySelectorAll('.'+importCls).forEach(function(cb){
     cb.addEventListener('change',function(){
       var w=document.getElementById('tw-'+prefix+'-'+cb.dataset.id);
-      if(w)w.classList.toggle('disabled',!cb.checked);
+      if(w) w.classList.toggle('disabled',!cb.checked);
     });
   });
 }
@@ -380,14 +366,14 @@ function loadPhotoZip(evt){
   JSZip.loadAsync(file).then(function(zip){
     var promises=[];
     zip.forEach(function(relPath,entry){
-      if(entry.dir)return;
+      if(entry.dir) return;
       var fname=relPath.split('/').pop();
       var m=fname.match(/^frc(\d+)_?(\d*)\.(?:jpg|jpeg|png|gif|webp)$/i);
-      if(!m)return;
+      if(!m) return;
       var num=parseInt(m[1]),photoNum=parseInt(m[2])||1;
       promises.push(entry.async('blob').then(function(blob){
         var url=URL.createObjectURL(blob);
-        if(!teamPhotos[num])teamPhotos[num]=[];
+        if(!teamPhotos[num]) teamPhotos[num]=[];
         teamPhotos[num].push({url:url,photoNum:photoNum,blob:blob,fname:fname});
       }));
     });
@@ -399,94 +385,35 @@ function loadPhotoZip(evt){
   }).catch(function(e){setStatus('Photo load failed: '+e.message,'error');});
 }
 
-// ── Detail Modal ──
+// ── Team Detail Modal ──
 function openDetailModal(num){
   var t=teams[num];if(!t)return;
-  // Build sorted list for arrow navigation (current active view order)
-  var view=rlViews.find(function(v){return v.id===activeRLView;})||rlViews[0];
-  var arr=Object.values(teams);
-  arr.forEach(function(t){t.__rl__=calcTotalForView(t,view);});
-  arr.sort(function(a,b){return b.__rl__-a.__rl__;});
-  detailSortedNums=arr.map(function(t){return t.num;});
   detailTeamNum=num;
-  renderDetailContent();
-  document.getElementById('detail-modal').style.display='flex';
-}
-function renderDetailContent(){
-  var num=detailTeamNum,t=teams[num];if(!t)return;
   document.getElementById('detail-num').textContent=num;
   document.getElementById('detail-name').textContent=t.name;
   document.getElementById('detail-dnp').checked=t.dnp;
-
-  // Rank badge + all view scores in header
-  var view=rlViews.find(function(v){return v.id===activeRLView;})||rlViews[0];
-  var idx=detailSortedNums.indexOf(num);
-  document.getElementById('detail-rank-badge').textContent=idx>=0?'#'+(idx+1)+' in '+view.name:'';
-
-  // Show scores for all views
-  var viewScores=rlViews.map(function(v){
-    return v.name+': '+calcTotalForView(t,v);
-  }).join('   •   ');
-  document.getElementById('detail-view-scores').textContent=viewScores;
-
-  // Photos
   detailCarouselPhotos=teamPhotos[num]||[];
   detailCarouselIndex=0;
   var pw=document.getElementById('detail-photo-wrap');
   pw.style.display=detailCarouselPhotos.length>0?'block':'none';
-  if(detailCarouselPhotos.length)renderDetailCarousel();
-
-  // Stats grid
+  if(detailCarouselPhotos.length) renderDetailCarousel();
   var defView=rlViews.find(function(v){return v.id==='rl_default';})||rlViews[0];
-  var si='<div style="background:var(--info-bg);border:0.5px solid var(--info-border);border-radius:8px;padding:8px 10px;grid-column:1/-1"><div style="font-size:10px;color:var(--info-text);margin-bottom:2px">Weighted Total (Overall)</div><div style="font-size:20px;font-weight:700;color:var(--info-text)">'+calcTotalForView(t,defView)+'</div></div>';
+  var si='<div style="background:var(--info-bg);border:0.5px solid var(--info-border);border-radius:8px;padding:8px 10px"><div style="font-size:10px;color:var(--info-text);margin-bottom:2px">Weighted Total</div><div style="font-size:18px;font-weight:700;color:var(--info-text)">'+calcTotalForView(t,defView)+'</div></div>';
   criteria.forEach(function(c){
-    var v=getScore(t,c);if(v===''||v==null)return;
-    si+='<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:7px 9px"><div style="font-size:10px;color:var(--text3);margin-bottom:2px">'+c.name+(c.weight>0&&!c.isText?' <span style="color:var(--info-text);font-size:9px">w:'+c.weight+'</span>':'')+'</div><div style="font-size:'+(c.isText?'12':'15')+'px;font-weight:600;color:var(--text)">'+v+'</div></div>';
+    var v=getScore(t,c);if(v===''||v==null) return;
+    si+='<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:8px 10px"><div style="font-size:10px;color:var(--text3);margin-bottom:2px">'+c.name+(c.weight>0?' <span style="color:var(--info-text);font-size:9px">w:'+c.weight+'</span>':'')+'</div><div style="font-size:'+(c.isText?'12':'16')+'px;font-weight:600;color:var(--text)">'+v+'</div></div>';
   });
   document.getElementById('detail-stats').innerHTML=si||'<p style="font-size:12px;color:var(--text3)">No data yet</p>';
-
-  // Notes editable in panel
-  document.getElementById('detail-notes-edit').innerHTML=noteTags.map(function(tag){
-    return '<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:600;color:var(--text3);margin-bottom:3px">'+tag+'</div>'
-      +'<textarea style="width:100%;font-size:11px;padding:4px 6px;min-height:48px;border:0.5px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);resize:vertical;font-family:inherit" onchange="setNote('+num+',\''+tag+'\',this.value)" placeholder="'+tag+'...">'+((t.notes[tag])||'')+'</textarea></div>';
-  }).join('');
-
-  // Tag list in panel
-  renderDetailTagList();
-}
-function renderDetailTagList(){
-  document.getElementById('detail-tag-list').innerHTML=noteTags.map(function(t,i){
-    return '<span class="tag-chip">'+t+'<button onclick="removeTagFromDetail('+i+')">&#215;</button></span>';
-  }).join('');
-  // Re-render notes since tags changed
-  if(detailTeamNum){
-    document.getElementById('detail-notes-edit').innerHTML=noteTags.map(function(tag){
-      var t=teams[detailTeamNum];
-      return '<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:600;color:var(--text3);margin-bottom:3px">'+tag+'</div>'
-        +'<textarea style="width:100%;font-size:11px;padding:4px 6px;min-height:48px;border:0.5px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);resize:vertical;font-family:inherit" onchange="setNote('+detailTeamNum+',\''+tag+'\',this.value)" placeholder="'+tag+'...">'+((t&&t.notes[tag])||'')+'</textarea></div>';
+  var hasNotes=noteTags.some(function(tag){return t.notes[tag]&&t.notes[tag].trim();});
+  if(hasNotes){
+    document.getElementById('detail-notes').innerHTML=noteTags.filter(function(tag){return t.notes[tag]&&t.notes[tag].trim();}).map(function(tag){
+      return '<div style="margin-bottom:8px"><span style="font-size:10px;font-weight:600;color:var(--text3)">'+tag+'</span><p style="font-size:13px;color:var(--text);margin-top:3px;white-space:pre-wrap">'+t.notes[tag]+'</p></div>';
     }).join('');
+    document.getElementById('detail-notes-wrap').style.display='block';
+  } else {
+    document.getElementById('detail-notes-wrap').style.display='none';
   }
-}
-function addTagFromDetail(){
-  var inp=document.getElementById('detail-new-tag'),val=inp.value.trim();
-  if(!val||noteTags.indexOf(val)>=0)return;
-  noteTags.push(val);inp.value='';
-  renderTagList();
-  renderDetailTagList();
-  renderTable();
-}
-function removeTagFromDetail(i){
-  noteTags.splice(i,1);
-  renderTagList();
-  renderDetailTagList();
-  renderTable();
-}
-function detailNav(dir){
-  var idx=detailSortedNums.indexOf(detailTeamNum);
-  if(idx<0)return;
-  var next=(idx+dir+detailSortedNums.length)%detailSortedNums.length;
-  detailTeamNum=detailSortedNums[next];
-  renderDetailContent();
+  document.getElementById('detail-modal').style.display='flex';
 }
 function closeDetailModal(){document.getElementById('detail-modal').style.display='none';detailTeamNum=null;}
 function setDetailDNP(val){if(detailTeamNum&&teams[detailTeamNum]){teams[detailTeamNum].dnp=val;renderAll();}}
@@ -505,7 +432,7 @@ function renderDetailCarousel(){
   counter.textContent=detailCarouselPhotos.length>1?(detailCarouselIndex+1)+' / '+detailCarouselPhotos.length:'';
 }
 function detailCarouselStep(dir){
-  if(!detailCarouselPhotos.length)return;
+  if(!detailCarouselPhotos.length) return;
   detailCarouselIndex=(detailCarouselIndex+dir+detailCarouselPhotos.length)%detailCarouselPhotos.length;
   renderDetailCarousel();
 }
@@ -516,12 +443,13 @@ function fetchStatbotics(){
   var code=document.getElementById('event-code').value.trim().toLowerCase();
   if(!code){setStatus('Enter an event code','error');return;}
   var btn=document.getElementById('fetch-stat-btn');
-  btn.innerHTML='<span class="spinner"></span>Fetching...';btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span>Fetching...';
+  btn.disabled=true;
   setStatus('Fetching from Statbotics...');
   fetch('https://api.statbotics.io/v3/team_events?event='+code+'&limit=100',{headers:{accept:'application/json'}})
-  .then(function(r){if(!r.ok)throw new Error('Statbotics returned '+r.status);return r.json();})
+  .then(function(r){if(!r.ok) throw new Error('Statbotics returned '+r.status);return r.json();})
   .then(function(list){
-    if(!list.length)throw new Error('No teams found — check event code');
+    if(!list.length) throw new Error('No teams found — check event code');
     setStatus('Got '+list.length+' teams. Fetching full stats...');
     return Promise.all(list.map(function(s){
       return fetch('https://api.statbotics.io/v3/team_event/'+s.team+'/'+code,{headers:{accept:'application/json'}})
@@ -540,31 +468,31 @@ function openStatModal(){
 function cancelStatModal(){document.getElementById('stat-col-modal').style.display='none';pendingStatData=null;}
 function confirmStatModal(){
   document.getElementById('stat-col-modal').style.display='none';
-  if(!pendingStatData)return;
+  if(!pendingStatData) return;
   var importIds=new Set(Array.from(document.querySelectorAll('.stat-import:checked')).map(function(i){return i.dataset.id;}));
   var rankIds=new Set(Array.from(document.querySelectorAll('.stat-rank:checked')).map(function(i){return i.dataset.id;}));
   STAT_FIELDS.forEach(function(f){
-    if(!importIds.has(f[0]))return;
+    if(!importIds.has(f[0])) return;
     if(!criteria.find(function(c){return c.id===f[0];}))
       criteria.push({id:f[0],name:f[1],weight:rankIds.has(f[0])?1:0,source:'statbotics',editable:false,isText:false});
   });
   var loaded=0;
   pendingStatData.details.forEach(function(s){
-    if(!s)return;
+    if(!s) return;
     var num=s.team;
-    if(!teams[num])teams[num]={num:num,name:s.team_name||'Team '+num,notes:{},scores:{},textScores:{},dnp:false,statbotics:{},tba:{}};
-    else if(s.team_name)teams[num].name=s.team_name;
+    if(!teams[num]) teams[num]={num:num,name:s.team_name||'Team '+num,notes:{},scores:{},textScores:{},dnp:false,statbotics:{}};
+    else if(s.team_name) teams[num].name=s.team_name;
     var b=(s.epa&&s.epa.breakdown)||{};
     teams[num].statbotics={
-      epa:s.epa&&s.epa.total_points&&s.epa.total_points.mean!=null?+s.epa.total_points.mean.toFixed(1):'',
-      auto_epa:b.auto_points!=null?+b.auto_points.toFixed(1):'',
-      teleop_epa:b.teleop_points!=null?+b.teleop_points.toFixed(1):'',
+      epa:        s.epa&&s.epa.total_points&&s.epa.total_points.mean!=null?+s.epa.total_points.mean.toFixed(1):'',
+      auto_epa:   b.auto_points!=null?+b.auto_points.toFixed(1):'',
+      teleop_epa: b.teleop_points!=null?+b.teleop_points.toFixed(1):'',
       endgame_epa:b.endgame_points!=null?+b.endgame_points.toFixed(1):'',
-      rank:s.record&&s.record.qual?s.record.qual.rank:'',
-      wins:s.record&&s.record.qual?s.record.qual.wins:'',
-      losses:s.record&&s.record.qual?s.record.qual.losses:'',
-      rps:s.record&&s.record.qual?s.record.qual.rps:'',
-      winrate:s.record&&s.record.qual&&s.record.qual.winrate!=null?+(s.record.qual.winrate*100).toFixed(1):''
+      rank:       s.record&&s.record.qual?s.record.qual.rank:'',
+      wins:       s.record&&s.record.qual?s.record.qual.wins:'',
+      losses:     s.record&&s.record.qual?s.record.qual.losses:'',
+      rps:        s.record&&s.record.qual?s.record.qual.rps:'',
+      winrate:    s.record&&s.record.qual&&s.record.qual.winrate!=null?+(s.record.qual.winrate*100).toFixed(1):''
     };
     loaded++;
   });
@@ -577,8 +505,10 @@ function confirmStatModal(){
 function fetchTBA(){
   var code=document.getElementById('event-code').value.trim().toLowerCase();
   if(!code){setStatus('Enter an event code','error');return;}
+  if(TBA_KEY==='__TBA_KEY_PLACEHOLDER__'){setStatus('TBA key not injected — see setup instructions','error');return;}
   var btn=document.getElementById('fetch-tba-btn');
-  btn.innerHTML='<span class="spinner"></span>Fetching...';btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span>Fetching...';
+  btn.disabled=true;
   setStatus('Fetching from TBA...');
   var h={'X-TBA-Auth-Key':TBA_KEY};
   var base='https://www.thebluealliance.com/api/v3';
@@ -593,7 +523,8 @@ function fetchTBA(){
     (tbaRank.rankings||[]).forEach(function(r){
       rankMap[r.team_key]={rank:r.rank,wins:r.record?r.record.wins:'',losses:r.record?r.record.losses:'',ties:r.record?r.record.ties:'',rp:r.extra_stats?r.extra_stats[0]:''};
     });
-    pendingTBAData={tbaTeams:tbaTeams,rankMap:rankMap,oprMap:tbaOpr.oprs||{},dprMap:tbaOpr.dprs||{},ccwmMap:tbaOpr.ccwms||{}};
+    var oprMap=tbaOpr.oprs||{},dprMap=tbaOpr.dprs||{},ccwmMap=tbaOpr.ccwms||{};
+    pendingTBAData={tbaTeams:tbaTeams,rankMap:rankMap,oprMap:oprMap,dprMap:dprMap,ccwmMap:ccwmMap};
     openTBAModal();
   })
   .catch(function(e){setStatus('TBA fetch failed: '+e.message,'error');})
@@ -607,24 +538,30 @@ function openTBAModal(){
 function cancelTBAModal(){document.getElementById('tba-col-modal').style.display='none';pendingTBAData=null;}
 function confirmTBAModal(){
   document.getElementById('tba-col-modal').style.display='none';
-  if(!pendingTBAData)return;
+  if(!pendingTBAData) return;
   var d=pendingTBAData;
   var importIds=new Set(Array.from(document.querySelectorAll('.tba-import:checked')).map(function(i){return i.dataset.id;}));
   var rankIds=new Set(Array.from(document.querySelectorAll('.tba-rank:checked')).map(function(i){return i.dataset.id;}));
   TBA_FIELDS.forEach(function(f){
-    if(!importIds.has(f[0]))return;
+    if(!importIds.has(f[0])) return;
     if(!criteria.find(function(c){return c.id===f[0];}))
       criteria.push({id:f[0],name:f[1],weight:rankIds.has(f[0])?1:0,source:'tba',editable:false,isText:false});
   });
   d.tbaTeams.forEach(function(t){
     var num=t.team_number,key=t.key;
-    if(!teams[num])teams[num]={num:num,name:t.nickname||key,notes:{},scores:{},textScores:{},dnp:false,statbotics:{},tba:{}};
+    if(!teams[num]) teams[num]={num:num,name:t.nickname||key,notes:{},scores:{},textScores:{},dnp:false,statbotics:{},tba:{}};
     else teams[num].name=t.nickname||teams[num].name;
+    if(!teams[num].tba) teams[num].tba={};
     var r=d.rankMap[key]||{};
     teams[num].tba={
-      tba_rank:r.rank!=null?r.rank:'',tba_opr:d.oprMap[key]!=null?+d.oprMap[key].toFixed(1):'',
-      tba_dpr:d.dprMap[key]!=null?+d.dprMap[key].toFixed(1):'',tba_ccwm:d.ccwmMap[key]!=null?+d.ccwmMap[key].toFixed(1):'',
-      tba_wins:r.wins!=null?r.wins:'',tba_losses:r.losses!=null?r.losses:'',tba_ties:r.ties!=null?r.ties:'',tba_rp:r.rp!=null?r.rp:''
+      tba_rank:  r.rank!=null?r.rank:'',
+      tba_opr:   d.oprMap[key]!=null?+d.oprMap[key].toFixed(1):'',
+      tba_dpr:   d.dprMap[key]!=null?+d.dprMap[key].toFixed(1):'',
+      tba_ccwm:  d.ccwmMap[key]!=null?+d.ccwmMap[key].toFixed(1):'',
+      tba_wins:  r.wins!=null?r.wins:'',
+      tba_losses:r.losses!=null?r.losses:'',
+      tba_ties:  r.ties!=null?r.ties:'',
+      tba_rp:    r.rp!=null?r.rp:''
     };
   });
   renderAll();
@@ -635,7 +572,7 @@ function confirmTBAModal(){
 // ── CSV ──
 function isNumericCol(rows,header){
   var vals=rows.map(function(r){return r[header];}).filter(function(v){return v!=null&&v!=='';});
-  if(!vals.length)return false;
+  if(!vals.length) return false;
   var nc=vals.filter(function(v){return typeof v==='number'||(!isNaN(parseFloat(v))&&isFinite(v));}).length;
   return nc/vals.length>=0.5;
 }
@@ -665,28 +602,31 @@ function openColModal(type,cols,rows){
 function cancelColModal(){document.getElementById('col-modal').style.display='none';pendingCSV=null;}
 function confirmColModal(){
   document.getElementById('col-modal').style.display='none';
-  if(!pendingCSV)return;
+  if(!pendingCSV) return;
   var type=pendingCSV.type,grouped=pendingCSV.grouped,rows=pendingCSV.rows;
   var checked=Array.from(document.querySelectorAll('.col-import:checked')).map(function(i){return i.dataset.id;});
   var rankCols=new Set(Array.from(document.querySelectorAll('.col-rank:checked')).map(function(i){return i.dataset.id;}));
   if(!checked.length){setStatus('No columns selected','error');pendingCSV=null;return;}
   checked.forEach(function(col){
-    var id=type+'_'+col,isText=!isNumericCol(rows,col);
+    var id=type+'_'+col;
+    var isText=!isNumericCol(rows,col);
     if(!criteria.find(function(c){return c.id===id;}))
       criteria.push({id:id,name:col,weight:(rankCols.has(col)&&!isText)?1:0,source:type,editable:true,isText:isText});
   });
   Object.keys(grouped).forEach(function(num){
     var n=+num,rowArr=grouped[num];
-    if(!teams[n])teams[n]={num:n,name:'Team '+n,notes:{},scores:{},textScores:{},dnp:false,statbotics:{},tba:{}};
-    if(!teams[n].textScores)teams[n].textScores={};
+    if(!teams[n]) teams[n]={num:n,name:'Team '+n,notes:{},scores:{},textScores:{},dnp:false,statbotics:{}};
+    if(!teams[n].textScores) teams[n].textScores={};
     checked.forEach(function(col){
-      var id=type+'_'+col,isText=!isNumericCol(rows,col);
+      var id=type+'_'+col;
+      var isText=!isNumericCol(rows,col);
       if(isText){
+        // Use most recent row's value
         var val=rowArr[rowArr.length-1][col];
-        if(val!=null&&val!=='')teams[n].textScores[id]=String(val);
+        if(val!=null&&val!=='') teams[n].textScores[id]=String(val);
       } else {
         var vals=rowArr.map(function(r){return typeof r[col]==='number'?r[col]:parseFloat(r[col]);}).filter(function(v){return !isNaN(v);});
-        if(vals.length)teams[n].scores[id]=+(vals.reduce(function(a,b){return a+b;},0)/vals.length).toFixed(2);
+        if(vals.length) teams[n].scores[id]=+(vals.reduce(function(a,b){return a+b;},0)/vals.length).toFixed(2);
       }
     });
   });
@@ -699,23 +639,23 @@ function addTeamManual(){
   var raw=prompt('Team number:');if(!raw)return;
   var n=parseTeamNum(raw);
   if(!n){setStatus('Invalid team number','error');return;}
-  if(!teams[n])teams[n]={num:n,name:'Team '+n,notes:{},scores:{},textScores:{},dnp:false,statbotics:{},tba:{}};
+  if(!teams[n]) teams[n]={num:n,name:'Team '+n,notes:{},scores:{},textScores:{},dnp:false,statbotics:{}};
   renderAll();
 }
 
 // ── Scoring ──
 function getScore(t,c){
-  if(!t)return '';
+  if(!t) return '';
   if(c.isText){var ts=t.textScores||{};return ts[c.id]!=null?ts[c.id]:'';}
-  if(c.source==='tba')return(t.tba&&t.tba[c.id]!=null)?t.tba[c.id]:'';
-  if(c.source==='statbotics')return(t.statbotics&&t.statbotics[c.id]!=null)?t.statbotics[c.id]:'';
-  return(t.scores&&t.scores[c.id]!=null)?t.scores[c.id]:'';
+  if(c.source==='tba') return (t.tba&&t.tba[c.id]!=null)?t.tba[c.id]:'';
+  if(c.source==='statbotics') return (t.statbotics&&t.statbotics[c.id]!=null)?t.statbotics[c.id]:'';
+  return (t.scores&&t.scores[c.id]!=null)?t.scores[c.id]:'';
 }
 function calcTotalForView(t,view){
   var use=view.criteriaIds.length===0?criteria:criteria.filter(function(c){return view.criteriaIds.indexOf(c.id)>=0;});
   var sum=0,wsum=0;
   use.forEach(function(c){
-    if(c.isText||!(c.weight>0))return;
+    if(c.isText||!(c.weight>0)) return;
     var v=parseFloat(getScore(t,c));
     if(!isNaN(v)){sum+=v*c.weight;wsum+=c.weight;}
   });
@@ -726,16 +666,16 @@ function getSorted(){
   var actView=rlViews.find(function(v){return v.id===activeRLView;})||rlViews[0];
   var arr=Object.values(teams);
   arr.forEach(function(t){t.__total__=calcTotalForView(t,defView);});
-  // FIX #2: DNP teams sorted inline by score, NOT pushed to bottom in main table
   arr.sort(function(a,b){
+    if(a.dnp!==b.dnp) return a.dnp?1:-1;
     var av,bv;
     if(sortCol==='__total__'){av=calcTotalForView(a,actView);bv=calcTotalForView(b,actView);}
     else if(sortCol==='name'){av=a.name;bv=b.name;}
     else if(sortCol==='num'){av=a.num;bv=b.num;}
     else{var c=criteria.find(function(x){return x.id===sortCol;})||{};av=getScore(a,c);bv=getScore(b,c);}
-    if(av===''||av==null)av=sortAsc?Infinity:-Infinity;
-    if(bv===''||bv==null)bv=sortAsc?Infinity:-Infinity;
-    if(typeof av==='string')return sortAsc?av.localeCompare(bv):bv.localeCompare(av);
+    if(av===''||av==null) av=sortAsc?Infinity:-Infinity;
+    if(bv===''||bv==null) bv=sortAsc?Infinity:-Infinity;
+    if(typeof av==='string') return sortAsc?av.localeCompare(bv):bv.localeCompare(av);
     return sortAsc?av-bv:bv-av;
   });
   return arr;
@@ -743,7 +683,6 @@ function getSorted(){
 
 // ── Render ──
 function renderAll(){renderTable();renderRankings();renderSummary();renderRLTabs();renderMobile();}
-
 function renderTable(){
   var sorted=getSorted();
   var si=function(col){return col===sortCol?(sortAsc?'&#8593;':'&#8595;'):'';};
@@ -752,16 +691,15 @@ function renderTable(){
     +'<th onclick="setSort(\'__total__\')">Total '+si('__total__')+'</th><th>Notes</th><th>DNP</th></tr>';
   document.getElementById('tbody').innerHTML=sorted.map(function(t){
     var hp=teamPhotos[t.num]&&teamPhotos[t.num].length>0;
-    return '<tr class="'+(t.dnp?'dnp-row':'')+'"><td>'
-      +'<span style="cursor:pointer;color:var(--info-text);font-weight:600" onclick="openDetailModal('+t.num+')" title="View details">'+t.num+(hp?' &#128247;':'')+'</span>'
-      +'</td><td style="white-space:nowrap">'+t.name+'</td>'
+    return '<tr class="'+(t.dnp?'dnp-row':'')+'"><td><span style="cursor:pointer;color:var(--info-text);font-weight:600" onclick="openDetailModal('+t.num+')" title="View details">'+t.num+(hp?' &#128247;':'')+'</span></td>'
+      +'<td style="white-space:nowrap">'+t.name+'</td>'
       +criteria.map(function(c){
         var v=getScore(t,c);
         if(c.isText){
-          if(!c.editable)return '<td style="font-size:11px;color:var(--text2)">'+(v||'—')+'</td>';
+          if(!c.editable) return '<td style="font-size:11px;color:var(--text2)">'+(v||'—')+'</td>';
           return '<td><input type="text" class="text-input-cell" value="'+(v||'')+'" placeholder="—" onchange="setTextScore('+t.num+',\''+c.id+'\',this.value)"></td>';
         }
-        if(!c.editable||c.source==='statbotics'||c.source==='tba')return '<td style="text-align:center">'+(v!==''&&v!=null?v:'—')+'</td>';
+        if(!c.editable||c.source==='statbotics') return '<td style="text-align:center">'+(v!==''&&v!=null?v:'—')+'</td>';
         return '<td><input type="number" class="score-input" value="'+(v!==''?v:'')+'" placeholder="—" min="0" max="200" step="0.1" onchange="setScore('+t.num+',\''+c.id+'\',this.value)"></td>';
       }).join('')
       +'<td class="total-col">'+t.__total__+'</td>'
@@ -771,24 +709,21 @@ function renderTable(){
       +'<td style="text-align:center;vertical-align:middle"><input type="checkbox" '+(t.dnp?'checked':'')+' onchange="toggleDNP('+t.num+',this.checked)"></td></tr>';
   }).join('');
 }
-
 function renderRLTabs(){
   document.getElementById('rl-tabs').innerHTML=rlViews.map(function(v){
     return '<button class="rl-tab '+(v.id===activeRLView?'active':'')+'" onclick="setRLView(\''+v.id+'\')">'+v.name+'</button>';
   }).join('');
 }
-
 function renderRankings(){
   var view=rlViews.find(function(v){return v.id===activeRLView;})||rlViews[0];
   var arr=Object.values(teams);
   arr.forEach(function(t){t.__rl__=calcTotalForView(t,view);});
-  // Sidebar rankings: DNP pushed to bottom
   arr.sort(function(a,b){if(a.dnp!==b.dnp)return a.dnp?1:-1;return b.__rl__-a.__rl__;});
   var el=document.getElementById('rank-list');
   if(!arr.length){el.innerHTML='<p style="font-size:12px;color:var(--text3)">No teams yet</p>';return;}
   var rank=0;
   el.innerHTML=arr.map(function(t){
-    if(!t.dnp)rank++;
+    if(!t.dnp) rank++;
     return '<div class="rank-item '+(t.dnp?'dnp':'')+'" onclick="openDetailModal('+t.num+')">'
       +'<span class="rank-num">'+(t.dnp?'—':rank)+'</span>'
       +'<span style="font-weight:600;font-size:13px">'+t.num+'</span>'
@@ -797,39 +732,14 @@ function renderRankings(){
       +(teamPhotos[t.num]&&teamPhotos[t.num].length?' <span style="font-size:10px">&#128247;</span>':'')+'</div>';
   }).join('');
 }
-
 function renderSummary(){
   var arr=Object.values(teams),dnp=arr.filter(function(t){return t.dnp;}).length;
   document.getElementById('summary').innerHTML='Teams: '+arr.length+'<br>Ranked: '+(arr.length-dnp)+'<br>DNP: '+dnp+'<br>Criteria: '+criteria.length+'<br>Views: '+rlViews.length;
 }
 
-function setRLView(id){
-  activeRLView=id;
-  renderRLTabs();
-  renderRankings();
-  // FIX #3: also re-sort the main table when view changes
-  renderTable();
-}
+function setRLView(id){activeRLView=id;renderRLTabs();renderRankings();}
 function setSort(col){if(sortCol===col)sortAsc=!sortAsc;else{sortCol=col;sortAsc=false;}renderTable();renderRankings();}
-function setScore(num,id,val){
-  if(!teams[num])return;
-  teams[num].scores[id]=val===''?'':+parseFloat(val).toFixed(2);
-  // FIX #5: recalc total immediately without needing modal reopen
-  teams[num].__total__=calcTotalForView(teams[num],rlViews.find(function(v){return v.id==='rl_default';})||rlViews[0]);
-  renderRankings();
-  renderSummary();
-  // Update just this row's total cell instead of full re-render to avoid losing focus
-  var rows=document.getElementById('tbody').rows;
-  for(var i=0;i<rows.length;i++){
-    var span=rows[i].querySelector('span[onclick^="openDetailModal"]');
-    if(span&&parseInt(span.textContent)===num){
-      var cells=rows[i].cells;
-      // total is at criteria.length+2 (0=#, 1=name, ...criteria..., total, notes, dnp)
-      cells[criteria.length+2].textContent=teams[num].__total__;
-      break;
-    }
-  }
-}
+function setScore(num,id,val){if(!teams[num])return;teams[num].scores[id]=val===''?'':+parseFloat(val).toFixed(2);renderRankings();renderSummary();}
 function setTextScore(num,id,val){if(!teams[num])return;if(!teams[num].textScores)teams[num].textScores={};teams[num].textScores[id]=val;}
 function setNote(num,tag,val){if(teams[num])teams[num].notes[tag]=val;}
 function toggleDNP(num,val){if(teams[num]){teams[num].dnp=val;renderAll();}}
@@ -843,7 +753,7 @@ function renderRLViewsList(){
       +'<input type="text" value="'+v.name+'" style="width:130px;font-size:13px" onchange="rlViews['+vi+'].name=this.value;renderRLTabs()">'
       +(vi>0?'<button class="danger" style="font-size:11px;padding:2px 7px" onclick="removeRLView('+vi+')">Remove</button>':'<span style="font-size:10px;color:var(--text3)">(uses all criteria)</span>')
       +'</div>'+(vi===0?'':'<div class="rl-criteria-check">'
-      +(criteria.filter(function(c){return !c.isText;}).length?criteria.filter(function(c){return !c.isText;}).map(function(c){
+      +(criteria.length?criteria.filter(function(c){return !c.isText;}).map(function(c){
         return '<label><input type="checkbox" '+(v.criteriaIds.indexOf(c.id)>=0?'checked':'')+' onchange="toggleRLCriteria('+vi+',\''+c.id+'\',this.checked)"> '+c.name+' <span style="font-size:10px;color:var(--text3)">('+c.source+')</span></label>';
       }).join(''):'<p style="font-size:12px;color:var(--text3)">No numeric criteria loaded yet.</p>')
       +'</div>')+'</div>';
@@ -863,7 +773,7 @@ function renderTagList(){
 }
 function addTag(){
   var inp=document.getElementById('new-tag'),val=inp.value.trim();
-  if(!val||noteTags.indexOf(val)>=0)return;
+  if(!val||noteTags.indexOf(val)>=0) return;
   noteTags.push(val);inp.value='';renderTagList();renderTable();
 }
 function removeTag(i){noteTags.splice(i,1);renderTagList();renderTable();}
@@ -873,65 +783,104 @@ function openCriteriaModal(){renderCriteriaModal();document.getElementById('crit
 function closeCriteriaModal(){document.getElementById('criteria-modal').style.display='none';renderAll();}
 function renderCriteriaModal(){
   document.getElementById('criteria-list').innerHTML=criteria.map(function(c,i){
-    return '<div class="criteria-row"><input type="text" style="flex:1" value="'+c.name+'" onchange="criteria['+i+'].name=this.value">'
-      +(c.isText?'<span class="badge-src">text</span>':'<input type="number" style="width:46px;text-align:center" value="'+c.weight+'" min="0" max="10" step="0.1" onchange="criteria['+i+'].weight=+this.value;renderRankings();renderSummary();" title="Weight">')
+    return '<div class="criteria-row">'
+      +'<input type="text" style="flex:1" value="'+c.name+'" onchange="criteria['+i+'].name=this.value">'
+      +(c.isText
+        ?'<span class="badge-src">text</span>'
+        :'<input type="number" style="width:46px;text-align:center" value="'+c.weight+'" min="0" max="10" step="0.1" onchange="criteria['+i+'].weight=+this.value" title="Weight">')
       +'<span class="badge-src">'+(c.source||'manual')+'</span>'
       +'<button class="danger" onclick="removeCriteria('+i+')">&#215;</button></div>';
   }).join('')||'<p style="font-size:12px;color:var(--text3)">No criteria yet.</p>';
 }
-function addCriteria(){
-  criteria.push({id:'manual_'+Date.now(),name:'New Criteria',weight:1,source:'manual',editable:true,isText:false});
-  renderCriteriaModal();
-  // FIX #5: immediately update totals when criteria added
-  renderRankings();
-  renderSummary();
-}
-function removeCriteria(i){criteria.splice(i,1);renderCriteriaModal();renderAll();}
+function addCriteria(){criteria.push({id:'manual_'+Date.now(),name:'New Criteria',weight:1,source:'manual',editable:true,isText:false});renderCriteriaModal();}
+function removeCriteria(i){criteria.splice(i,1);renderCriteriaModal();}
 
 // ── Export ──
 function openExportModal(){
-  var opts='<div class="export-row"><span>&#128196; Full project (.zip)</span><button class="act" onclick="exportProject()">Download</button></div>';
-  rlViews.forEach(function(v){opts+='<div class="export-row"><span>&#128202; Rankings: '+v.name+'</span><button onclick="exportRankingCSV(\''+v.id+'\')">CSV</button></div>';});
-  opts+='<div class="export-row"><span>&#128202; All team data</span><button onclick="exportAllCSV()">CSV</button></div>';
+  var opts='';
+  // Full project zip
+  opts+='<div class="export-row"><span>&#128196; Full project (.zip) — everything</span><button class="act" onclick="exportProject()">Download</button></div>';
+  // Ranking CSVs
+  rlViews.forEach(function(v){
+    opts+='<div class="export-row"><span>&#128202; Rankings: '+v.name+'</span><button onclick="exportRankingCSV(\''+v.id+'\')">Download CSV</button></div>';
+  });
+  // All data CSV
+  opts+='<div class="export-row"><span>&#128202; All team data (.csv)</span><button onclick="exportAllCSV()">Download CSV</button></div>';
   document.getElementById('export-options').innerHTML=opts;
   document.getElementById('export-modal').style.display='flex';
 }
 function closeExportModal(){document.getElementById('export-modal').style.display='none';}
+
 function exportAllCSV(){
   var sorted=getSorted();
   var headers=['Team','Name'].concat(criteria.map(function(c){return c.name;})).concat(['Weighted Total']).concat(noteTags).concat(['DNP']);
-  var rows=sorted.map(function(t){return[t.num,t.name].concat(criteria.map(function(c){return getScore(t,c);})).concat([t.__total__]).concat(noteTags.map(function(tag){return t.notes[tag]||'';})).concat([t.dnp?'Y':'N']);});
-  dlText(Papa.unparse({fields:headers,data:rows}),'picklist_all.csv','text/csv');
+  var rows=sorted.map(function(t){
+    return [t.num,t.name].concat(criteria.map(function(c){return getScore(t,c);})).concat([t.__total__]).concat(noteTags.map(function(tag){return t.notes[tag]||'';})).concat([t.dnp?'Y':'N']);
+  });
+  var csv=Papa.unparse({fields:headers,data:rows});
+  dlText(csv,'picklist_all.csv','text/csv');
 }
+
 function exportRankingCSV(viewId){
   var view=rlViews.find(function(v){return v.id===viewId;})||rlViews[0];
   var arr=Object.values(teams);
   arr.forEach(function(t){t.__rl__=calcTotalForView(t,view);});
   arr.sort(function(a,b){if(a.dnp!==b.dnp)return a.dnp?1:-1;return b.__rl__-a.__rl__;});
   var rank=0;
-  var rows=arr.map(function(t){if(!t.dnp)rank++;return[t.dnp?'DNP':rank,t.num,t.name,t.__rl__,t.dnp?'Y':'N'];});
-  dlText(Papa.unparse({fields:['Rank','Team','Name','Score','DNP'],data:rows}),'ranking_'+view.name.replace(/\s+/g,'_')+'.csv','text/csv');
+  var headers=['Rank','Team','Name','Score','DNP'];
+  var rows=arr.map(function(t){if(!t.dnp)rank++;return [t.dnp?'DNP':rank,t.num,t.name,t.__rl__,t.dnp?'Y':'N'];});
+  var csv=Papa.unparse({fields:headers,data:rows});
+  dlText(csv,'ranking_'+view.name.replace(/\s+/g,'_')+'.csv','text/csv');
 }
+
 function exportProject(){
-  setStatus('Building project zip...');
+  setStatus('Building project zip...','info');
   var zip=new JSZip();
-  var state={teams:{},criteria:criteria,noteTags:noteTags,rlViews:rlViews,activeRLView:activeRLView,sortCol:sortCol,sortAsc:sortAsc,darkMode:darkMode};
-  Object.values(teams).forEach(function(t){state.teams[t.num]={num:t.num,name:t.name,notes:t.notes,scores:t.scores,textScores:t.textScores||{},dnp:t.dnp,statbotics:t.statbotics||{},tba:t.tba||{}};});
+  // State JSON
+  var state={
+    teams:{},
+    criteria:criteria,
+    noteTags:noteTags,
+    rlViews:rlViews,
+    activeRLView:activeRLView,
+    sortCol:sortCol,
+    sortAsc:sortAsc,
+    darkMode:darkMode
+  };
+  // Strip blob URLs from teams, save scores/notes/statbotics/etc
+  Object.values(teams).forEach(function(t){
+    state.teams[t.num]={num:t.num,name:t.name,notes:t.notes,scores:t.scores,textScores:t.textScores||{},dnp:t.dnp,statbotics:t.statbotics||{},tba:t.tba||{}};
+  });
   zip.file('project.json',JSON.stringify(state,null,2));
-  var pf=zip.folder('photos');
-  Object.keys(teamPhotos).forEach(function(num){teamPhotos[num].forEach(function(p){if(p.blob)pf.file(p.fname,p.blob);});});
-  var cf=zip.folder('rankings');
+  // Photos
+  var photoZip=zip.folder('photos');
+  var photoPromises=[];
+  Object.keys(teamPhotos).forEach(function(num){
+    teamPhotos[num].forEach(function(p){
+      if(p.blob){
+        photoPromises.push(photoZip.file(p.fname,p.blob));
+      }
+    });
+  });
+  // Rankings CSVs
+  var csvZip=zip.folder('rankings');
   rlViews.forEach(function(v){
-    var arr=Object.values(teams);arr.forEach(function(t){t.__rl__=calcTotalForView(t,v);});
+    var arr=Object.values(teams);
+    arr.forEach(function(t){t.__rl__=calcTotalForView(t,v);});
     arr.sort(function(a,b){if(a.dnp!==b.dnp)return a.dnp?1:-1;return b.__rl__-a.__rl__;});
     var rank=0;
-    var rows=arr.map(function(t){if(!t.dnp)rank++;return[t.dnp?'DNP':rank,t.num,t.name,t.__rl__,t.dnp?'Y':'N'];});
-    cf.file(v.name.replace(/\s+/g,'_')+'.csv',Papa.unparse({fields:['Rank','Team','Name','Score','DNP'],data:rows}));
+    var headers=['Rank','Team','Name','Score','DNP'];
+    var rows=arr.map(function(t){if(!t.dnp)rank++;return [t.dnp?'DNP':rank,t.num,t.name,t.__rl__,t.dnp?'Y':'N'];});
+    csvZip.file(v.name.replace(/\s+/g,'_')+'.csv',Papa.unparse({fields:headers,data:rows}));
   });
+  // All data CSV
   var sorted=getSorted();
-  var allH=['Team','Name'].concat(criteria.map(function(c){return c.name;})).concat(['Weighted Total']).concat(noteTags).concat(['DNP']);
-  var allR=sorted.map(function(t){return[t.num,t.name].concat(criteria.map(function(c){return getScore(t,c);})).concat([t.__total__]).concat(noteTags.map(function(tag){return t.notes[tag]||'';})).concat([t.dnp?'Y':'N']);});
-  zip.file('all_data.csv',Papa.unparse({fields:allH,data:allR}));
+  var allHeaders=['Team','Name'].concat(criteria.map(function(c){return c.name;})).concat(['Weighted Total']).concat(noteTags).concat(['DNP']);
+  var allRows=sorted.map(function(t){
+    return [t.num,t.name].concat(criteria.map(function(c){return getScore(t,c);})).concat([t.__total__]).concat(noteTags.map(function(tag){return t.notes[tag]||'';})).concat([t.dnp?'Y':'N']);
+  });
+  zip.file('all_data.csv',Papa.unparse({fields:allHeaders,data:allRows}));
+
   zip.generateAsync({type:'blob'}).then(function(blob){
     var url=URL.createObjectURL(blob);
     var a=document.createElement('a');a.href=url;a.download='frc_picklist_project.zip';a.click();
@@ -939,8 +888,11 @@ function exportProject(){
     setStatus('Project exported','success');
   });
 }
+
 function dlText(content,filename,mime){
-  var a=document.createElement('a');a.href='data:'+mime+';charset=utf-8,'+encodeURIComponent(content);a.download=filename;a.click();
+  var a=document.createElement('a');
+  a.href='data:'+mime+';charset=utf-8,'+encodeURIComponent(content);
+  a.download=filename;a.click();
 }
 
 // ── Import Project ──
@@ -948,32 +900,37 @@ function importProject(evt){
   var file=evt.target.files[0];if(!file)return;evt.target.value='';
   setStatus('Loading project...');
   JSZip.loadAsync(file).then(function(zip){
-    var sf=zip.file('project.json');
-    if(!sf)throw new Error('Not a valid project zip — missing project.json');
-    return sf.async('string').then(function(json){
+    var stateFile=zip.file('project.json');
+    if(!stateFile) throw new Error('Not a valid project zip — missing project.json');
+    return stateFile.async('string').then(function(json){
       var state=JSON.parse(json);
+      // Restore state
       criteria=state.criteria||[];
       noteTags=state.noteTags||['Strategy','Autos','Concerns'];
       rlViews=state.rlViews||[{id:'rl_default',name:'Overall',criteriaIds:[]}];
       activeRLView=state.activeRLView||'rl_default';
       sortCol=state.sortCol||'__total__';
       sortAsc=state.sortAsc||false;
-      if(typeof state.darkMode==='boolean'&&state.darkMode!==darkMode)toggleTheme();
+      if(typeof state.darkMode==='boolean'&&state.darkMode!==darkMode) toggleTheme();
+      // Restore teams
       teams={};
       Object.values(state.teams||{}).forEach(function(t){
         teams[t.num]={num:t.num,name:t.name,notes:t.notes||{},scores:t.scores||{},textScores:t.textScores||{},dnp:t.dnp||false,statbotics:t.statbotics||{},tba:t.tba||{}};
       });
+      // Restore photos
       teamPhotos={};
+      var photoFolder=zip.folder('photos');
+      if(!photoFolder) return;
       var photoPromises=[];
       zip.folder('photos').forEach(function(relPath,entry){
-        if(entry.dir)return;
+        if(entry.dir) return;
         var fname=relPath.split('/').pop();
         var m=fname.match(/^frc(\d+)_?(\d*)\.(?:jpg|jpeg|png|gif|webp)$/i);
-        if(!m)return;
+        if(!m) return;
         var num=parseInt(m[1]),photoNum=parseInt(m[2])||1;
         photoPromises.push(entry.async('blob').then(function(blob){
           var url=URL.createObjectURL(blob);
-          if(!teamPhotos[num])teamPhotos[num]=[];
+          if(!teamPhotos[num]) teamPhotos[num]=[];
           teamPhotos[num].push({url:url,photoNum:photoNum,blob:blob,fname:fname});
         }));
       });
@@ -981,7 +938,8 @@ function importProject(evt){
     });
   }).then(function(){
     Object.keys(teamPhotos).forEach(function(num){teamPhotos[num].sort(function(a,b){return a.photoNum-b.photoNum;});});
-    renderTagList();renderAll();
+    renderTagList();
+    renderAll();
     setStatus('Project loaded successfully','success');
   }).catch(function(e){setStatus('Import failed: '+e.message,'error');});
 }
@@ -997,25 +955,24 @@ function applyMobile(isMobile){
   var mob=document.getElementById('mobile-layout');
   if(!isMobile){desktop.style.display='';mob.style.display='none';return;}
   desktop.style.display='none';mob.style.display='flex';
-  if(mob.children.length)return;
+  if(mob.children.length) return;
   var sections=[
     {title:'Controls',open:true,html:'<div style="padding:10px"><div style="display:flex;flex-wrap:wrap;gap:7px;align-items:center">'
       +'<input type="text" id="event-code-m" placeholder="Event code" style="flex:1;min-width:130px">'
       +'<button onclick="fetchStatMobile()">Fetch Statbotics</button>'
-      +'<button onclick="fetchTBAMobile()">Fetch TBA</button>'
       +'<button onclick="toggleDD(\'import-dd-m\')">&#8595; Import</button>'
-      +'<div class="dd-menu" id="import-dd-m" style="display:none;position:static;box-shadow:none;border-radius:6px;margin-top:4px;width:100%">'
-      +'<button onclick="document.getElementById(\'match-file\').click()">Match CSV</button>'
-      +'<button onclick="document.getElementById(\'pit-file\').click()">Pit CSV</button>'
-      +'<button onclick="document.getElementById(\'photo-file\').click()">Photos</button>'
-      +'<button onclick="document.getElementById(\'project-file\').click()">Open Project</button>'
-      +'</div>'
+      +'<div class="dd-wrap"><div class="dd-menu" id="import-dd-m" style="display:none">'
+      +'<button onclick="closeDD();document.getElementById(\'match-file\').click()">Match CSV</button>'
+      +'<button onclick="closeDD();document.getElementById(\'pit-file\').click()">Pit CSV</button>'
+      +'<button onclick="closeDD();document.getElementById(\'photo-file\').click()">Photos</button>'
+      +'<button onclick="closeDD();document.getElementById(\'project-file\').click()">Open Project</button>'
+      +'</div></div>'
       +'<button onclick="openExportModal()">&#8593; Export</button>'
       +'<button onclick="openCriteriaModal()">Criteria</button><button onclick="addTeamManual()">+ Team</button>'
       +'<button onclick="toggleTheme()" id="theme-btn-m">Light mode</button>'
       +'</div><div id="status-bar-m" style="font-size:12px;padding:4px 0;min-height:18px;color:var(--text2)"></div></div>'},
     {title:'Live Rankings',open:true,html:'<div style="padding:10px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div class="rl-tabs" id="rl-tabs-m"></div><button onclick="openRLModal()">+ View</button></div><div class="rank-scroll" id="rank-list-m"><p style="font-size:12px;color:var(--text3)">No teams yet</p></div></div>'},
-    {title:'Team Table',open:false,html:'<div><div class="table-outer" style="border:none;border-radius:0"><table><thead id="thead-m"></thead><tbody id="tbody-m"></tbody></table></div></div>'},
+    {title:'Team Table',open:false,html:'<div><div class="table-wrap" style="border:none;border-radius:0"><table><thead id="thead-m"></thead><tbody id="tbody-m"></tbody></table></div></div>'},
     {title:'Notes & Tags',open:false,html:'<div style="padding:10px"><div id="tag-list-m"></div><div class="flex-gap" style="margin-top:8px"><input type="text" id="new-tag-m" placeholder="New tag..." style="flex:1"><button onclick="addTagMobile()">+</button></div></div>'},
     {title:'Summary',open:false,html:'<div style="padding:10px"><div id="summary-m" style="font-size:12px;color:var(--text2);line-height:1.9"></div></div>'}
   ];
@@ -1032,11 +989,14 @@ function toggleSection(hdr){
   body.style.display=open?'none':'block';chev.innerHTML=open?'&#9660;':'&#9650;';
 }
 function syncMobileThemeBtn(){var b=document.getElementById('theme-btn-m');if(b)b.textContent=darkMode?'Light mode':'Dark mode';}
-function fetchStatMobile(){var m=document.getElementById('event-code-m');if(m)document.getElementById('event-code').value=m.value;fetchStatbotics();}
-function fetchTBAMobile(){var m=document.getElementById('event-code-m');if(m)document.getElementById('event-code').value=m.value;fetchTBA();}
+function fetchStatMobile(){
+  var m=document.getElementById('event-code-m');
+  if(m) document.getElementById('event-code').value=m.value;
+  fetchStatbotics();
+}
 function addTagMobile(){var inp=document.getElementById('new-tag-m');if(!inp)return;var val=inp.value.trim();if(!val||noteTags.indexOf(val)>=0)return;noteTags.push(val);inp.value='';renderTagList();renderTable();}
 function renderMobile(){
-  if(!window.matchMedia('(max-width:700px)').matches)return;
+  if(!window.matchMedia('(max-width:700px)').matches) return;
   var pairs=[['status-bar','status-bar-m'],['rl-tabs','rl-tabs-m'],['rank-list','rank-list-m'],['thead','thead-m'],['tbody','tbody-m'],['tag-list','tag-list-m'],['summary','summary-m']];
   pairs.forEach(function(p){var s=document.getElementById(p[0]),d=document.getElementById(p[1]);if(s&&d){d.innerHTML=s.innerHTML;if(p[0]==='status-bar')d.style.color=s.style.color;}});
   syncMobileThemeBtn();
