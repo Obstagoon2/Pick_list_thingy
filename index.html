@@ -156,8 +156,8 @@ tr.dnp-row td{opacity:.5;background:var(--bg2)}
       </div>
       <div id="status-bar" class="status-bar"></div>
     </div>
-    <div class="card" style="padding:0;overflow:hidden">
-      <div class="table-outer" id="table-outer">
+    <div class="card" style="padding:0;overflow:hidden;display:flex;flex-direction:column;min-height:0">
+      <div class="table-outer" id="table-outer" style="overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 140px)">
         <table><thead id="thead"></thead><tbody id="tbody"></tbody></table>
       </div>
     </div>
@@ -311,7 +311,7 @@ tr.dnp-row td{opacity:.5;background:var(--bg2)}
 
 <script>
 var TBA_KEY='k3RQ7yVrZdKqUt6RjDlOKYadDOglo2B41X1CE6Fv5eUozinzBfDhr2aw3hg5D22z';
-var ALWAYS_SKIP=new Set(['org_key','year','event_key','match_key','match_number','time','alliance','scouter','team_key','RedCard','YellowCard','describepizzatoppings','AutoMistake\uD83D\uDEA9','DidScoreMistake\uD83D\uDEA9','DidintakeMistake\uD83D\uDEA9']);
+var ALWAYS_SKIP=new Set(['org_key','year','event_key','match_key','match_number','time','alliance','scouter','team_key','otherNotes','superNotes','RedCard','YellowCard','describeAuto','autoCodeTeleop','preferredStrategy','describepizzatoppings','doAutoCodeTeleop','StartPos','AutoMistake\uD83D\uDEA9','DidScoreMistake\uD83D\uDEA9','DidintakeMistake\uD83D\uDEA9']);
 var STAT_FIELDS=[['epa','EPA',true],['auto_epa','Auto EPA',true],['teleop_epa','Teleop EPA',true],['endgame_epa','Endgame EPA',true],['rank','Rank',false],['wins','W',false],['losses','L',false],['rps','RPs',false],['winrate','Win%',false]];
 // CCWM renamed to Win Margin, DPR to Def Power Rating
 var TBA_FIELDS=[['tba_rank','Rank',false],['tba_opr','OPR',true],['tba_dpr','Def Power Rating',false],['tba_ccwm','Win Margin',true],['tba_wins','W',false],['tba_losses','L',false],['tba_ties','Ties',false],['tba_rp','RPs',false]];
@@ -1012,7 +1012,7 @@ function applyMobile(isMobile){
       +'<button onclick="toggleTheme()" id="theme-btn-m">Light mode</button>'
       +'</div><div id="status-bar-m" style="font-size:12px;padding:4px 0;min-height:18px;color:var(--text2)"></div></div>'},
     {title:'Live Rankings',open:true,html:'<div style="padding:10px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div class="rl-tabs" id="rl-tabs-m"></div><button onclick="openRLModal()">+ View</button></div><div class="rank-scroll" id="rank-list-m"><p style="font-size:12px;color:var(--text3)">No teams yet</p></div></div>'},
-    {title:'Team Table',open:false,html:'<div><div class="table-outer" style="border:none;border-radius:0"><table><thead id="thead-m"></thead><tbody id="tbody-m"></tbody></table></div></div>'},
+    {title:'Team Table',open:false,html:'<div><div class="table-outer" style="overflow-x:auto;overflow-y:auto;max-height:60vh;border:none;border-radius:0"><table><thead id="thead-m"></thead><tbody id="tbody-m"></tbody></table></div></div>'},
     {title:'Notes & Tags',open:false,html:'<div style="padding:10px"><div id="tag-list-m"></div><div class="flex-gap" style="margin-top:8px"><input type="text" id="new-tag-m" placeholder="New tag..." style="flex:1"><button onclick="addTagMobile()">+</button></div></div>'},
     {title:'Summary',open:false,html:'<div style="padding:10px"><div id="summary-m" style="font-size:12px;color:var(--text2);line-height:1.9"></div></div>'}
   ];
