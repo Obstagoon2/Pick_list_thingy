@@ -824,12 +824,6 @@ function showQR(text, title) {
 function closeQR() { document.getElementById('qr-modal').style.display='none'; }
 
 // ── Field Map ──────────────────────────────────
-function loadFieldImg(evt) {
-  var file=evt.target.files[0];if(!file)return;evt.target.value='';
-  var reader=new FileReader();
-  reader.onload=function(e){fieldImgUrl=e.target.result;fieldBgImg=null;renderFieldPreview();if(document.getElementById('field-modal').style.display!=='none')initCanvas();};
-  reader.readAsDataURL(file);
-}
 
 function getFieldBg(cb) {
   if (fieldBgImg && !fieldImgUrl) { cb(fieldBgImg); return; }
