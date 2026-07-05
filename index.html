@@ -7,6 +7,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%230c2a45'/><text y='44' x='8' font-size='40' font-family='system-ui,sans-serif' font-weight='700' fill='%2378b4e8'>P</text><circle cx='48' cy='20' r='10' fill='%2378b4e8'/><text y='25' x='44' font-size='13' font-family='system-ui,sans-serif' font-weight='700' fill='%230c2a45'>1</text></svg>">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root{--bg:#1e1e1e;--bg2:#272727;--bg3:#333;--text:#e0e0e0;--text2:#aaa;--text3:#666;--border:#3a3a3a;--border2:#555;--info-bg:#0c2a45;--info-text:#78b4e8;--info-border:#1a5080;--danger-bg:#3a1515;--danger-text:#e88;--danger-border:#6a2a2a;--success:#81c784;--total:#78b4e8;}
 [data-theme=light]{--bg:#fff;--bg2:#f4f4f4;--bg3:#e8e8e8;--text:#1a1a1a;--text2:#555;--text3:#999;--border:#d8d8d8;--border2:#bbb;--info-bg:#e6f1fb;--info-text:#185fa5;--info-border:#85b7eb;--danger-bg:#fcebeb;--danger-text:#a32d2d;--danger-border:#f09595;--success:#2e7d32;--total:#185fa5;}
@@ -273,7 +274,8 @@ tr.dnp-row td{opacity:.5;background:var(--bg2)}
       <span>&#128506; Field Map — 2026 REBUILT</span>
       <div style="display:flex;align-items:center;gap:4px">
         <div onclick="event.stopPropagation()" style="display:flex;gap:4px">
-          <button onclick="shareField()" style="font-size:11px;padding:3px 8px">&#8679; Share</button>
+          <button onclick="downloadField()" style="font-size:11px;padding:3px 8px">&#8595; Download</button>
+          <button onclick="qrField()" style="font-size:11px;padding:3px 8px">&#9783; QR</button>
           <label style="font-size:11px;padding:3px 8px;border-radius:6px;cursor:pointer;background:var(--bg2);border:0.5px solid var(--border);color:var(--text);display:flex;align-items:center" onclick="event.stopPropagation()">&#128247;<input type="file" accept="image/*" style="display:none" onchange="loadFieldImg(event)"></label>
           <button onclick="openFieldEditor()" style="font-size:11px;padding:3px 8px">Editor</button>
         </div>
@@ -295,7 +297,8 @@ tr.dnp-row td{opacity:.5;background:var(--bg2)}
       <span>&#128221; Match Notes</span>
       <div style="display:flex;align-items:center;gap:4px">
         <div onclick="event.stopPropagation()">
-          <button onclick="shareNotes()" style="font-size:11px;padding:3px 8px">&#8679; Share</button>
+          <button onclick="downloadNotes()" style="font-size:11px;padding:3px 8px">&#8595; Download</button>
+          <button onclick="qrNotes()" style="font-size:11px;padding:3px 8px">&#9783; QR</button>
         </div>
         <span id="ms-chev-notes" class="ms-chev" style="margin-left:4px">&#9650;</span>
       </div>
@@ -391,6 +394,16 @@ tr.dnp-row td{opacity:.5;background:var(--bg2)}
       <label for="detail-dnp" style="font-size:12px;color:var(--text2);cursor:pointer;margin-right:auto">DNP</label>
       <button onclick="closeDetailModal()">Close</button>
     </div>
+  </div>
+</div>
+
+<!-- QR MODAL -->
+<div id="qr-modal" style="display:none" class="modal-backdrop">
+  <div class="modal" style="width:300px;text-align:center">
+    <h2 id="qr-title" style="font-size:15px;font-weight:500;margin-bottom:4px">QR Code</h2>
+    <p class="modal-sub" id="qr-sub">Scan to view match notes</p>
+    <div id="qr-container" style="display:flex;justify-content:center;align-items:center;background:white;border-radius:10px;padding:14px;margin:12px 0;min-height:248px"></div>
+    <div class="modal-footer"><button onclick="closeQR()" style="margin:0 auto">Close</button></div>
   </div>
 </div>
 
@@ -760,43 +773,55 @@ function getNotesText() {
   return lines.join('\n');
 }
 
-// ── Share ──────────────────────────────────────
-function shareField() {
+// ── Download / QR ──────────────────────────────
+function downloadField() {
   var canvas = document.getElementById('field-preview'); if (!canvas) return;
   var mk = msMatchKey || 'map';
-  var title = 'Match Paths' + (msMatchKey ? ' — ' + msMatchKey : '');
-  var notesText = getNotesText();
   canvas.toBlob(function(blob) {
     if (!blob) return;
-    var file = new File([blob], 'field_'+mk+'.png', {type:'image/png'});
-    if (navigator.share) {
-      var shareData = {title:title, text:notesText||title};
-      var canFiles = false;
-      try { canFiles = navigator.canShare && navigator.canShare({files:[file]}); } catch(e) {}
-      if (canFiles) shareData.files = [file];
-      navigator.share(shareData).catch(function(e){if(e.name!=='AbortError'&&navigator.share)navigator.share({title:title,text:notesText||title}).catch(function(){});});
-    } else {
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a'); a.href=url; a.download='field_'+mk+'.png'; a.click(); URL.revokeObjectURL(url);
-    }
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a'); a.href=url; a.download='field_'+mk+'.png'; a.click(); URL.revokeObjectURL(url);
   }, 'image/png');
 }
 
-function shareNotes() {
+function downloadNotes() {
   var text = getNotesText();
-  var isEmpty = !text.replace(/=.*=|\n/g,'').trim();
-  if (isEmpty) { msSetStatus('No notes to share yet','error'); return; }
-  var title = 'Match Notes' + (msMatchKey ? ' — '+msMatchKey : '');
-  if (navigator.share) {
-    navigator.share({title:title, text:text}).catch(function(e){if(e.name!=='AbortError')fallbackCopy(text);});
-  } else { fallbackCopy(text); }
+  if (!text.replace(/[=\n]/g,'').trim()) { msSetStatus('No notes to download','error'); return; }
+  dlText(text, 'notes_'+(msMatchKey||'scratch')+'.txt', 'text/plain');
+  msSetStatus('Notes downloaded','success');
 }
 
-function fallbackCopy(text) {
-  if (navigator.clipboard&&navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(function(){msSetStatus('Notes copied to clipboard','success');}).catch(function(){});
-  } else { msSetStatus('Share not supported on this device','error'); }
+function qrField() {
+  var text = getNotesText();
+  if (!text.replace(/[=\n]/g,'').trim()) text = (msMatchKey?'Match: '+msMatchKey:'No match loaded')+'\n(No notes yet)';
+  showQR(text, msMatchKey ? 'Field — '+msMatchKey : 'Field Notes');
 }
+
+function qrNotes() {
+  var text = getNotesText();
+  if (!text.replace(/[=\n]/g,'').trim()) { msSetStatus('No notes to generate QR for','error'); return; }
+  showQR(text, msMatchKey ? 'Notes — '+msMatchKey : 'Match Notes');
+}
+
+function showQR(text, title) {
+  document.getElementById('qr-title').textContent = title || 'QR Code';
+  var container = document.getElementById('qr-container');
+  container.innerHTML = '';
+  if (!window.QRCode) {
+    container.innerHTML = '<p style="color:var(--danger-text);font-size:12px;padding:8px">QR library not available</p>';
+  } else if (!text || text.length > 1800) {
+    container.innerHTML = '<p style="color:var(--danger-text);font-size:12px;padding:8px">Content too long for QR.<br>Use Download instead.</p>';
+  } else {
+    try {
+      new QRCode(container, {text:text, width:224, height:224, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M});
+    } catch(e) {
+      container.innerHTML = '<p style="color:var(--danger-text);font-size:12px;padding:8px">Failed to generate QR code</p>';
+    }
+  }
+  document.getElementById('qr-modal').style.display = 'flex';
+}
+
+function closeQR() { document.getElementById('qr-modal').style.display='none'; }
 
 // ── Field Map ──────────────────────────────────
 function loadFieldImg(evt) {
