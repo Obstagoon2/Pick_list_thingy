@@ -275,8 +275,7 @@ tr.dnp-row td{opacity:.5;background:var(--bg2)}
       <div style="display:flex;align-items:center;gap:4px">
         <div onclick="event.stopPropagation()" style="display:flex;gap:4px">
           <button onclick="downloadField()" style="font-size:11px;padding:3px 8px">&#8595; Download</button>
-          <button onclick="qrField()" style="font-size:11px;padding:3px 8px">&#9783; QR</button>
-          <label style="font-size:11px;padding:3px 8px;border-radius:6px;cursor:pointer;background:var(--bg2);border:0.5px solid var(--border);color:var(--text);display:flex;align-items:center" onclick="event.stopPropagation()">&#128247;<input type="file" accept="image/*" style="display:none" onchange="loadFieldImg(event)"></label>
+          <button onclick="qrField()" style="font-size:11px;padding:3px 8px">QR Code</button>
           <button onclick="openFieldEditor()" style="font-size:11px;padding:3px 8px">Editor</button>
         </div>
         <span id="ms-chev-fieldmap" class="ms-chev" style="margin-left:4px">&#9650;</span>
@@ -298,7 +297,7 @@ tr.dnp-row td{opacity:.5;background:var(--bg2)}
       <div style="display:flex;align-items:center;gap:4px">
         <div onclick="event.stopPropagation()">
           <button onclick="downloadNotes()" style="font-size:11px;padding:3px 8px">&#8595; Download</button>
-          <button onclick="qrNotes()" style="font-size:11px;padding:3px 8px">&#9783; QR</button>
+          <button onclick="qrNotes()" style="font-size:11px;padding:3px 8px">QR Code</button>
         </div>
         <span id="ms-chev-notes" class="ms-chev" style="margin-left:4px">&#9650;</span>
       </div>
@@ -461,7 +460,7 @@ var msPaths = {}, msNotes = {};
 var msSectionState = {breakdown:true, fieldmap:true, notes:true};
 // Field drawing
 var feTool = 'pen', feRobot = 0, feDrawing = false, feStroke = [];
-var fieldBgImg = null, fieldImgUrl = null;
+var fieldBgImg = null;
 
 // ── IndexedDB ──────────────────────────────────
 function openDB(cb){var req=indexedDB.open(DB_NAME,DB_VERSION);req.onupgradeneeded=function(e){var d=e.target.result;if(!d.objectStoreNames.contains('kv'))d.createObjectStore('kv');if(!d.objectStoreNames.contains('photos'))d.createObjectStore('photos');};req.onsuccess=function(e){DB=e.target.result;cb(true);};req.onerror=function(){setSaveBox('&#9888; Storage unavailable');cb(false);};}
@@ -792,9 +791,29 @@ function downloadNotes() {
 }
 
 function qrField() {
-  var text = getNotesText();
-  if (!text.replace(/[=\n]/g,'').trim()) text = (msMatchKey?'Match: '+msMatchKey:'No match loaded')+'\n(No notes yet)';
-  showQR(text, msMatchKey ? 'Field — '+msMatchKey : 'Field Notes');
+  getFieldBg(function(bg) {
+    var sizes = [[160,78],[120,59],[90,44],[70,34]];
+    var dataUrl = null;
+    for (var s = 0; s < sizes.length && !dataUrl; s++) {
+      var tc = document.createElement('canvas');
+      tc.width = sizes[s][0]; tc.height = sizes[s][1];
+      var ctx = tc.getContext('2d');
+      if (bg) ctx.drawImage(bg, 0, 0, tc.width, tc.height);
+      else { ctx.fillStyle='#2a5c1a'; ctx.fillRect(0,0,tc.width,tc.height); }
+      drawPaths(ctx, tc.width, tc.height);
+      var url = tc.toDataURL('image/jpeg', 0.07);
+      if (url.length <= 2900) dataUrl = url;
+    }
+    if (!dataUrl) {
+      var tc2 = document.createElement('canvas'); tc2.width=60; tc2.height=29;
+      var ctx2 = tc2.getContext('2d');
+      if (bg) ctx2.drawImage(bg,0,0,60,29);
+      else { ctx2.fillStyle='#2a5c1a'; ctx2.fillRect(0,0,60,29); }
+      drawPaths(ctx2, 60, 29);
+      dataUrl = tc2.toDataURL('image/jpeg', 0.04);
+    }
+    showQR(dataUrl, msMatchKey ? 'Field — '+msMatchKey : 'Field Map', true);
+  });
 }
 
 function qrNotes() {
@@ -803,17 +822,20 @@ function qrNotes() {
   showQR(text, msMatchKey ? 'Notes — '+msMatchKey : 'Match Notes');
 }
 
-function showQR(text, title) {
+function showQR(text, title, isImg) {
   document.getElementById('qr-title').textContent = title || 'QR Code';
+  document.getElementById('qr-sub').textContent = isImg ? 'Scan to view field map' : 'Scan to view match notes';
   var container = document.getElementById('qr-container');
   container.innerHTML = '';
+  var limit = isImg ? 2950 : 1800;
   if (!window.QRCode) {
     container.innerHTML = '<p style="color:var(--danger-text);font-size:12px;padding:8px">QR library not available</p>';
-  } else if (!text || text.length > 1800) {
-    container.innerHTML = '<p style="color:var(--danger-text);font-size:12px;padding:8px">Content too long for QR.<br>Use Download instead.</p>';
+  } else if (!text || text.length > limit) {
+    container.innerHTML = '<p style="color:var(--danger-text);font-size:12px;padding:8px">Content too large for QR.<br>Use Download instead.</p>';
   } else {
     try {
-      new QRCode(container, {text:text, width:224, height:224, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M});
+      new QRCode(container, {text:text, width:224, height:224, colorDark:'#000000', colorLight:'#ffffff',
+        correctLevel: isImg ? QRCode.CorrectLevel.L : QRCode.CorrectLevel.M});
     } catch(e) {
       container.innerHTML = '<p style="color:var(--danger-text);font-size:12px;padding:8px">Failed to generate QR code</p>';
     }
@@ -826,11 +848,7 @@ function closeQR() { document.getElementById('qr-modal').style.display='none'; }
 // ── Field Map ──────────────────────────────────
 
 function getFieldBg(cb) {
-  if (fieldBgImg && !fieldImgUrl) { cb(fieldBgImg); return; }
-  if (fieldImgUrl) {
-    if (fieldBgImg && fieldBgImg._src===fieldImgUrl) { cb(fieldBgImg); return; }
-    var img=new Image(); img.onload=function(){img._src=fieldImgUrl;fieldBgImg=img;cb(img);}; img.onerror=function(){cb(null);}; img.src=fieldImgUrl; return;
-  }
+  if (fieldBgImg) { cb(fieldBgImg); return; }
   // Try field.png from repo
   var img=new Image();
   img.onload=function(){fieldBgImg=img;cb(img);};
